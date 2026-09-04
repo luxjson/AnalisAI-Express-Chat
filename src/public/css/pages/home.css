@@ -1,0 +1,180 @@
+* {
+            font-family: 'helvetica', sans-serif;
+            font-weight: normal;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body.dash-body {
+            background-color: #18181b;
+        }
+
+        .home-content-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .card-elite {
+            background: var(--card-bg);
+            border: 2px solid #2e3134;
+            border-radius: 28px;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+            transition: 0.3s ease;
+        }
+
+        .card-elite:hover {
+            border-color: #444;
+            transform: translateY(-5px);
+        }
+        .card-line {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: #ff0101;
+            border-radius: 0 0 10px 10px;
+        }
+
+        .icon-accent {
+            font-size: 2rem;
+            color: #ff0101;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        details {
+            background: var(--card-bg);
+            border: 2px solid #2e3134;
+            border-radius: 15px;
+            padding: 20px 30px;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+        summary { list-style: none; display: flex; justify-content: space-between; color: #fff; font-size: 0.95rem; }
+        summary::after { content: '+'; color: #ff0101; }
+
+@media screen and (max-width: 768px) {
+    .main-layout {
+        margin: 0 !important;
+        padding: 20px !important;
+    }
+    .dash-header {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+        padding-bottom: 30px !important;
+    }
+
+    .welcome-banner {
+        padding: 40px 20px !important;
+        margin-bottom: 40px !important;
+        text-align: center;
+    }
+
+    .welcome-banner h1 {
+        font-size: 2.2rem !important;
+    }
+
+    .welcome-banner p {
+        font-size: 1rem !important;
+    }
+
+    .dash-grid {
+        grid-template-columns: 1fr !important;
+        gap: 20px !important;
+    }
+
+    .card-elite {
+        padding: 30px 20px !important;
+    }
+
+    #sobre, #faq {
+        margin-bottom: 60px !important;
+    }
+
+    .dash-footer {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        height: 65px;
+        flex-direction: row;
+        top: auto;
+        bottom: 0;
+        padding: 0 10px;
+        border-right: none;
+        border-top: 1px solid #262626;
+    }
+
+    .sidebar-top, .sidebar-bottom {
+        flex-direction: row;
+        width: auto;
+        gap: 5px;
+    }
+
+    .logo-container, 
+    .divider, 
+    .link-text, 
+    .active-indicator {
+        display: none !important;
+    }
+
+    .side-link {
+        margin-bottom: 0;
+        width: 50px;
+        height: 50px;
+        justify-content: center;
+    }
+
+    .icon-box {
+        width: 42px;
+        height: 42px;
+        font-size: 1.2rem;
+    }
+
+    .modal-new-card {
+        width: 92%;
+        padding: 40px 20px;
+        border-radius: 24px;
+    }
+
+    .modal-new-card::before {
+        width: 60px;
+    }
+
+    .modal-new-logo {
+        width: 130px;
+    }
+
+    .modal-new-info-grid {
+        gap: 20px;
+    }
+
+    .modal-new-text {
+        font-size: 13px;
+    }
+
+    .main-layout {
+        margin-left: 0 !important;
+        margin-bottom: 65px !important;
+    }
+}
+
+@media screen and (max-width: 380px) {
+    .sidebar {
+        padding: 0 5px;
+    }
+    .icon-box {
+        width: 38px;
+        height: 38px;
+    }
+}

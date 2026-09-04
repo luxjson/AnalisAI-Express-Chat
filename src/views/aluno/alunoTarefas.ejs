@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta name="csrf-token" content="<%= csrfToken %>">
+    <meta charset="UTF-8">
+    <script src="/js/shared/theme-init.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnalisAI - Minhas Tarefas</title>
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
+    <script src="/js/shared/phosphor-icons.js" defer></script>
+    <link rel="stylesheet" href="/css/components/sidebar.css">
+    <link rel="stylesheet" href="/css/pages/edit.css">
+    <link rel="stylesheet" href="/css/base/dashboard.css">
+    <link rel="stylesheet" href="/css/base/light-theme.css">
+</head>
+<body class="dash-body">
+    <%- include('../partials/barAluno') %>
+
+    <div class="main-layout">
+        <header class="dash-header">
+            <div class="header-left">
+                <div class="logo">
+                    <img src="/images/logo3-green.png" alt="AnalisAI" style="height: 40px;">
+                </div>
+            </div>
+            
+            <div class="header-user">
+                <div class="user-profile-group">
+                    <div class="user-avatar" style="background: var(--color-apto);">
+                        <%= aluno.nome.charAt(0).toUpperCase() %>
+                    </div>
+                    <div class="user-details">
+                        <span class="user-name"><strong><%= aluno.nome %></strong></span>
+                        <span class="user-email"><%= aluno.ano_escolar %></span>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <%- include('../partials/notificacoes', { notificacaoClasse: 'header-icon' }) %>
+                </div>
+            </div>
+        </header>
+
+        <main class="dash-content">
+            <section class="welcome-banner" style="background: linear-gradient(90deg, #1b5e38 0%, #217346 100%);">
+                <div class="banner-text">
+                    <h1><i class="fas fa-tasks"></i> Minhas Tarefas</h1>
+                    <p>Gerencie suas entregas, acompanhe prazos e visualize os feedbacks dos seus professores em um só lugar.</p>
+                </div>
+            </section>
+
+            <% if (success_msg && success_msg.length > 0) { %>
+                <div class="alert alert-success" style="margin-bottom: 25px;">
+                    <i class="fas fa-check-circle"></i> <%= success_msg %>
+                </div>
+            <% } %>
+            
+            <% if (error_msg && error_msg.length > 0) { %>
+                <div class="alert alert-error" style="margin-bottom: 25px;">
+                    <i class="fas fa-exclamation-triangle"></i> <%= error_msg %>
+                </div>
+            <% } %>
+
+            <section class="section-container">
+                <div class="dash-grid">
+                    <div class="stats-card">
+                        <h3>TOTAL</h3>
+                        <p class="stats-number"><%= stats.total || 0 %></p>
+                    </div>
+                    <div class="stats-card desenvolvimento">
+                        <h3>PENDENTES</h3>
+                        <p class="stats-number"><%= stats.pendentes || 0 %></p>
+                    </div>
+                    <div class="stats-card" style="border-left: 6px solid #70b5f9;">
+                        <h3>AGUARDANDO</h3>
+                        <p class="stats-number"><%= stats.aguardando || 0 %></p>
+                    </div>
+                    <div class="stats-card apto">
+                        <h3>CONCLUÍDAS</h3>
+                        <p class="stats-number"><%= stats.concluidas || 0 %></p>
+                    </div>
+                    <div class="stats-card inapto">
+                        <h3>ATRASADAS</h3>
+                        <p class="stats-number"><%= stats.atrasadas || 0 %></p>
+                    </div>
+                </div>
+            </section>
+            <section class="section-container">
+                <h2 class="section-title-2"> LISTA DE ATIVIDADES</h2>
+                
+                <% if (tarefas && tarefas.length > 0) { %>
+                    <div class="dash-grid">
+                        <% tarefas.forEach(tarefa => { 
+                            let statusColor = '#888';
+                            let statusClass = 'pendente';
+                            let statusLabel = tarefa.status_texto;
+                            let canSubmit = false;
+
+                            if (tarefa.status_real === 'ATRASADA') {
+                                statusColor = 'var(--color-inapto)';
+                                statusClass = 'inapto';
+                                canSubmit = true;
+                            } else if (tarefa.status === 'DEVOLVIDA') {
+                                statusColor = 'var(--color-desenvolvimento)';
+                                statusClass = 'desenvolvimento';
+                                canSubmit = true;
+                            } else if (tarefa.status === 'ENTREGUE') {
+                                statusColor = '#70b5f9';
+                                statusClass = 'aguardando';
+                            } else if (tarefa.status === 'CONCLUIDA') {
+                                statusColor = 'var(--color-apto)';
+                                statusClass = 'apto';
+                            } else if (tarefa.status === 'PENDENTE') {
+                                statusColor = 'var(--color-desenvolvimento)';
+                                statusClass = 'desenvolvimento';
+                                canSubmit = true;
+                            }
+
+                            const hoje = new Date();
+                            const dataLimite = new Date(tarefa.data_limite);
+                            const isUrgent = tarefa.data_limite && dataLimite < hoje && tarefa.status === 'PENDENTE';
+                        %>
+                            <div class="stats-card" style="border-left: 6px solid <%= statusColor %>; display: flex; flex-direction: column; gap: 15px; padding: 30px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span class="media-nota <%= statusClass %>" style="font-size: 0.7rem; padding: 4px 12px; letter-spacing: 1px;">
+                                        <%= statusLabel %>
+                                    </span>
+                                    <% if (tarefa.data_limite) { %>
+                                        <span style="font-size: 0.75rem; color: <%= isUrgent ? 'var(--color-inapto)' : 'var(--text-muted)' %>">
+                                            <i class="far fa-calendar-alt"></i> <%= tarefa.data_limite_formatada %>
+                                        </span>
+                                    <% } %>
+                                </div>
+
+                                <div>
+                                    <h3 style="color: var(--text-white); font-size: 1.15rem; margin-bottom: 5px; text-transform: none;"><%= tarefa.titulo %></h3>
+                                    <span style="font-size: 0.7rem; color: var(--text-gray); text-transform: uppercase; letter-spacing: 1px;">
+                                        <i class="fas fa-tag"></i> <%= tarefa.competencia_nome || 'Geral' %>
+                                    </span>
+                                </div>
+
+                                <% if (tarefa.descricao) { %>
+                                    <p style="font-size: 0.85rem; color: var(--text-gray); line-height: 1.5; margin: 5px 0;">
+                                        <%= tarefa.descricao.substring(0, 120) %><%= tarefa.descricao.length > 120 ? '...' : '' %>
+                                    </p>
+                                <% } %>
+
+                                <% if (tarefa.status === 'DEVOLVIDA' && tarefa.feedback) { %>
+                                    <div style="background: rgba(212, 160, 23, 0.1); border: 1px solid var(--color-desenvolvimento); padding: 12px; border-radius: 10px;">
+                                        <p style="font-size: 0.8rem; color: var(--color-desenvolvimento);">
+                                            <i class="fas fa-exclamation-circle"></i> <strong>Feedback:</strong> <%= tarefa.feedback %>
+                                        </p>
+                                    </div>
+                                <% } %>
+
+                                <% if (tarefa.status === 'CONCLUIDA' && tarefa.nota) { %>
+                                    <div style="display: flex; align-items: center; gap: 15px; background: rgba(255,255,255,0.03); padding: 15px; border-radius: 12px;">
+                                        <span class="media-nota apto" style="font-size: 1.4rem;"><%= parseFloat(tarefa.nota).toFixed(1) %></span>
+                                        <% if (tarefa.feedback) { %>
+                                            <p style="font-size: 0.8rem; color: var(--text-gray); font-style: italic;">"<%= tarefa.feedback %>"</p>
+                                        <% } %>
+                                    </div>
+                                <% } %>
+
+                                <div style="margin-top: auto; padding-top: 15px;">
+                                    <% if (canSubmit) { %>
+                                        <button class="btn-secondary-dash" style=" justify-content: center;"
+                                                onclick="abrirModalEnvio(<%= tarefa.tarefa_aluno_id %>, '<%= tarefa.titulo.replace(/'/g, "\\'") %>')">
+                                            <i class="fas fa-paper-plane"></i> <%= tarefa.status === 'DEVOLVIDA' ? 'REENVIAR TAREFA' : 'ENVIAR TAREFA' %>
+                                        </button>
+                                    <% } else if (tarefa.status === 'ENTREGUE') { %>
+                                        <div style="text-align: center; font-size: 0.8rem; color: var(--text-muted);">
+                                            <i class="fas fa-check-circle" style="color: #70b5f9;"></i> Entregue em <%= tarefa.data_entrega_formatada %>
+                                        </div>
+                                    <% } else if (tarefa.status === 'CONCLUIDA') { %>
+                                        <div style="text-align: center; font-size: 0.8rem; color: var(--text-muted);">
+                                            <i class="fas fa-certificate" style="color: var(--color-apto);"></i> Atividade Avaliada
+                                        </div>
+                                    <% } %>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+                <% } else { %>
+                    <div class="stats-card" style="text-align: center; padding: 80px;">
+                        <i class="fas fa-tasks" style="font-size: 4rem; color: var(--border-color); margin-bottom: 20px;"></i>
+                        <p style="color: var(--text-gray);">Você não possui tarefas pendentes no momento.</p>
+                    </div>
+                <% } %>
+            </section>
+        </main>
+
+        <footer class="dash-footer">
+            <div class="footer-actions">
+                <a href="/aluno" class="btn-secondary-dash">
+                    <i class="fas fa-arrow-left"></i> VOLTAR AO PAINEL
+                </a>
+            </div>
+            <div class="footer-credits">
+                <p>© 2026 AnalisAI</p>
+            </div>
+        </footer>
+    </div>
+
+    <div id="modalEnvioTarefa" class="modal-overlay">
+        <div class="modal-content">
+            <button class="close-btn" onclick="fecharModalEnvio()">
+                <i class="ph-bold ph-x"></i>
+            </button>
+            
+            <h2 class="section-title-2" >
+                ENVIAR TAREFA
+            </h2>
+            <p id="tarefaTituloEnvio" style="color: #fff; font-size: 1rem; margin-bottom: 25px; opacity: 0.8;"></p>
+            
+            <form id="formEnvioTarefa" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <div style="display: flex; flex-direction: column; gap: 20px;">
+                    <div>
+                        <label style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 8px;">Resposta em Texto</label>
+                        <textarea name="resposta_texto" style="width: 100%; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 15px; padding: 15px; color: var(--text-white); resize: vertical; min-height: 120px;" placeholder="Descreva sua resposta aqui..."></textarea>
+                    </div>
+                    
+                    <div>
+                        <label style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 8px;">Anexar Arquivo</label>
+                        <div style="border: 2px dashed var(--border-color); border-radius: 20px; padding: 30px; text-align: center; cursor: pointer; transition: 0.3s;" 
+                             onmouseover="this.style.borderColor='var(--color-apto)'" 
+                             onmouseout="this.style.borderColor='var(--border-color)'"
+                             onclick="document.getElementById('arquivoInput').click()">
+                            <i class="fas fa-file-upload" style="font-size: 2rem; color: #333; margin-bottom: 10px;"></i>
+                            <p style="font-size: 0.8rem; color: #888;">Clique para selecionar (PDF, Imagens ou Documentos)</p>
+                            <input type="file" id="arquivoInput" name="arquivo" style="display: none;">
+                        </div>
+                        <div id="nomeArquivo" style="font-size: 0.75rem; color: var(--color-apto); margin-top: 10px; text-align: center;"></div>
+                    </div>
+                    
+                    <button type="submit" class="btn-secondary-dash" style="justify-content: center; height: 55px;">
+                        <i class="fas fa-paper-plane"></i> FINALIZAR ENTREGA
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+<script src="/js/pages/student/tasks.js" defer></script>
+</body>
+</html>

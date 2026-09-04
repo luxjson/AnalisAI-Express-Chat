@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta name="csrf-token" content="<%= csrfToken %>">
+    <meta charset="UTF-8">
+    <script src="/js/shared/theme-init.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnalisAI - Gerenciar Tarefas</title>
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
+    <script src="/js/shared/phosphor-icons.js" defer></script>
+    <link rel="stylesheet" href="/css/components/sidebar.css">
+    <link rel="stylesheet" href="/css/base/dashboard.css">
+    <link rel="stylesheet" href="/css/pages/edit.css">
+    <link rel="stylesheet" href="/css/pages/tasks.css">
+    
+    <link rel="stylesheet" href="/css/base/light-theme.css">
+</head>
+<body class="dash-body">
+    <%- include('../partials/barProfessor') %>
+
+    <div class="main-layout">
+        <header class="dash-header">
+            <div class="header-left">
+                <h1>
+                    Gerenciar Tarefas
+                </h1>
+            </div>
+            
+            <div class="header-user">
+                <div class="user-profile-group">
+                    <div class="user-details">
+                        <span class="user-name"><strong><%= user %></strong></span>
+                        <span class="user-role" style="color: #888888;"><strong><%= userCargo %></strong></span>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <%- include('../partials/notificacoes', { notificacaoClasse: 'header-icon' }) %>
+                     
+                </div>
+            </div>
+        </header>
+
+        <% if (success_msg && success_msg.length > 0) { %>
+            <div class="alert alert-success">
+                <%= success_msg %>
+                <span class="close-alert" onclick="this.parentElement.style.display='none'">&times;</span>
+            </div>
+        <% } %>
+        <% if (error_msg && error_msg.length > 0) { %>
+            <div class="alert alert-error">
+                <%= error_msg %>
+                <span class="close-alert" onclick="this.parentElement.style.display='none'">&times;</span>
+            </div>
+        <% } %>
+
+        <div class="tarefas-header">
+            <button class="btn-secondary-dash" onclick="abrirModalNovaTarefa()" style="padding: 12px 25px;">
+                <i class="fas fa-plus"></i> NOVA TAREFA
+            </button>
+        </div>
+
+        <div class="tarefas-stats">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-tasks"></i></div>
+                <div class="stat-info">
+                    <h3><%= stats.total || 0 %></h3>
+                    <p>Total de Tarefas</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                <div class="stat-info">
+                    <h3><%= stats.ativas || 0 %></h3>
+                    <p>Tarefas Ativas</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                <div class="stat-info">
+                    <h3><%= stats.atrasadas || 0 %></h3>
+                    <p>Atrasadas</p>
+                </div>
+            </div>
+        </div>
+
+        <form method="GET" action="/dashboard/tarefas">
+            <div class="filtros-tarefas">
+                <div class="filtro-group">
+                    <label>TURMA</label>
+                    <select name="turma" class="filtro-select">
+                        <option value="">TODAS AS TURMAS</option>
+                        <option value="1º MÉDIO" <%= filtros.turma === '1º MÉDIO' ? 'selected' : '' %>>1º MÉDIO</option>
+                        <option value="2º MÉDIO" <%= filtros.turma === '2º MÉDIO' ? 'selected' : '' %>>2º MÉDIO</option>
+                        <option value="3º MÉDIO" <%= filtros.turma === '3º MÉDIO' ? 'selected' : '' %>>3º MÉDIO</option>
+                        <option value="9º FUNDAMENTAL" <%= filtros.turma === '9º FUNDAMENTAL' ? 'selected' : '' %>>9º FUNDAMENTAL</option>
+                    </select>
+                </div>
+                <div class="filtro-group">
+                    <label>STATUS</label>
+                    <select name="status" class="filtro-select">
+                        <option value="">TODOS OS STATUS</option>
+                        <option value="ATIVA" <%= filtros.status === 'ATIVA' ? 'selected' : '' %>>ATIVA</option>
+                        <option value="CONCLUIDA" <%= filtros.status === 'CONCLUIDA' ? 'selected' : '' %>>CONCLUÍDA</option>
+                    </select>
+                </div>
+                <div class="filtro-group" style="flex: 0 0 auto;">
+                    <button type="submit" class="btn-secondary-dash">
+                        <i class="fas fa-filter"></i> FILTRAR
+                    </button>
+                </div>
+                <div class="filtro-group" style="flex: 0 0 auto;">
+                    <a href="/dashboard/tarefas" class="btn-secondary-dash">
+                        <i class="fas fa-times"></i> LIMPAR
+                    </a>
+                </div>
+            </div>
+        </form>
+
+        <% if (tarefas && tarefas.length > 0) { %>
+            <div class="tarefas-grid">
+                <% tarefas.forEach(tarefa => { 
+                    let prioridadeClass = 'media';
+                    let prioridadeText = 'MÉDIA';
+                    if (tarefa.prioridade === 'ALTA') {
+                        prioridadeClass = 'alta';
+                        prioridadeText = 'ALTA';
+                    } else if (tarefa.prioridade === 'BAIXA') {
+                        prioridadeClass = 'baixa';
+                        prioridadeText = 'BAIXA';
+                    }
+                    
+                    const totalAlunos = parseInt(tarefa.total_alunos) || 0;
+                    const concluidas = parseInt(tarefa.concluidas) || 0;
+                    const entregues = parseInt(tarefa.entregues) || 0;
+                    const devolvidas = parseInt(tarefa.devolvidas) || 0;
+                    const atrasadas = parseInt(tarefa.atrasadas) || 0;
+                    const percentual = totalAlunos > 0 ? Math.round((concluidas / totalAlunos) * 100) : 0;
+                    
+                    const hoje = new Date();
+                    const dataEntrega = new Date(tarefa.data_entrega);
+                    const isUrgente = tarefa.data_entrega && dataEntrega < hoje && tarefa.status === 'ATIVA';
+                %>
+                    <div class="tarefa-card">
+                        <div class="tarefa-prioridade <%= prioridadeClass %>"><%= prioridadeText %></div>
+                        <div class="tarefa-header">
+                            <h3 class="tarefa-titulo"><%= tarefa.titulo %></h3>
+                            <span class="tarefa-turma"><i class="fas fa-users"></i> <%= tarefa.turma %></span>
+                        </div>
+                        <p class="tarefa-descricao"><%= tarefa.descricao || 'Sem descrição' %></p>
+                        <div class="tarefa-meta">
+                            <div class="tarefa-data <%= isUrgente ? 'urgente' : '' %>">
+                                <i class="far fa-calendar-alt"></i> 
+                                <%= tarefa.data_entrega ? new Date(tarefa.data_entrega).toLocaleDateString('pt-BR') : 'Sem data' %>
+                            </div>
+                            <div class="tarefa-data">
+                                <i class="fas fa-user"></i> <%= tarefa.professor_nome || 'Professor' %>
+                            </div>
+                        </div>
+                        <div class="tarefa-progresso">
+                            <div class="progresso-header">
+                                <span>Progresso</span>
+                                <span><%= concluidas %>/<%= totalAlunos %></span>
+                            </div>
+                            <div class="progresso-bar">
+                                <div class="progresso-fill" style="width: <%= percentual %>%"></div>
+                            </div>
+                        </div>
+                        <div class="tarefa-footer">
+                            <% 
+                                let statusTarefa = 'PENDENTE';
+                                let statusCor = '#d4a017';
+                                let statusIcon = 'fa-clock';
+                                
+                                if (tarefa.status === 'CONCLUIDA') {
+                                    statusTarefa = 'CONCLUÍDA';
+                                    statusCor = '#217346';
+                                    statusIcon = 'fa-check-circle';
+                                } else if (concluidas > 0 && concluidas === totalAlunos) {
+                                    statusTarefa = 'CONCLUÍDA';
+                                    statusCor = '#217346';
+                                    statusIcon = 'fa-check-circle';
+                                } else if (entregues > 0) {
+                                    statusTarefa = 'AGUARDANDO CORREÇÃO';
+                                    statusCor = '#217346';
+                                    statusIcon = 'fa-hourglass-half';
+                                } else if (devolvidas > 0) {
+                                    statusTarefa = 'DEVOLVIDA';
+                                    statusCor = '#ffa500';
+                                    statusIcon = 'fa-undo-alt';
+                                } else if (atrasadas > 0) {
+                                    statusTarefa = 'ATRASADA';
+                                    statusCor = '#ff0101';
+                                    statusIcon = 'fa-exclamation-triangle';
+                                }
+                            %>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <i class="fas <%= statusIcon %>" style="color: <%= statusCor %>;"></i>
+                                <span style="color: <%= statusCor %>; font-size: 0.8rem;">
+                                    <%= statusTarefa %>
+                                </span>
+                            </div>
+                            
+                            <span style="color: #666; font-size: 0.75rem;">
+                                <%= concluidas || 0 %>/<%= totalAlunos || 0 %>
+                            </span>
+                        </div>
+                        
+                        <div class="tarefa-acoes" style="margin-top: 15px; justify-content: flex-end;">
+                            <button class="btn-tarefa" onclick="verTarefa(<%= tarefa.id %>)" title="Ver detalhes">
+                                <i class="fas fa-eye"></i>
+                            </button>
+
+                                <button class="btn-tarefa" onclick="editarTarefa(<%= tarefa.id %>)" title="Editar">
+                                    <i class="ph-bold ph-pen" aria-hidden="true"></i>
+                                </button>
+                                <button class="btn-tarefa excluir" onclick="excluirTarefa(<%= tarefa.id %>)" title="Excluir">
+                                    <i class="ph-bold ph-trash" aria-hidden="true"></i>
+                                </button>
+                            
+                            <% if (entregues > 0 && concluidas < entregues) { %>
+                                <button class="btn-tarefa" onclick="avaliarTarefa(<%= tarefa.id %>)" title="Avaliar tarefas" style="border-color: #217346; color: #217346;">
+                                    <i class="fas fa-star"></i>
+                                </button>
+                            <% } %>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+        <% } else { %>
+            <div class="empty-tarefas">
+                <i class="fas fa-tasks"></i>
+                <h3>Nenhuma tarefa encontrada</h3>
+                <p>Clique em "NOVA TAREFA" para começar.</p>
+            </div>
+        <% } %>
+
+        <footer class="dash-footer">
+            <a href="/dashboard/edit" class="btn-secondary-dash">
+                <i class="fas fa-pencil-alt"></i> EDITOR DE NOTAS
+            </a>
+            <div class="footer-credits">
+                <p>© 2026 AnalisAI
+            </div>
+        </footer>
+    </div>
+
+    <div id="novaTarefaModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 500px; padding: 30px;">
+        <button class="close-btn" onclick="fecharModal('novaTarefaModal')"><i class="ph-bold ph-x"></i></button>
+        
+        <h2 class="section-title-2" style="font-size: 1.1rem; margin-bottom: 20px;">
+            NOVA TAREFA
+        </h2>
+
+        <div class="edit-tabs" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; border-bottom: none;">
+            <button type="button" class="tab-btn active" onclick="showTaskTab('geral')" id="btn-task-geral">GERAL</button>
+            <button type="button" class="tab-btn" onclick="showTaskTab('config')" id="btn-task-config">AJUSTES</button>
+            <button type="button" class="tab-btn" onclick="showTaskTab('alunos')" id="btn-task-alunos">ALUNOS</button>
+        </div>
+
+        <form action="/dashboard/tarefas/criar" method="POST" style="margin-top: 20px; border-top: 1px solid var(--border-color); padding-top: 15px;">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            
+            <div id="taskGeralTab" class="tab-content active">
+                <div class="filter-options">
+                    <label style="margin-top: 0;">TÍTULO DA ATIVIDADE</label>
+                    <input type="text" name="titulo" class="filter-input" style="padding: 12px;" required>
+                    
+                    <label style="margin-top: 15px;">DESCRIÇÃO DETALHADA</label>
+                    <textarea name="descricao" class="filter-input" rows="5" style="padding: 12px; resize: none;"></textarea>
+                </div>
+            </div>
+
+            <div id="taskConfigTab" class="tab-content" style="display: none;">
+                <div class="filter-options">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div>
+                            <label style="margin-top: 0;">TURMA</label>
+                            <select name="turma" id="turmaSelect" class="filter-input" style="padding: 10px; font-size: 0.8rem;" required>
+                                <option value="">SELECIONE</option>
+                                <option value="1º MÉDIO">1º MÉDIO</option>
+                                <option value="2º MÉDIO">2º MÉDIO</option>
+                                <option value="3º MÉDIO">3º MÉDIO</option>
+                                <option value="9º FUNDAMENTAL">9º FUNDAMENTAL</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="margin-top: 0;">DATA LIMITE</label>
+                            <input type="date" name="data_entrega" class="filter-input" style="padding: 10px; font-size: 0.8rem;">
+                        </div>
+                    </div>
+
+                    <label style="margin-top: 15px;">COMPETÊNCIA ALVO</label>
+                    <select name="competencia_id" class="filter-input" style="padding: 10px; font-size: 0.8rem;">
+                        <option value="">NENHUMA ESPECÍFICA</option>
+                        <% if (listaCompetencias && listaCompetencias.length > 0) { %>
+                            <% listaCompetencias.forEach(comp => { %>
+                                <option value="<%= comp.id %>"><%= comp.nome %></option>
+                            <% }); %>
+                        <% } %>
+                    </select>
+
+                    <label style="margin-top: 15px;">NÍVEL DE PRIORIDADE</label>
+                    <select name="prioridade" class="filter-input" style="padding: 10px; font-size: 0.8rem;">
+                        <option value="BAIXA">BAIXA</option>
+                        <option value="MEDIA" selected>MÉDIA</option>
+                        <option value="ALTA">ALTA</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="taskAlunosTab" class="tab-content" style="display: none;">
+                <div class="filter-options">
+                    <label style="display:flex; align-items:center; gap:10px; cursor:pointer; background: var(--bg-secondary); padding: 12px; border-radius: 10px; margin-top: 0;">
+                        <input type="checkbox" id="selecionarTodosAlunos" onclick="toggleTodosAlunos()" style="width:16px; height:16px; accent-color: var(--primary-red);">
+                        <span style="color:var(--text-white); font-size: 0.75rem; letter-spacing: 0.5px;">VINCULAR A TURMA TODA</span>
+                    </label>
+                    
+                    <div class="alunos-tarefa" style="max-height: 200px; overflow-y: auto; margin-top: 15px; background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border-color); padding: 10px;">
+                        <% alunos.forEach(aluno => { %>
+                            <div class="aluno-tarefa-item" data-turma="<%= aluno.ano_escolar %>" style="margin-bottom: 0;">
+                                <label style="display:flex; align-items:center; gap:10px; cursor:pointer; flex:1; margin-top:2px">
+                                    <input type="checkbox" name="alunos" value="<%= aluno.id %>" class="aluno-checkbox" style="width:15px; height:15px; accent-color: var(--primary-red);">
+                                    <div class="aluno-tarefa-info">
+                                        <h4 style="font-size: 0.8rem; color: #fff;"><%= aluno.nome %></h4>
+                                        <p style="font-size: 0.65rem; color: var(--text-gray);"><%= aluno.ano_escolar %></p>
+                                    </div>
+                                </label>
+                            </div>
+                        <% }); %>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-secondary-dash" style="margin-top: 25px; width: 100%; height: 50px; justify-content: center; font-size: 0.8rem;">
+                <i class="fas fa-save"></i> PUBLICAR ATIVIDADE
+            </button>
+        </form>
+    </div>
+</div>
+
+    <div id="verTarefaModal" class="modal-overlay">
+        <div class="modal-content modal-lg">
+            <button class="close-btn" onclick="fecharModal('verTarefaModal')"><i class="ph-bold ph-x"></i></button>
+            <h2 class="section-title-2">DETALHES DA TAREFA</h2>
+            <div id="tarefaDetalhes" class="filter-options"></div>
+        </div>
+    </div>
+
+    <div id="avaliarTarefaModal" class="modal-overlay">
+        <div class="modal-content modal-lg">
+            <button class="close-btn" onclick="fecharModal('avaliarTarefaModal')"><i class="ph-bold ph-x"></i></button>
+            <h2 class="section-title-2">AVALIAR TAREFA</h2>
+            <div id="avaliarTarefaConteudo" class="filter-options"></div>
+        </div>
+    </div>
+
+    <div id="editarTarefaModal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 500px; padding: 30px;">
+        <button class="close-btn" onclick="fecharModal('editarTarefaModal')"><i class="ph-bold ph-x"></i></button>
+
+        <h2 class="section-title-2" style="font-size: 1.1rem; margin-bottom: 20px;">
+                EDITAR TAREFA
+            </h2>
+
+            <div class="edit-tabs" style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px; border-bottom: none;">
+                <button type="button" class="tab-btn active" onclick="showEditTaskTab('geral')" id="btn-edit-task-geral" style="font-size: 0.65rem; padding: 8px;">CONTEÚDO</button>
+                <button type="button" class="tab-btn" onclick="showEditTaskTab('config')" id="btn-edit-task-config" style="font-size: 0.65rem; padding: 8px;">CONFIGURAÇÕES</button>
+            </div>
+
+            <form id="editarTarefaForm" method="POST" style="margin-top: 20px; border-top: 1px solid var(--border-color); padding-top: 15px;">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                
+                <div id="editTaskGeralTab" class="tab-content active">
+                    <div class="filter-options">
+                        <label style="margin-top: 0;">TÍTULO</label>
+                        <input type="text" name="titulo" id="editTitulo" class="filter-input" style="padding: 12px;" required>
+                        
+                        <label style="margin-top: 15px;">DESCRIÇÃO</label>
+                        <textarea name="descricao" id="editDescricao" class="filter-input" rows="6" style="padding: 12px; resize: none;"></textarea>
+                    </div>
+                </div>
+
+                <div id="editTaskConfigTab" class="tab-content" style="display: none;">
+                    <div class="filter-options">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                            <div>
+                                <label style="margin-top: 0;">ENTREGA</label>
+                                <input type="date" name="data_entrega" id="editDataEntrega" class="filter-input" style="padding: 10px; font-size: 0.8rem;">
+                            </div>
+                            <div>
+                                <label style="margin-top: 0;">PRIORIDADE</label>
+                                <select name="prioridade" id="editPrioridade" class="filter-input" style="padding: 10px; font-size: 0.8rem;">
+                                    <option value="BAIXA">BAIXA</option>
+                                    <option value="MEDIA">MÉDIA</option>
+                                    <option value="ALTA">ALTA</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <label style="margin-top: 15px;">STATUS DA ATIVIDADE</label>
+                        <select name="status" id="editStatus" class="filter-input" style="padding: 10px; font-size: 0.8rem;">
+                            <option value="ATIVA">ATIVA</option>
+                            <option value="CONCLUIDA">CONCLUÍDA</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-secondary-dash" style="margin-top: 25px; width: 100%; height: 50px; justify-content: center; font-size: 0.8rem;">
+                    <i class="fas fa-save"></i> ATUALIZAR TAREFA
+                </button>
+            </form>
+        </div>
+</div>
+
+    <form id="excluirTarefaForm" method="POST" style="display:none">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>"></form>
+
+    <script src="/js/pages/dashboard/tasks.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta name="csrf-token" content="<%= csrfToken %>">
+    <meta charset="UTF-8">
+    <script src="/js/shared/theme-init.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnalisAI - Minha Evolução</title>
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
+    <script src="/js/shared/phosphor-icons.js" defer></script>
+    <link rel="stylesheet" href="/css/components/sidebar.css">
+    <link rel="stylesheet" href="/css/base/dashboard.css">
+    <link rel="stylesheet" href="/css/pages/student-evolution.css">
+    <link rel="stylesheet" href="/css/base/light-theme.css">
+</head>
+<body class="dash-body">
+
+    <%- include('../partials/barAluno') %>
+
+    <div class="main-layout">
+        <header class="dash-header">
+            <div class="header-left">
+                <div class="logo">
+                    <img src="/images/logo3-green.png" alt="AnalisAI" style="height: 40px;">
+                </div>
+            </div>
+            
+            <div class="header-user">
+                <div class="user-profile-group">
+                    <div class="user-avatar" style="background: var(--color-apto);">
+                        <%= aluno.nome.charAt(0).toUpperCase() %>
+                    </div>
+                    <div class="user-details">
+                        <span class="user-name"><strong><%= aluno.nome %></strong></span>
+                        <span class="user-email"><%= aluno.ano_escolar %></span>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <%- include('../partials/notificacoes', { notificacaoClasse: 'header-icon' }) %>
+                </div>
+            </div>
+        </header>
+
+        <main class="dash-content">
+            
+            <% if (competencias && competencias.length > 0) { %>
+                <section class="welcome-banner" style="background: linear-gradient(90deg, #1b5e38 0%, #217346 100%); padding-bottom: 60px;">
+                    <div class="banner-text">
+                        <h1>Sua Jornada Acadêmica</h1>
+                        <p>Acompanhe em tempo real o seu crescimento e a consolidação das suas competências.</p>
+                        
+                
+                    </div>
+                </section>
+
+                <section class="filter-bar">
+                    <div class="periodo-selector">
+                        <button class="periodo-btn active" onclick="mudarPeriodo('7d', this)">7 Dias</button>
+                        <button class="periodo-btn" onclick="mudarPeriodo('30d', this)">30 Dias</button>
+                        <button class="periodo-btn" onclick="mudarPeriodo('90d', this)">90 Dias</button>
+                        <button class="periodo-btn" onclick="mudarPeriodo('all', this)">Todo o Curso</button>
+                    </div>
+                </section>
+
+                <section class="section-container">
+                    <div class="stats-card" style="padding: 40px;">
+                        <h2 class="section-title-2" style="margin-bottom: 30px;">Desempenho Temporal</h2>
+                        <div style="height: 400px; position: relative;">
+                            <canvas id="evolucaoChart"></canvas>
+                        </div>
+                    </div>
+                </section>
+                <% if (categorias && categorias.length > 0) { %>
+                <section class="section-container">
+                    <h2 class="section-title-2">Performance por Área de Conhecimento</h2>
+                    <div class="dash-grid">
+                        <% categorias.forEach(cat => { 
+                            let mediaCat = cat.media / 10;
+                            let colorClass = mediaCat >= 7 ? 'apto' : (mediaCat >= 5 ? 'desenvolvimento' : 'inapto');
+                        %>
+                            <div class="stats-card" style="border-left: 5px solid var(--color-<%= colorClass %>);">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <h3 style="margin-bottom: 0; color: var(--text-white);"><%= cat.categoria %></h3>
+                                    <span class="media-nota <%= colorClass %>"><%= mediaCat.toFixed(1) %></span>
+                                </div>
+                                <div class="progresso-bar-container">
+                                    <div class="progresso-bar-fill" style="width: <%= cat.media %>%; background: var(--color-<%= colorClass %>);"></div>
+                                </div>
+                                <p style="font-size: 0.7rem; color: var(--text-muted); margin-top: 10px; text-transform: uppercase;">
+                                    Aproveitamento: <%= cat.media.toFixed(0) %>%
+                                </p>
+                            </div>
+                        <% }); %>
+                    </div>
+                </section>
+                <% } %>
+                <section class="section-container">
+                    <h2 class="section-title-2">Histórico de Registros</h2>
+                    <div class="ranking-list">
+                        <% competencias.forEach(comp => { 
+                            let n = parseFloat(comp.nota) || 0;
+                            let c = n >= 7 ? 'apto' : (n >= 5 ? 'desenvolvimento' : 'inapto');
+                        %>
+                            <div class="ranking-item">
+                                <div class="ranking-position" style="background: rgba(255,255,255,0.05); color: #666;">
+                                    <i class="far fa-calendar-alt"></i>
+                                </div>
+                                <div class="ranking-info">
+                                    <h4><%= comp.nome %></h4>
+                                    <p><%= comp.data_formatada %> • <%= comp.categoria || 'Geral' %></p>
+                                    <% if (comp.observacoes) { %>
+                                        <p style="text-transform: none; color: var(--text-gray); margin-top: 5px; font-style: italic;">
+                                            "<%= comp.observacoes %>"
+                                        </p>
+                                    <% } %>
+                                </div>
+                                <div class="ranking-media">
+                                    <span class="media-nota <%= c %>"><%= n.toFixed(1) %></span>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+                </section>
+
+            <% } else { %>
+                <div class="stats-card" style="text-align: center; padding: 100px;">
+                    <i class="fas fa-chart-line" style="font-size: 4rem; color: var(--border-color); margin-bottom: 20px;"></i>
+                    <h3>Nenhum dado para exibir</h3>
+                    <p style="color: var(--text-gray);">Suas avaliações aparecerão aqui assim que forem registradas.</p>
+                </div>
+            <% } %>
+        </main>
+
+        <footer class="dash-footer">
+            <div class="footer-actions">
+                <a href="/aluno" class="btn-secondary-dash"><i class="fas fa-arrow-left"></i> VOLTAR AO PAINEL</a>
+            </div>
+            <div class="footer-credits">
+                <p>© 2026 AnalisAI</p>
+            </div>
+        </footer>
+    </div>
+
+    <% if (historico && historico.length > 0) { %>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="application/json" id="aluno-evolucao-data"><%- safeJson(historico) %></script>
+<script src="/js/pages/student/evolution.js" defer></script>
+    <% } %>
+</body>
+</html>

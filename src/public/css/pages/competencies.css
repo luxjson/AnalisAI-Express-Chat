@@ -1,0 +1,337 @@
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .page-title {
+            font-size: 1.5rem;
+            color: #217346;
+            text-transform: uppercase;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .stat-box {
+            background: #030303;
+            border: 2px solid #2e3134;
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            transition: 0.3s;
+        }
+        
+        .stat-box:hover {
+            border-color: #217346;
+            transform: translateY(-5px);
+        }
+        
+        .stat-icon {
+            font-size: 2rem;
+            color: #217346;
+            margin-bottom: 15px;
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: #888;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .filtros-container {
+            background: #030303;
+            border: 2px solid #2e3134;
+            border-radius: 20px;
+            padding: 25px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .filtro-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px 15px;
+            background: #030303;
+            border: 2px solid #2e3134;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 0.9rem;
+        }
+        
+        .filtro-input:focus {
+            border-color: #217346;
+            outline: none;
+        }
+        
+        .filtro-select {
+            min-width: 150px;
+            padding: 12px 15px;
+            background: #030303;
+            border: 2px solid #2e3134;
+            border-radius: 10px;
+            color: #fff;
+            cursor: pointer;
+        }
+        
+        .filtro-select option {
+            background: #030303;
+            color: #fff;
+        }
+        
+        .btn-filtrar {
+            padding: 12px 25px;
+            background: #217346;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn-filtrar:hover {
+            background: #2a8e4f;
+            transform: translateY(-2px);
+        }
+        
+        .btn-limpar {
+            padding: 12px 25px;
+            background: transparent;
+            border: 2px solid #444;
+            border-radius: 10px;
+            color: #888;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        
+        .btn-limpar:hover {
+            border-color: #666;
+            color: #fff;
+        }
+        
+        .competencias-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .competencias-count {
+            color: #888;
+            font-size: 1.2rem;
+        }
+        
+        .ordenar-select {
+            padding: 8px 15px;
+            background: #030303;
+            border: 2px solid #2e3134;
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+        }
+        
+        .competencia-card {
+            background: #030303;
+            border: 2px solid #2e3134;
+            border-radius: 20px;
+            padding: 25px;
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .competencia-card:hover {
+            border-color: #217346;
+            transform: translateY(-5px);
+        }
+        
+        .competencia-card.apto { border-left: 6px solid #217346; }
+        .competencia-card.desenvolvimento { border-left: 6px solid #d4a017; }
+        .competencia-card.inapto { border-left: 6px solid #ff0101; }
+        
+        .competencia-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+        }
+        
+        .competencia-badge.apto {
+            background: rgba(33, 115, 70, 0.1);
+            color: #217346;
+            border: 2px solid #217346;
+        }
+        
+        .competencia-badge.desenvolvimento {
+            background: rgba(212, 160, 23, 0.1);
+            color: #d4a017;
+            border: 2px solid #d4a017;
+        }
+        
+        .competencia-badge.inapto {
+            background: rgba(255, 1, 1, 0.1);
+            color: #ff0101;
+            border: 2px solid #ff0101;
+        }
+        
+        .competencia-header {
+            margin-bottom: 20px;
+            padding-right: 80px;
+        }
+        
+        .competencia-nome {
+            font-size: 1.3rem;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+        
+        .competencia-categoria {
+            color: #888;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .competencia-desc {
+            color: #aaa;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .competencia-nota-container {
+            display: flex;
+            align-items: baseline;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .competencia-nota {
+            font-size: 3rem;
+        }
+        
+        .competencia-nota.apto { color: #217346; }
+        .competencia-nota.desenvolvimento { color: #d4a017; }
+        .competencia-nota.inapto { color: #ff0101; }
+        
+        .competencia-nota-max {
+            color: #666;
+            font-size: 1.2rem;
+        }
+        
+        .competencia-obs {
+            background: #1a1a1a;
+            border-radius: 12px;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 3px solid #217346;
+        }
+        
+        .competencia-obs p {
+            color: #ccc;
+            font-style: italic;
+            line-height: 1.6;
+            margin: 0;
+        }
+        
+        .competencia-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #2e3134;
+        }
+        
+        .competencia-data {
+            color: #666;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .competencia-data i {
+            color: #217346;
+        }
+        
+        .grafico-container {
+            background: #030303;
+            border: 2px solid #2e3134;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 40px;
+            height: 300px;
+            position: relative;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            background: #030303;
+            border: 2px solid #2e3134;
+            border-radius: 20px;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .empty-state h3 {
+            color: #666;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .empty-state p {
+            color: #444;
+            font-size: 0.9rem;
+        }
+        
+        @media screen and (max-width: 768px) {
+            .filtros-container {
+                flex-direction: column;
+            }
+            
+            .filtro-input, .filtro-select, .btn-filtrar, .btn-limpar {
+                width: 100%;
+            }
+            
+            .competencias-header {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+            
+            .competencia-header {
+                padding-right: 0;
+            }
+            
+            .competencia-badge {
+                position: relative;
+                top: 0;
+                right: 0;
+                display: inline-block;
+                margin-bottom: 10px;
+            }
+        }

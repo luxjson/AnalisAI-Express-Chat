@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta name="csrf-token" content="<%= csrfToken %>">
+    <meta charset="UTF-8">
+    <script src="/js/shared/theme-init.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnalisAI - Manual do Usuário</title>
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
+    <script src="/js/shared/phosphor-icons.js" defer></script>
+    <link rel="stylesheet" href="/css/components/sidebar.css">
+    <link rel="stylesheet" href="/css/base/dashboard.css">
+    <link rel="stylesheet" href="/css/pages/teacher-manual.css">
+    <link rel="stylesheet" href="/css/base/light-theme.css">
+</head>
+<body class="dash-body">
+    <% if (userCargo === 'Professor' || userCargo === 'Admin') { %>
+    <%- include('partials/barProfessor') %>
+    <% } else { %>
+        <%- include('partials/barAluno') %>
+    <% } %>
+    
+    <div class="main-layout">
+        <header class="dash-header">
+            <div class="header-left">
+                <h1>
+                    Manual do Professor
+                </h1>
+            </div>
+            
+            <div class="header-user">
+                <div class="user-profile-group">
+                    <div class="user-details">
+                        <span class="user-name"><strong><%= user %></strong></span>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <%- include('./partials/notificacoes', { notificacaoClasse: 'header-icon' }) %>
+                     
+                </div>
+            </div>
+        </header>
+        
+        <div class="pdf-header">
+            <a href="/pdf/manual-do-professor.pdf" download class="btn-secondary-dash">
+                <i class="fas fa-download"></i> BAIXAR PDF
+            </a>
+        </div>
+        
+        <div class="pdf-container">
+            <iframe src="/pdf/manual-do-professor.pdf"></iframe>
+        </div>
+    </div>
+</body>
+</html>

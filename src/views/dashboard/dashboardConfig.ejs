@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta name="csrf-token" content="<%= csrfToken %>">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnalisAI - Configurações</title>
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
+    <script src="/js/shared/phosphor-icons.js" defer></script>
+    <link rel="stylesheet" href="/css/components/sidebar.css">
+    <link rel="stylesheet" href="/css/base/dashboard.css">
+    <link rel="stylesheet" href="/css/pages/dashboard-config.css">
+</head>
+<body class="dash-body config-page config-page-professor">
+    <%- include('../partials/barProfessor') %>
+    
+    <div class="main-layout">
+       <header class="dash-header">
+            <div class="header-left">
+                <h1>
+                    Configurações
+                </h1>
+            </div>
+            
+            <div class="header-user">
+                <div class="user-profile-group">
+                    <div class="user-details">
+                        <span class="user-name"><strong><%= user %></strong></span>
+                        <span class="user-role"><strong><%= userCargo %></strong></span>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <%- include('../partials/notificacoes', { notificacaoClasse: 'header-icon' }) %>
+                     
+                </div>
+            </div>
+        </header>
+        
+        <main class="dash-content">
+            <div class="perfil-grid">
+                <aside class="perfil-sidebar-card">
+                    <div class="avatar-circle">
+                        <%= user.charAt(0).toUpperCase() %>
+                    </div>
+                    
+                    <div class="perfil-info-base">
+                        <h2><%= user %></h2>
+                        <p><%= cargo %></p>
+                    </div>
+
+                    <div class="perfil-stats-row">
+                        <div class="stat-item">
+                            <span>Tarefas</span>
+                            <strong><%= stats.tarefas || 0 %></strong>
+                        </div>
+                        <div class="stat-item">
+                            <span>Alunos</span>
+                            <strong><%= stats.alunos || 0 %></strong>
+                        </div>
+                    </div>
+
+                    <div style="text-align: left; padding: 0 10px;">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 10px;">
+                            <span style="color: var(--text-gray);">Status:</span>
+                            <span class="media-nota apto status-badge-professor">ATIVO</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+                            <span style="color: var(--text-gray);">Último Acesso:</span>
+                            <span ><%= ultimoAcesso || '---' %></span>
+                        </div>
+                    </div>
+                </aside>
+                
+                <div class="perfil-main">
+                    <div id="mensagemSucesso" class="mensagem-sucesso">
+                        <i class="fas fa-check-circle"></i> Preferências salvas com sucesso!
+                    </div>
+
+                    <nav class="tabs-container">
+                        <button class="tab-trigger <%= abaAtiva === 'dados' ? 'active' : '' %>" onclick="mudarAba('dados')">Meus Dados</button>
+                        <button class="tab-trigger <%= abaAtiva === 'notificacoes' ? 'active' : '' %>" onclick="mudarAba('notificacoes')">Notificações</button>
+                        <button class="tab-trigger <%= abaAtiva === 'senha' ? 'active' : '' %>" onclick="mudarAba('senha')">Segurança</button>
+                    </nav>
+                    
+                    <div id="abaDados" class="tab-content <%= abaAtiva === 'dados' ? 'active' : '' %>">
+                        <div class="info-grid">
+                            <div class="info-display-item"><label>Nome Completo</label><div class="value"><i class="fas fa-user"></i> <%= user %></div></div>
+                            <div class="info-display-item"><label>E-mail Institucional</label><div class="value"><i class="fas fa-envelope"></i> <%= email %></div></div>
+                            <div class="info-display-item"><label>Cargo / Função</label><div class="value"><i class="fas fa-briefcase"></i> <%= cargo %></div></div>
+                        </div>
+                    </div>
+                    
+                    <div id="abaNotificacoes" class="tab-content <%= abaAtiva === 'notificacoes' ? 'active' : '' %>">
+                        <form id="configForm">
+                            <div class="toggle-item">
+                                <div><h4 >Alertas de Sistema</h4><p >Notificações globais da plataforma</p></div>
+                                <div class="toggle-switch <%= config.notificacoes_ativas ? 'ativo' : '' %>" data-input="notificacoes_ativas"></div>
+                                <input type="hidden" name="notificacoes_ativas" id="notificacoes_ativas" value="<%= config.notificacoes_ativas %>">
+                            </div>
+                            
+                            <div class="toggle-item">
+                                <div><h4 >Atividades de Alunos</h4><p >Avisar sobre novas entregas e tarefas</p></div>
+                                <div class="toggle-switch <%= config.notificacoes_tarefas ? 'ativo' : '' %>" data-input="notificacoes_tarefas"></div>
+                                <input type="hidden" name="notificacoes_tarefas" id="notificacoes_tarefas" value="<%= config.notificacoes_tarefas %>">
+                            </div>
+
+                            <input type="hidden" name="notificacoes_avaliacoes" id="notificacoes_avaliacoes" value="<%= config.notificacoes_avaliacoes %>">
+                            <input type="hidden" name="notificacoes_competencias" id="notificacoes_competencias" value="<%= config.notificacoes_competencias %>">
+                        </form>
+                        
+                        <button class="btn-secondary-dash" onclick="salvarConfiguracoes()" >
+                            <i class="fas fa-save"></i> SALVAR CONFIGURAÇÕES
+                        </button>
+                    </div>
+                    
+                    <div id="abaSenha" class="tab-content <%= abaAtiva === 'senha' ? 'active' : '' %>">
+                        <% if (success_msg && success_msg.length > 0) { %>
+                            <div class="alert alert-success">
+                                <i class="fas fa-check-circle"></i> <%= success_msg %>
+                            </div>
+                        <% } %>
+            
+                        <% if (error_msg && error_msg.length > 0) { %>
+                            <div class="alert alert-error">
+                                <i class="fas fa-exclamation-circle"></i> <%= error_msg %>
+                            </div>
+                        <% } %>
+
+                        <form class="senha-form" action="/dashboard/alterar-senha" method="POST">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                            <label>SENHA ATUAL</label>
+                            <input type="password" name="senha_atual" class="form-input-premium" required>
+                            
+                            <label>NOVA SENHA</label>
+                            <input type="password" name="nova_senha" class="form-input-premium" required minlength="12" placeholder="Mínimo 12 caracteres">
+                            
+                            <label>CONFIRMAR NOVA SENHA</label>
+                            <input type="password" name="confirmar_senha" class="form-input-premium" required>
+                            
+                            <button type="submit" class="btn-secondary-dash">
+                                <i class="fas fa-key"></i> ATUALIZAR SENHA
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script src="/js/pages/dashboard/config.js" defer></script>
+</body>
+</html>

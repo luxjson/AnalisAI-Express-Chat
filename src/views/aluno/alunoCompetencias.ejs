@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta name="csrf-token" content="<%= csrfToken %>">
+    <meta charset="UTF-8">
+    <script src="/js/shared/theme-init.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnalisAI - Minhas Competências</title>
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
+    <script src="/js/shared/phosphor-icons.js" defer></script>
+    <link rel="stylesheet" href="/css/components/sidebar.css">
+    <link rel="stylesheet" href="/css/base/dashboard.css">
+    <link rel="stylesheet" href="/css/base/light-theme.css">
+</head>
+<body class="dash-body">
+
+    <%- include('../partials/barAluno') %>
+
+    <div class="main-layout">
+        <header class="dash-header">
+            <div class="header-left">
+                <div class="logo">
+                    <img src="/images/logo3-green.png" alt="AnalisAI" style="height: 40px;">
+                </div>
+            </div>
+            
+            <div class="header-user">
+                <div class="user-profile-group">
+                    <div class="user-avatar" style="background: var(--color-apto);">
+                        <%= aluno.nome.charAt(0).toUpperCase() %>
+                    </div>
+                    <div class="user-details">
+                        <span class="user-name"><strong><%= aluno.nome %></strong></span>
+                        <span class="user-email"><%= aluno.ano_escolar %></span>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <%- include('../partials/notificacoes', { notificacaoClasse: 'header-icon' }) %>
+                </div>
+            </div>
+        </header>
+
+        <main class="dash-content">
+            <section class="welcome-banner" style="background: linear-gradient(90deg, #1b5e38 0%, #217346 100%); padding: 40px;">
+                <div class="banner-text">
+                    <h1><i class="fas fa-medal"></i> Relatório de Competências</h1>
+                    <p>Filtre, analise e acompanhe o detalhamento de cada habilidade avaliada pelos seus professores.</p>
+                </div>
+            </section>
+
+            <section class="section-container">
+                <div class="dash-grid">
+                    <div class="stats-card">
+                        <h3>TOTAL AVALIADAS</h3>
+                        <p class="stats-number"><%= stats.total || 0 %></p>
+                    </div>
+                    
+                    <div class="stats-card apto">
+                        <h3>APTAS</h3>
+                        <p class="stats-number"><%= stats.aptas || 0 %></p>
+                    </div>
+                    
+                    <div class="stats-card desenvolvimento">
+                        <h3>EM DESENVOLVIMENTO</h3>
+                        <p class="stats-number"><%= stats.desenvolvimento || 0 %></p>
+                    </div>
+                    
+                    <div class="stats-card inapto">
+                        <h3>INAPTAS</h3>
+                        <p class="stats-number"><%= stats.inaptas || 0 %></p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section-container">
+                <div class="stats-card" style="padding: 25px; display: flex; flex-direction: row; gap: 15px; justify-content: space-between;">
+                    <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center; flex: 1; max-width: 60%;">
+                        <input type="text" id="searchInput" 
+                               style="flex: 2; background: var(--card-bg); border: 1px solid var(--border-color); padding: 12px; border-radius: 10px; color: var(--text-white); max-width:50%;" 
+                               placeholder="Pesquisar competência...">
+                        
+                        <select id="categoriaFilter" style="flex: 1; background: var(--card-bg); border: 1px solid var(--border-color); padding: 12px; border-radius: 10px; color: var(--text-white); max-width: 25%">
+                            <option value="">TODAS CATEGORIAS</option>
+                            <option value="Técnica">TÉCNICA</option>
+                            <option value="Comportamental">COMPORTAMENTAL</option>
+                            <option value="Cognitiva">COGNITIVA</option>
+                        </select>
+
+                        <select id="nivelFilter" style="flex: 1; background: var(--card-bg); border: 1px solid var(--border-color); padding: 12px; border-radius: 10px; color: var(--text-white); max-width: 25%;">
+                            <option value="">TODOS OS NÍVEIS</option>
+                            <option value="apto">APTO</option>
+                            <option value="desenvolvimento">DESENVOLVIMENTO</option>
+                            <option value="inapto">INAPTO</option>
+                        </select>
+
+                    </div>
+                    <div style="display: flex; gap: 15px;">
+                        <button onclick="aplicarFiltros()" class="btn-secondary-dash" style="height: 50px;">
+                            <i class="fas fa-filter"></i> FILTRAR
+                        </button>
+                        <button onclick="limparFiltros()" class="btn-secondary-dash" style="height: 50px;">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section-container">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                    <h2 class="section-title-2" style="margin-bottom: 0;">DETALHAMENTO</h2>
+                    <select id="ordenarSelect" onchange="ordenarCompetencias()" 
+                            style="background: var(--card-bg); border: 1px solid var(--border-color); padding: 8px 15px; border-radius: 8px; color: #888; font-size: 0.8rem;">
+                        <option value="data_desc">MAIS RECENTES</option>
+                        <option value="nome_asc">A-Z</option>
+                    </select>
+                </div>
+
+                <% if (competencias && competencias.length > 0) { %>
+                    <div class="dash-grid" id="competenciasGrid">
+                        <% competencias.forEach(comp => { 
+                            let notaNum = parseFloat(comp.nota) || 0;
+                            let statusClass = notaNum >= 7 ? 'apto' : (notaNum >= 5 ? 'desenvolvimento' : 'inapto');
+                        %>
+                            <div class="stats-card <%= statusClass %>" 
+                                 data-nome="<%= comp.nome.toLowerCase() %>"
+                                 data-categoria="<%= comp.categoria || '' %>"
+                                 data-nivel="<%= statusClass %>"
+                                 data-nota="<%= notaNum %>"
+                                 data-data="<%= comp.data_registro %>"
+                                 style="padding: 25px; border-left: 6px solid var(--color-<%= statusClass %>);">
+                                
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+                                    <div>
+                                        <h3 style="color: var(--text-white); font-size: 1.1rem; margin-bottom: 5px;"><%= comp.nome %></h3>
+                                        <span style="font-size: 0.7rem; color: var(--text-gray); text-transform: uppercase; letter-spacing: 1px;">
+                                            <i class="fas fa-tag"></i> <%= comp.categoria || 'GERAL' %>
+                                        </span>
+                                    </div>
+                                    <span class="media-nota <%= statusClass %>" style="font-size: 1.2rem; padding: 5px 15px;">
+                                        <%= notaNum.toFixed(1) %>
+                                    </span>
+                                </div>
+
+                                <p style="font-size: 0.85rem; color: var(--text-gray); line-height: 1.5; margin-bottom: 15px;">
+                                    <%= comp.descricao || 'Sem descrição disponível.' %>
+                                </p>
+
+                                <% if (comp.observacoes) { %>
+                                    <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 10px; margin-bottom: 15px;">
+                                        <p style="font-size: 0.8rem; color: #aaa; font-style: italic;">
+                                            <i class="fas fa-quote-left" style="color: var(--color-<%= statusClass %>);"></i> 
+                                            <%= comp.observacoes %>
+                                        </p>
+                                    </div>
+                                <% } %>
+
+                                <div style="border-top: 1px solid var(--border-soft); padding-top: 15px; font-size: 0.75rem; color: var(--text-muted);">
+                                    <i class="far fa-calendar-alt"></i> <%= comp.data_formatada %>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+                <% } else { %>
+                    <div class="stats-card" style="text-align: center; padding: 80px;">
+                        <i class="fas fa-clipboard-list" style="font-size: 4rem; color: var(--border-color); margin-bottom: 20px;"></i>
+                        <h3>Nenhuma competência avaliada</h3>
+                    </div>
+                <% } %>
+            </section>
+
+             <% if (competencias && competencias.length > 0) { %>
+            <section class="section-container">
+                <div class="stats-card">
+                    <h2 class="section-title-2" style="margin-bottom: 20px;">DESEMPENHO POR HABILIDADE</h2>
+                    <div style="height: 300px; position: relative;">
+                        <canvas id="competenciasChart"></canvas>
+                    </div>
+                </div>
+            </section>
+            <% } %>
+        </main>
+
+        <footer class="dash-footer">
+            <div class="footer-actions">
+                <a href="/aluno" class="btn-secondary-dash">
+                    <i class="fas fa-arrow-left"></i> VOLTAR AO PAINEL
+                </a>
+            </div>
+            <div class="footer-credits">
+                <p>© 2026 AnalisAI</p>
+            </div>
+        </footer>
+    </div>
+
+    <% if (competencias && competencias.length > 0) { %>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="application/json" id="aluno-competencias-data"><%- safeJson(competencias) %></script>
+<script src="/js/pages/student/competencies.js" defer></script>
+    <% } %>
+</body>
+</html>

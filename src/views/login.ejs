@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <script src="/js/shared/theme-init.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnalisAI - Login</title>
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
+    <script src="/js/shared/phosphor-icons.js" defer></script>
+    <link rel="stylesheet" href="/css/base/dashboard.css">
+    <link rel="stylesheet" href="/css/pages/login.css">
+    <link rel="stylesheet" href="/css/base/light-theme.css">
+</head>
+<body class="dash-body">
+
+    <div class="login-wrapper">
+        
+        <div style="margin-bottom: 20px;">
+            <a href="/" class="btn-secondary-dash" style="text-decoration: none;">
+                <i class="fas fa-undo-alt"></i> VOLTAR
+            </a>
+        </div>
+
+        <div class="login-card">
+            <div class="login-logo">
+                <img src="/images/logo3-white.png" alt="AnalisAI" id="logoimg">
+            </div>
+
+            <% if (error_msg && error_msg.length > 0) { %>
+                <div class="alert-box error"><i class="fas fa-exclamation-circle"></i> <%= error_msg %></div>
+            <% } %>
+            <% if (success_msg && success_msg.length > 0) { %>
+                <div class="alert-box success"><i class="fas fa-check-circle"></i> <%= success_msg %></div>
+            <% } %>
+
+            <div class="login-tabs">
+                <button class="login-tab professor <%= tipo === 'professor' ? 'active' : '' %>" onclick="switchTab('professor')">PROFESSOR</button>
+                <button class="login-tab aluno <%= tipo === 'aluno' ? 'active' : '' %>" onclick="switchTab('aluno')">ALUNO</button>
+            </div>
+
+            <div class="login-form professor <%= tipo === 'professor' ? 'active' : '' %>" id="professorForm">
+                <form action="/login/professor" method="POST" style="display: flex;flex-direction: column;">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <div class="input-group">
+                        <input type="text" name="usuario" placeholder="E-MAIL INSTITUCIONAL" oninput="this.value = this.value.toLowerCase()" required>
+                    </div>
+                    <div class="input-group">
+                        <input type="password" name="senha" placeholder="SENHA"  required>
+                    </div>
+                    <button type="submit" class="btn-secondary-dash" style="justify-content: center;">ENTRAR NO SISTEMA</button>
+                </form>
+                <a href="/esqueci-senha" class="link-esqueci">Esqueci minha senha</a>
+            </div>
+
+            <div class="login-form aluno <%= tipo === 'aluno' ? 'active' : '' %>" id="alunoForm">
+                <div class="info-box-login">
+                    <i class="fas fa-info-circle"></i> Use sua matrícula ou e-mail cadastrado
+                </div>
+                <form action="/login/aluno" method="POST" style="display: flex;flex-direction: column;">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <div class="input-group input-group-aluno">
+                        <input type="text" name="matricula" placeholder="MATRÍCULA" oninput="this.value = this.value.toLowerCase()">
+                    </div>
+                    <div class="input-group input-group-aluno">
+                        <input type="email" name="email" oninput="this.value = this.value.toLowerCase()" placeholder="E-MAIL">
+                    </div>
+                    <div class="input-group input-group-aluno">
+                        <input type="password" name="senha" placeholder="SENHA" required>
+                    </div>
+                    <button type="submit" class="btn-secondary-dash" style="justify-content: center;">ENTRAR NO SISTEMA</button>
+                </form>
+            </div>
+        </div>
+
+        <footer style="margin-top: 30px; text-align: center;">
+            <a href="/termos" class="btn-secondary-dash" style="font-size: 0.7rem; border: none; background: transparent;">
+                TERMOS DE SERVIÇO
+            </a>
+        </footer>
+    </div>
+
+    <script src="/js/pages/auth/login.js" defer></script>
+</body>
+</html>

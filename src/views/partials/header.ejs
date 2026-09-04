@@ -1,0 +1,78 @@
+<aside class="sidebar">
+    <div class="sidebar-top">
+        <div class="logo-container">
+            <a href="#inicio"><img src="/images/side-bar-logo.png" alt="S" class="sideBarLogo"></a>
+        </div>
+        
+        <div class="divider"></div>
+
+        <a href="#inicio" class="side-link active">
+            <div class="icon-box"><i class="fas fa-home"></i></div>
+            <span class="link-text">Início</span>
+            <div class="active-indicator"></div>
+        </a>
+
+        <a href="#sobre" class="side-link">
+            <div class="icon-box"><i class="fas fa-layer-group"></i></div>
+            <span class="link-text">Pilares</span>
+            <div class="active-indicator"></div>
+        </a>
+
+        <a href="#faq" class="side-link">
+            <div class="icon-box"><i class="fas fa-question-circle"></i></div>
+            <span class="link-text">Dúvidas</span>
+            <div class="active-indicator"></div>
+        </a>
+    </div>
+    
+    <div class="sidebar-bottom">
+        <a href="#" class="side-link" onclick="openModal()">
+            <div class="icon-box"><i class="fas fa-info-circle"></i></div>
+            <span class="link-text">Sobre</span>
+        </a>
+        
+        <a href="/login" class="side-link exit-link">
+            <div class="icon-box"><i class="fas fa-sign-in-alt"></i></div>
+            <span class="link-text">Entrar</span>
+        </a>
+    </div>
+</aside>
+
+<div id="infoModal" class="modal-new-overlay">
+    <div class="modal-new-card">
+        <button class="modal-new-close" onclick="closeModal()">
+            <i class="fas fa-times"></i>
+        </button>
+
+        <div class="modal-new-header" style="justify-content: center;align-items: center;display: flex;flex-direction: column;">
+            <img src="/images/logo3-white.png" alt="AnalisAI" class="modal-new-logo">
+            <div class="version-badge">Versão 1.0.4</div>
+        </div>
+
+        <div class="modal-new-body">
+            <p class="modal-new-text">
+                Plataforma avançada para gestão de competências e análise de desempenho educacional. 
+                Desenvolvida para facilitar a visualização de dados e tomada de decisão pedagógica.
+            </p>
+            
+            <div class="modal-new-divider"></div>
+            
+            <div class="modal-new-info-grid">
+                <div class="info-item">
+                    <span>Ambiente</span>
+                    <p>Produção</p>
+                </div>
+                <div class="info-item">
+                    <span>Atualização</span>
+                    <p>Junho 2026</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-new-footer">
+            <p>© 2026 AnalisAI</p>
+            <a href="/equipe" class="modal-link">Time de desenvolvimento</a>
+        </div>
+    </div>
+</div>
+<script src="/js/shared/common.js" defer></script>

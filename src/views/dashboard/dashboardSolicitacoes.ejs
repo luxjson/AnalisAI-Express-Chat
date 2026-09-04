@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta name="csrf-token" content="<%= csrfToken %>">
+    <meta charset="UTF-8">
+    <script src="/js/shared/theme-init.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnalisAI - Solicitações de Senha</title>
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
+    <script src="/js/shared/phosphor-icons.js" defer></script>
+    <link rel="stylesheet" href="/css/components/sidebar.css">
+    <link rel="stylesheet" href="/css/pages/edit.css">
+    <link rel="stylesheet" href="/css/base/dashboard.css">
+    <link rel="stylesheet" href="/css/pages/requests.css">
+    <link rel="stylesheet" href="/css/base/light-theme.css">
+</head>
+<body class="dash-body">
+    <%- include('../partials/barProfessor') %>
+    
+    <div class="main-layout">
+        <header class="dash-header">
+            <div class="header-left">
+                <h1>
+                    Solicitações de Senha
+                </h1>
+            </div>
+            
+            <div class="header-user">
+                <div class="user-profile-group">
+                    <div class="user-details">
+                        <span class="user-name"><strong><%= user %></strong></span>
+                        <span class="user-role" style="color: #888888;"><strong><%= userCargo %></strong></span>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <%- include('../partials/notificacoes', { notificacaoClasse: 'header-icon' }) %>
+                     
+                </div>
+            </div>
+        </header>
+        
+        <main class="dash-content">
+            <% if (solicitacoes.length === 0) { %>
+                <div class="empty-state">
+                    <i class="fas fa-inbox" style="font-size: 3rem; color: #333;"></i>
+                    <h3 style="color: #666; margin-top: 15px;">Nenhuma solicitação pendente</h3>
+                </div>
+            <% } else { %>
+                <div class="solicitacoes-grid">
+                    <% solicitacoes.forEach(s => { %>
+                        <div class="solicitacao-card">
+                            <div class="solicitacao-nome">
+                                <i class="fas fa-user"></i> <%= s.nome %>
+                            </div>
+                            <div class="solicitacao-email">
+                                <i class="fas fa-envelope"></i> <%= s.email %>
+                            </div>
+                            <div class="solicitacao-data">
+                                <i class="far fa-clock"></i> 
+                                <%= new Date(s.data_solicitacao).toLocaleString('pt-BR') %>
+                            </div>
+                            <div class="solicitacao-acoes">
+                                <button class="btn-secondary-dash" onclick="abrirModalAprovar(<%= s.id %>, '<%= s.nome %>')">
+                                    <i class="fas fa-check"></i> APROVAR
+                                </button>
+                                <button class="btn-secondary-dash" onclick="abrirModalRejeitar(<%= s.id %>, '<%= s.nome %>')">
+                                    <i class="fas fa-times"></i> REJEITAR
+                                </button>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+            <% } %>
+        </main>
+    </div>
+    
+    <div id="modalAprovar" class="modal-overlay">
+        <div class="modal-content modal-pequeno">
+            <button class="close-btn" onclick="fecharModal('modalAprovar')">
+                <i class="ph-bold ph-x"></i>
+            </button>
+            <h2 class="section-title-2">APROVAR SOLICITAÇÃO</h2>
+            <form action="" method="POST" id="formAprovar">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <div class="filter-options">
+                    <p style="color: #888; margin-bottom: 15px;" id="nomeAprovar"></p>
+                    <label>NOVA SENHA</label>
+                    <input type="password" name="nova_senha" class="filter-input" required minlength="12">
+                    <button type="submit" class="btn-secondary-dash" style="margin-top: 20px; justify-content: center;">REDEFINIR SENHA</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div id="modalRejeitar" class="modal-overlay">
+        <div class="modal-content modal-pequeno">
+            <button class="close-btn" onclick="fecharModal('modalRejeitar')">
+                <i class="ph-bold ph-x"></i>
+            </button>
+            <h2 class="section-title-2">REJEITAR SOLICITAÇÃO</h2>
+            <form action="" method="POST" id="formRejeitar">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <div class="filter-options">
+                    <p style="color: #888; margin-bottom: 15px;" id="nomeRejeitar"></p>
+                    <label>MOTIVO (opcional)</label>
+                    <textarea name="motivo" class="filter-input" rows="3" placeholder="Por que está rejeitando?"></textarea>
+                    <button type="submit" class="btn-secondary-dash" style="margin-top: 20px; justify-content: center;">REJEITAR</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script src="/js/pages/dashboard/requests.js" defer></script>
+</body>
+</html>

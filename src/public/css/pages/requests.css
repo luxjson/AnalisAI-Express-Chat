@@ -1,0 +1,142 @@
+.solicitacoes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .solicitacao-card {
+            background: #18181b;
+            border: 2px solid #2e3134;
+            border-radius: 15px;
+            padding: 20px;
+        }
+        
+        .solicitacao-nome {
+            color: #fff;
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+        
+        .solicitacao-email {
+            color: #888;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+        
+        .solicitacao-data {
+            color: #666;
+            font-size: 0.8rem;
+            margin-bottom: 15px;
+        }
+        
+        .solicitacao-acoes {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .btn-aprovar {
+            flex: 1;
+            background: #217346;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        
+        .btn-aprovar:hover {
+            background: #2a8e4f;
+        }
+        
+        .btn-rejeitar {
+            flex: 1;
+            background: #ff0101;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        
+        .btn-rejeitar:hover {
+            background: #ff3333;
+        }
+        
+        .modal-pequeno {
+            max-width: 400px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: #18181b;
+            border: 2px solid #2e3134;
+            border-radius: 20px;
+        }
+
+        
+.a {
+    background: transparent;
+    border: 2px solid #2e3134;
+    color: white;
+    padding: 12px 25px;
+    cursor: pointer;
+    border-radius: 12px;
+    text-decoration: none;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.a:hover a {
+    color: white;
+}
+
+.a:hover {
+    border-color: #ff0000;
+    color: var(--text-white);
+    background: rgba(115, 33, 33, 0.205);
+}
+
+.a i {
+    font-size: 1rem;
+    opacity: 0.8;
+}
+
+.b {
+    background: transparent;
+    border: 2px solid #2e3134;
+    color:white;
+    padding: 12px 25px;
+    cursor: pointer;
+    border-radius: 12px;
+    text-decoration: none;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.b:hover a {
+    color: white;
+}
+
+.b:hover {
+    border-color: #217346;
+    color: var(--text-white);
+    background: rgba(33, 115, 70, 0.05);
+}
+
+.b i {
+    font-size: 1rem;
+    opacity: 0.8;
+}

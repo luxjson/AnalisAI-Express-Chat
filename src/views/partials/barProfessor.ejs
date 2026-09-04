@@ -1,0 +1,142 @@
+
+
+<button class="mobile-menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false">
+    <i class="fas fa-bars"></i>
+</button>
+<div class="mobile-menu-backdrop" data-close-mobile-menu></div>
+<aside class="sidebar">
+    <div class="sidebar-top">
+        <div class="logo-container">
+            <img src="/images/side-bar-logo.png" alt="S" class="sideBarLogo">
+        </div>
+        
+        <div class="divider"></div>
+
+        <a href="/dashboard" data-sidebar-id="dashboard" class="side-link">
+            <div class="icon-box"><i class="fas fa-home"></i></div>
+            <span class="link-text">Início</span>
+            <div class="active-indicator"></div>
+        </a>
+
+        <a href="/dashboard/edit" data-sidebar-id="edit" class="side-link">
+            <div class="icon-box"><i class="fas fa-pen"></i></div>
+            <span class="link-text">Editor</span>
+            <div class="active-indicator"></div>
+        </a>
+
+        <a href="/dashboard/tarefas" data-sidebar-id="tasks" class="side-link">
+            <div class="icon-box"><i class="fas fa-tasks"></i></div>
+            <span class="link-text">Tarefas</span>
+            <div class="active-indicator"></div>
+        </a>
+
+        <a href="/dashboard/graficos" data-sidebar-id="reports" class="side-link">
+            <div class="icon-box"><i class="fas fa-chart-bar"></i></div>
+            <span class="link-text">Relatórios</span>
+            <div class="active-indicator"></div>
+        </a>
+
+        
+        <a href="/dashboard/calendario" data-sidebar-id="calendar" class="side-link">
+            <div class="icon-box"><i class="fas fa-calendar"></i></div>
+            <span class="link-text">Calendário</span>
+            <div class="active-indicator"></div>
+        </a>
+        
+        <a href="/dashboard/ia" data-sidebar-id="ai" class="side-link">
+            <div class="icon-box"><i class="ph-bold ph-sparkle" aria-hidden="true"></i></div>
+            <span class="link-text">Agente</span>
+            <div class="active-indicator"></div>
+        </a>
+        
+        <% if (userCargo === 'Admin') { %>
+            <a href="/dashboard/usuarios" data-sidebar-id="users" class="side-link">
+                <div class="icon-box"><i class="fas fa-users"></i></div>
+                <span class="link-text">Usuários</span>
+                <div class="active-indicator"></div>
+            </a>
+        <% } %>
+    </div>
+    
+    <div class="sidebar-bottom">
+        <a href="#" class="side-link settings-link" data-settings-modal>
+            <div class="icon-box"><i class="fas fa-cog"></i></div>
+            <span class="link-text">Ajustes</span>
+            <div class="active-indicator"></div>
+        </a>
+        
+        <a href="/logout" class="side-link exit-link">
+            <div class="icon-box"><i class="fas fa-sign-out-alt"></i></div>
+            <span class="link-text">Sair</span>
+        </a>
+    </div>
+
+    <div id="settingsModal" class="settings-modal" aria-hidden="true">
+        <div class="settings-modal-card" role="dialog" aria-modal="true" aria-labelledby="settingsModalTitle">
+            <aside class="settings-modal-nav">
+                <label class="settings-search"><i class="ph-bold ph-magnifying-glass"></i><input type="search" data-settings-search placeholder="Procurar" aria-label="Pesquisar configurações"></label>
+                <span class="settings-nav-label">Configurações</span>
+                <button class="settings-nav-item active" data-settings-section="general"><i class="ph-bold ph-user-circle"></i> Geral</button>
+                <button class="settings-nav-item" data-settings-section="account"><i class="ph-bold ph-identification-card"></i> Conta</button>
+                <button class="settings-nav-item" data-settings-section="privacy"><i class="ph-bold ph-shield-check"></i> Privacidade</button>
+                <button class="settings-nav-item" data-settings-section="notifications"><i class="ph-bold ph-bell"></i> Notificações</button>
+             </aside>
+            <section class="settings-modal-content">
+                <button type="button" class="settings-modal-close" data-close-settings aria-label="Fechar"><i class="ph-bold ph-x"></i></button>
+                <div class="settings-section active" data-settings-panel="general">
+                    <h2 id="settingsModalTitle">Perfil</h2>
+                    <div class="settings-avatar-row"><strong>Avatar</strong><span class="settings-avatar"><%= user.charAt(0).toUpperCase() %></span></div>
+                    <div class="settings-field"><label>Nome completo</label><span><%= user %></span></div>
+                    <div class="settings-field"><label>E-mail institucional</label><span><%= typeof email !== 'undefined' ? email : 'Não informado' %></span></div>
+                    <div class="settings-field"><label>Função</label><span><%= typeof cargo !== 'undefined' ? cargo : (typeof userCargo !== 'undefined' ? userCargo : 'Professor') %></span></div>
+                </div>
+                <div class="settings-section" data-settings-panel="account"><h2>Conta</h2><p class="settings-help">Altere sua senha diretamente por este painel.</p><form class="settings-password-form" action="/dashboard/alterar-senha" method="POST"><input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>"><label>Senha atual</label><input type="password" name="senha_atual" required autocomplete="current-password"><label>Nova senha</label><input type="password" name="nova_senha" required minlength="12" autocomplete="new-password"><label>Confirmar nova senha</label><input type="password" name="confirmar_senha" required autocomplete="new-password"><button class="settings-save" type="submit">Atualizar senha</button></form></div>
+                <div class="settings-section" data-settings-panel="privacy"><h2>Privacidade</h2><p class="settings-help">Sua sessão é protegida por autenticação e token CSRF. Nunca compartilhe sua senha. Os dados exibidos neste painel são privados da sua conta.</p></div>
+                <div class="settings-section" data-settings-panel="notifications"><h2>Notificações</h2><div class="settings-field"><label>Notificações gerais</label><button class="settings-switch" data-notification="notificacoes_ativas" type="button"></button></div><div class="settings-field"><label>Atividades de alunos</label><button class="settings-switch" data-notification="notificacoes_tarefas" type="button"></button></div><div class="settings-field"><label>Avaliações</label><button class="settings-switch" data-notification="notificacoes_avaliacoes" type="button"></button></div><button class="settings-save" data-save-notifications type="button">Salvar notificações</button><span class="settings-feedback" data-settings-feedback></span></div>
+                <div class="settings-section" data-settings-panel="appearance"><h2>Aparência</h2><div class="settings-field settings-choice"><label>Tema da interface</label><span class="settings-theme-options"><button type="button" data-theme="dark"><i class="ph-bold ph-moon"></i> Escuro</button><button type="button" data-theme="light"><i class="ph-bold ph-sun"></i> Claro</button></span></div></div>
+                <div class="settings-section" data-settings-panel="preferences"><h2>Preferências</h2><div class="settings-field"><label>Reduzir animações</label><button class="settings-switch" data-preference="reduced-motion" type="button"></button></div></div>
+            </section>
+        </div>
+    </div>
+</aside>
+
+<div id="infoModal" class="modal-new-overlay">
+    <div class="modal-new-card">
+        <button class="modal-new-close" onclick="closeModal()">
+            <i class="fas fa-times"></i>
+        </button>
+
+        <div class="modal-new-header" style="justify-content: center;align-items: center;display: flex;flex-direction: column;">
+            <img src="/images/logo3-white.png" alt="AnalisAI" class="modal-new-logo">
+            <div class="version-badge">Versão 1.0.4</div>
+        </div>
+
+        <div class="modal-new-body">
+            <p class="modal-new-text">
+                Plataforma avançada para gestão de competências e análise de desempenho educacional. 
+                Desenvolvida para facilitar a visualização de dados e tomada de decisão pedagógica.
+            </p>
+            
+            <div class="modal-new-divider"></div>
+            
+            <div class="modal-new-info-grid">
+                <div class="info-item">
+                    <span>Ambiente</span>
+                    <p>Produção</p>
+                </div>
+                <div class="info-item">
+                    <span>Atualização</span>
+                    <p>Junho 2026</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-new-footer">
+            <p>© 2026 AnalisAI</p>
+            <a href="/dashboard/equipe" class="modal-link">Time de desenvolvimento</a>
+        </div>
+    </div>
+</div>
+
+<script src="/js/components/sidebar-professor.js" defer></script>
+<script src="/js/components/settings-modal.js" defer></script>

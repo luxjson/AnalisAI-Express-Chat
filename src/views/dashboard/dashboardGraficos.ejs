@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta name="csrf-token" content="<%= csrfToken %>">
+    <meta charset="UTF-8">
+    <script src="/js/shared/theme-init.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnalisAI - Gráficos de Evolução</title>
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
+    <script src="/js/shared/phosphor-icons.js" defer></script>
+    <link rel="stylesheet" href="/css/components/sidebar.css">
+    <link rel="stylesheet" href="/css/base/dashboard.css">
+    <link rel="stylesheet" href="/css/pages/charts.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="/css/base/light-theme.css">
+</head>
+<body class="dash-body">
+
+    <%- include('../partials/barProfessor') %>
+
+    <div class="main-layout" style="padding: 40px 60px">
+        <header class="dash-header">
+            <div class="header-left">
+                <h1>Relatorios</h1>
+            </div>
+            <div class="header-user">
+                <div class="user-profile-group">
+                    <div class="user-details">
+                        <span class="user-name"><strong><%= user %></strong></span>
+                        <span class="user-role" style="color: #888888;"><strong><%= userCargo %></strong></span>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <%- include('../partials/notificacoes', { notificacaoClasse: 'header-icon' }) %>
+                     
+                </div>
+            </div>
+        </header>
+
+        <main class="dash-content graficos-grid">
+            
+            <p class="section-label">PANORAMA DE NÍVEIS</p>
+            <div class="row-triple">
+                <div class="dash-card card-grafico">
+                    <% if (stats.total > 0) { %>
+                        <canvas id="chartAptos"></canvas>
+                        <p class="chart-label label-verde">ALUNOS APTOS</p>
+                        <p class="chart-value"><%= stats.apto %></p>
+                    <% } else { %>
+                        <div class="empty-chart">SEM DADOS PARA EXIBIR</div>
+                    <% } %>
+                </div>
+                <div class="dash-card card-grafico">
+                    <% if (stats.total > 0) { %>
+                        <canvas id="chartInaptos"></canvas>
+                        <p class="chart-label label-vermelho">ALUNOS INAPTOS</p>
+                        <p class="chart-value"><%= stats.inapto %></p>
+                    <% } else { %>
+                        <div class="empty-chart">SEM DADOS PARA EXIBIR</div>
+                    <% } %>
+                </div>
+                <div class="dash-card card-grafico">
+                    <% if (stats.total > 0) { %>
+                        <canvas id="chartDesenvolvimento"></canvas>
+                        <p class="chart-label label-amarelo">EM DESENVOLVIMENTO</p>
+                        <p class="chart-value"><%= stats.total - stats.apto - stats.inapto %></p>
+                    <% } else { %>
+                        <div class="empty-chart">SEM DADOS PARA EXIBIR</div>
+                    <% } %>
+                </div>
+            </div>
+
+            <p class="section-label">DESEMPENHO MÉDIO — ENSINO MÉDIO</p>
+            <div class="dash-card card-grafico-large">
+                <% if (stats.mediaMedio !== undefined && stats.total > 0) { %>
+                    <canvas id="chartMedio"></canvas>
+                    <p class="chart-value-large"><%= stats.mediaMedio %></p>
+                <% } else { %>
+                    <div class="empty-chart">NENHUM DADO DISPONÍVEL</div>
+                <% } %>
+            </div>
+
+            <p class="section-label">DESEMPENHO MÉDIO — ENSINO FUNDAMENTAL</p>
+            <div class="dash-card card-grafico-small">
+                <% if (stats.mediaFundamental !== undefined && stats.total > 0) { %>
+                    <canvas id="chartFundamental"></canvas>
+                    <p class="chart-value-large"><%= stats.mediaFundamental %></p>
+                <% } else { %>
+                    <div class="empty-chart">NENHUM DADO DISPONÍVEL</div>
+                <% } %>
+            </div>
+        </main>
+
+        <footer class="dash-footer">
+            <div class="footer-actions">
+                <a href="/dashboard/edit" class="btn-secondary-dash">
+                    <i class="fas fa-arrow-left"></i> VOLTAR AO EDITOR
+                </a>
+                <button onclick="atualizarGraficos()" class="btn-secondary-dash">
+                    <i class="fas fa-sync-alt"></i> ATUALIZAR
+                </button>
+            </div>
+            <div class="footer-credits">
+                <p>© 2026 AnalisAI
+                </p>
+            </div>
+        </footer>
+    </div>
+
+    <script type="application/json" id="dashboard-graficos-data"><%- safeJson(stats) %></script>
+<script src="/js/pages/dashboard/charts.js" defer></script>
+</body>
+</html>

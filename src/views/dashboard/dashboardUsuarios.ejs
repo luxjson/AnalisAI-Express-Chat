@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta name="csrf-token" content="<%= csrfToken %>">
+    <meta charset="UTF-8">
+    <script src="/js/shared/theme-init.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnalisAI - Gestão de Usuários</title>
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
+    <script src="/js/shared/phosphor-icons.js" defer></script>
+    <link rel="stylesheet" href="/css/components/sidebar.css">
+    <link rel="stylesheet" href="/css/base/dashboard.css">
+    <link rel="stylesheet" href="/css/pages/edit.css">
+    <link rel="stylesheet" href="/css/pages/users.css">
+    <link rel="stylesheet" href="/css/base/light-theme.css">
+</head>
+<body class="dash-body">
+
+    <%- include('../partials/barProfessor') %>
+
+    <div class="main-layout">
+        <header class="dash-header">
+            <div class="header-left">
+                <h1>
+                    Gestão de Usuários
+                </h1>
+            </div>
+            
+            <div class="header-user">
+                <div class="user-profile-group">
+                    <div class="user-details">
+                        <span class="user-name"><strong><%= user %></strong></span>
+                        <span class="user-role" style="color: #888888;"><strong><%= userCargo %></strong></span>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <%- include('../partials/notificacoes', { notificacaoClasse: 'header-icon' }) %>
+                     
+                </div>
+            </div>
+        </header>
+
+        <% if (success_msg && success_msg.length > 0) { %>
+            <div class="alert alert-success">
+                <%= success_msg %>
+                <span class="close-alert" onclick="this.parentElement.style.display='none'">&times;</span>
+            </div>
+        <% } %>
+        <% if (error_msg && error_msg.length > 0) { %>
+            <div class="alert alert-error">
+                <%= error_msg %>
+                <span class="close-alert" onclick="this.parentElement.style.display='none'">&times;</span>
+            </div>
+        <% } %>
+
+        <div class="toolbar">
+            <div class="action-buttons">
+                <button class="btn-secondary-dash" onclick="openAddUserModal()" title="Novo Usuário">
+                    <i class="fas fa-user-plus"></i> NOVO USUÁRIO
+                </button>
+            </div>
+
+            <div class="search-container">
+                <i class="fas fa-search"></i>
+                <input type="text" id="userSearchInput" placeholder="Pesquisar por nome ou e-mail...">
+            </div>
+        </div>
+
+        <main class="edit-content">
+            <div class="table-container">
+                <table class="alunos-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>NOME</th>
+                            <th>E-MAIL</th>
+                            <th>CARGO</th>
+                            <th>STATUS</th>
+                            <th>AÇÕES</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userTableBody">
+                        <% if (usuarios && usuarios.length > 0) { %>
+                            <% usuarios.forEach(user => { %>
+                                <tr>
+                                    <td><%= user.id %></td>
+                                    <td><%= user.nome %></td>
+                                    <td><%= user.email.toLowerCase() %></td>
+                                    <td><%= user.cargo %></td>
+                                    <td>
+                                        <span class="status <%= user.status === 'ATIVO' ? 'apto' : 'inapto' %>">
+                                            <%= user.status %>
+                                        </span>
+                                    </td>
+                                    <td class="td-actions">
+                                        <button class="btn-table-add" data-id="<%= user.id %>" data-name="<%= user.nome %>" data-email="<%= user.email.toLowerCase() %>" data-cargo="<%= user.cargo %>" data-status="<%= user.status %>" onclick="editUser(this.dataset.id, this.dataset.name, this.dataset.email, this.dataset.cargo, this.dataset.status)" title="Editar">
+                                            <i class="ph-bold ph-pen" aria-hidden="true"></i>
+                                        </button>
+                                        <% if (user.id !== userId) { %>
+                                            <a href="#" data-id="<%= user.id %>" data-name="<%= user.nome %>" onclick="event.preventDefault(); confirmDeleteUser(this.dataset.id, this.dataset.name)" class="delete-link">
+                                                <i class="ph-bold ph-trash" aria-hidden="true"></i>
+                                            </a>
+                                        <% } %>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        <% } else { %>
+                            <tr><td colspan="6" style="padding: 50px; text-align: center;">Nenhum usuário encontrado.</td></tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+
+        <footer class="dash-footer">
+            <a href="/dashboard/edit" class="btn-secondary-dash">
+                <i class="fas fa-pencil-alt"></i> EDITOR DE NOTAS
+            </a>
+            <div class="footer-credits">
+                <p>© 2026 AnalisAI
+            </div>
+        </footer>
+    </div>
+
+    <div id="userModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeUserModal()"><i class="ph-bold ph-x"></i></button>
+            <h2 class="section-title-2" id="userModalTitle">NOVO USUÁRIO</h2>
+            <form id="userForm" action="/dashboard/usuarios/add" method="POST" class="filter-options">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <input type="hidden" name="id" id="userId">
+                
+                <label>NOME COMPLETO:</label>
+                <input type="text" name="nome" id="userName" class="filter-input" required>
+
+                <label style="margin-top: 15px; display: block;">E-MAIL:</label>
+                <input type="email" name="email" id="userEmail" class="filter-input" required>
+
+                <div id="passwordField">
+                    <label style="margin-top: 15px; display: block;">SENHA:</label>
+                    <input type="password" name="senha" class="filter-input">
+                </div>
+
+                <label style="margin-top: 15px; display: block;">CARGO:</label>
+                <select name="cargo" id="userCargo" class="filter-input">
+                    <option value="Professor">Professor</option>
+                    <option value="Coordenador">Coordenador</option>
+                    <option value="Admin">Admin</option>
+                </select>
+
+                <div id="statusField" style="display: none;">
+                    <label style="margin-top: 15px; display: block;">STATUS:</label>
+                    <select name="status" id="userStatus" class="filter-input">
+                        <option value="ATIVO">ATIVO</option>
+                        <option value="INATIVO">INATIVO</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn-secondary-dash" style="margin-top: 30px; width: 100%; justify-content: center;">SALVAR USUÁRIO</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="permissionModal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 400px; border-color: #ff0101;">
+            <button class="close-btn" onclick="closePermissionModal()">
+                <i class="ph-bold ph-x"></i>
+            </button>
+            
+            <div style="text-align: center;">
+                <div style="font-size: 4rem; color: #ff0101; margin-bottom: 15px;">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                
+                <h2 class="section-title-2" style="color: #ff0101; margin-bottom: 15px;">
+                    ACESSO NEGADO
+                </h2>
+                
+                <p style="color: #888; font-size: 1rem; margin-bottom: 20px;">
+                    Apenas administradores podem gerenciar usuários.
+                </p>
+
+                <button class="btn-action" onclick="closePermissionModal()" style="width: 100%; justify-content: center; border-color: #ff0101; color: #ff0101;">
+                    <i class="fas fa-times"></i> ENTENDI
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script type="application/json" id="dashboard-usuarios-data"><%= isAdmin %></script>
+<script src="/js/pages/dashboard/users.js" defer></script>
+    
+</body>
+</html>

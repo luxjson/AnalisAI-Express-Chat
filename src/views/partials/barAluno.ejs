@@ -1,0 +1,135 @@
+<link rel="stylesheet" href="/css/components/sidebar.css">
+
+<button class="mobile-menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false">
+    <i class="fas fa-bars"></i>
+</button>
+<div class="mobile-menu-backdrop" data-close-mobile-menu></div>
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<aside class="sidebar">
+    <div class="sidebar-top">
+        <div class="logo-container">
+            <img src="/images/side-bar-logo.png" alt="S" class="sideBarLogo">
+        </div>
+        
+        <div class="divider"></div>
+
+        <a href="/aluno" data-sidebar-id="dashboard" class="side-link">
+            <div class="icon-box"><i class="fas fa-home"></i></div>
+            <span class="link-text">Início</span>
+            <div class="active-indicator"></div>
+        </a>
+
+        <a href="/aluno/competencias" data-sidebar-id="competencies" class="side-link">
+            <div class="icon-box"><i class="ph-bold ph-medal" aria-hidden="true"></i></div>
+            <span class="link-text">Competências</span>
+            <div class="active-indicator"></div>
+        </a>
+
+        <a href="/aluno/tarefas" data-sidebar-id="tasks" class="side-link">
+            <div class="icon-box"><i class="ph-bold ph-check-square" aria-hidden="true"></i></div>
+            <span class="link-text">Tarefas</span>
+            <div class="active-indicator"></div>
+        </a>
+
+        <a href="/aluno/evolucao" data-sidebar-id="evolution" class="side-link">
+            <div class="icon-box"><i class="fas fa-chart-line"></i></div>
+            <span class="link-text">Evolução</span>
+            <div class="active-indicator"></div>
+        </a>
+
+        <a href="/aluno/ia" data-sidebar-id="ai" class="side-link">
+            <div class="icon-box"><i class="ph-bold ph-sparkle" aria-hidden="true"></i></div>
+            <span class="link-text">Agente</span>
+            <div class="active-indicator"></div>
+        </a>
+    </div>
+    
+    <div class="sidebar-bottom">
+        <a href="#" class="side-link settings-link" data-settings-modal>
+            <div class="icon-box"><i class="fas fa-cog"></i></div>
+            <span class="link-text">Ajustes</span>
+            <div class="active-indicator"></div>
+        </a>
+        
+        <a href="/logout" class="side-link exit-link">
+            <div class="icon-box"><i class="fas fa-sign-out-alt"></i></div>
+            <span class="link-text">Sair</span>
+        </a>
+    </div>
+
+    <div id="settingsModal" class="settings-modal" aria-hidden="true">
+        <div class="settings-modal-card" role="dialog" aria-modal="true" aria-labelledby="settingsModalTitle">
+            <aside class="settings-modal-nav">
+                <label class="settings-search"><i class="ph ph-magnifying-glass"></i><input type="search" data-settings-search placeholder="Procurar" aria-label="Pesquisar configurações"></label>
+                <span class="settings-nav-label">Configurações</span>
+                <button class="settings-nav-item active" data-settings-section="general"><i class="ph ph-user"></i> Geral</button>
+                <button class="settings-nav-item" data-settings-section="account"><i class="ph ph-identification-card"></i> Conta</button>
+                <button class="settings-nav-item" data-settings-section="privacy"><i class="ph ph-shield-check"></i> Privacidade</button>
+                <button class="settings-nav-item" data-settings-section="notifications"><i class="ph ph-bell"></i> Notificações</button>
+                            </aside>
+            <section class="settings-modal-content">
+                <button type="button" class="settings-modal-close" data-close-settings aria-label="Fechar"><i class="ph ph-x"></i></button>
+                <div class="settings-section active" data-settings-panel="general">
+                    <h2 id="settingsModalTitle">Perfil</h2>
+                    <div class="settings-avatar-row"><strong>Avatar</strong><span class="settings-avatar" data-account="initial"><%= aluno.nome.charAt(0).toUpperCase() %></span></div>
+                    <div class="settings-field"><label>Nome completo</label><span data-account="name"><%= aluno.nome %></span></div>
+                    <div class="settings-field"><label>Turma / ano</label><span data-account="class"><%= aluno.ano_escolar %></span></div>
+                    <div class="settings-field"><label>Matrícula</label><span data-account="registration"><%= typeof aluno.matricula !== 'undefined' ? aluno.matricula : 'Carregando...' %></span></div>
+                    <div class="settings-field"><label>E-mail</label><span data-account="email">Carregando...</span></div>
+                    <div class="settings-field"><label>Idade</label><span data-account="age">—</span></div>
+                    <div class="settings-account-summary"><div class="settings-account-stat"><span>Avaliações</span><strong data-account="assessments">—</strong></div><div class="settings-account-stat"><span>Presença</span><strong data-account="attendance">—</strong></div><div class="settings-account-stat"><span>Status da conta</span><strong data-account="status">—</strong></div><div class="settings-account-stat"><span>Cadastro</span><strong data-account="created">—</strong></div><div class="settings-account-stat"><span>Último acesso</span><strong data-account="lastAccess">—</strong></div></div>
+                </div>
+                <div class="settings-section" data-settings-panel="account">
+                    <h2>Conta e segurança</h2>
+                    <% if (typeof success_msg !== 'undefined' && success_msg) { %><p class="settings-feedback is-success"><%= success_msg %></p><% } %>
+                    <% if (typeof error_msg !== 'undefined' && error_msg) { %><p class="settings-feedback is-error"><%= error_msg %></p><% } %>
+                    <p class="settings-help">Altere sua senha sem sair do painel atual.</p>
+                    <form class="settings-password-form" action="/aluno/alterar-senha" method="POST"><input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>"><label>Senha atual</label><input type="password" name="senha_atual" required autocomplete="current-password"><label>Nova senha</label><input type="password" name="nova_senha" required minlength="12" autocomplete="new-password"><label>Confirmar nova senha</label><input type="password" name="confirmar_senha" required autocomplete="new-password"><button class="settings-save" type="submit">Atualizar senha</button></form>
+                </div>
+                <div class="settings-section" data-settings-panel="privacy"><h2>Privacidade</h2><p class="settings-help">Sua sessão é protegida por autenticação e token CSRF. Nunca compartilhe sua senha. Os dados exibidos neste painel são privados da sua conta.</p></div>
+                <div class="settings-section" data-settings-panel="notifications"><h2>Notificações</h2><div class="settings-field"><label>Notificações gerais</label><button class="settings-switch" data-notification="notificacoes_ativas" type="button"></button></div><div class="settings-field"><label>Notificações por e-mail</label><button class="settings-switch" data-notification="notificacoes_email" type="button"></button></div><div class="settings-field"><label>Tarefas</label><button class="settings-switch" data-notification="notificacoes_tarefas" type="button"></button></div><div class="settings-field"><label>Avaliações</label><button class="settings-switch" data-notification="notificacoes_avaliacoes" type="button"></button></div><div class="settings-field"><label>Competências</label><button class="settings-switch" data-notification="notificacoes_competencias" type="button"></button></div><button class="settings-save" data-save-notifications type="button">Salvar notificações</button><span class="settings-feedback" data-settings-feedback></span></div></div></div>
+            </section>
+        </div>
+    </div>
+</aside>
+
+<div id="infoModal" class="modal-new-overlay">
+    <div class="modal-new-card">
+        <button class="modal-new-close" onclick="closeModal()">
+            <i class="fas fa-times"></i>
+        </button>
+
+        <div class="modal-new-header" style="justify-content: center;align-items: center;display: flex;flex-direction: column;">
+            <img src="/images/logo3-green.png" alt="AnalisAI" class="modal-new-logo">
+            <div class="version-badge" style="background: rgba(33, 115, 70, 0.1); color: #217346;">Versão Aluno 1.0.4</div>
+        </div>
+
+        <div class="modal-new-body">
+            <p class="modal-new-text">
+                Área exclusiva para estudantes. Acompanhe seu desempenho, visualize suas competências 
+                e monitore sua evolução acadêmica em tempo real através de dados integrados.
+            </p>
+            
+            <div class="modal-new-divider"></div>
+            
+            <div class="modal-new-info-grid">
+                <div class="info-item">
+                    <span>Portal</span>
+                    <p>Estudante</p>
+                </div>
+                <div class="info-item">
+                    <span>Status</span>
+                    <p>Sincronizado</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-new-footer">
+            <p>© 2026 AnalisAI • Senai CIC</p>
+            <a href="/aluno/equipe" class="modal-link">Time de desenvolvimento</a>
+        </div>
+    </div>
+</div>
+
+<script src="/js/components/sidebar-student.js" defer></script>
+<script src="/js/components/settings-modal.js" defer></script>

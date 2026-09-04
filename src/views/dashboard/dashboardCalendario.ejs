@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta name="csrf-token" content="<%= csrfToken %>">
+    <meta charset="UTF-8">
+    <script src="/js/shared/theme-init.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnalisAI - Calendário Escolar</title>
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
+    <script src="/js/shared/phosphor-icons.js" defer></script>
+    <link rel="stylesheet" href="/css/pages/calendar.css">
+    <link rel="stylesheet" href="/css/pages/edit.css">
+    <link rel="stylesheet" href="/css/components/sidebar.css">
+    <link rel="stylesheet" href="/css/base/dashboard.css">
+    <link rel="stylesheet" href="/css/base/light-theme.css">
+</head>
+<body class="dash-body">
+    <%- include('../partials/barProfessor') %>
+    
+    <div class="main-layout">
+        <header class="dash-header">
+            <div class="header-left">
+                <h1>
+                    Calendário Escolar
+                </h1>
+            </div>
+            
+            <div class="header-user">
+                <div class="user-profile-group">
+                    <div class="user-details">
+                        <span class="user-name"><strong><%= user %></strong></span>
+                        <span class="user-role" style="color: #888888;"><strong><%= userCargo %></strong></span>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <%- include('../partials/notificacoes', { notificacaoClasse: 'header-icon' }) %>
+                </div>
+            </div>
+        </header>
+        
+        <% if (success_msg && success_msg.length > 0) { %>
+            <div class="alert alert-success">
+                <%= success_msg %>
+                <span class="close-alert" onclick="this.parentElement.style.display='none'">&times;</span>
+            </div>
+        <% } %>
+        
+        <% if (error_msg && error_msg.length > 0) { %>
+            <div class="alert alert-error">
+                <%= error_msg %>
+                <span class="close-alert" onclick="this.parentElement.style.display='none'">&times;</span>
+            </div>
+        <% } %>
+
+        
+        
+        <div class="calendario-container">
+            <div class="calendario-main">
+                <div class="calendario-header">
+                    <div class="calendario-mes">
+                        <button class="btn-mes" onclick="mudarMes(-1)">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <h2 id="mesAtual">
+                            <%= new Date(filtros.ano, filtros.mes-1).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }) %>
+                        </h2>
+                        <button class="btn-mes" onclick="mudarMes(1)">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    
+                    <form method="GET" action="/dashboard/calendario" id="filtroForm">
+                        <input type="hidden" name="mes" id="mesInput" value="<%= filtros.mes %>">
+                        <input type="hidden" name="ano" id="anoInput" value="<%= filtros.ano %>">
+                        <input type="hidden" name="turma" value="<%= filtros.turma %>">
+                    </form>
+                </div>
+                
+                <div class="calendario-grid" id="calendarioGrid">
+                    <div class="dia-semana">DOM</div>
+                    <div class="dia-semana">SEG</div>
+                    <div class="dia-semana">TER</div>
+                    <div class="dia-semana">QUA</div>
+                    <div class="dia-semana">QUI</div>
+                    <div class="dia-semana">SEX</div>
+                    <div class="dia-semana">SÁB</div>
+                    
+                    <% 
+                        const primeiroDia = new Date(filtros.ano, filtros.mes-1, 1);
+                        const ultimoDia = new Date(filtros.ano, filtros.mes, 0);
+                        const diasNoMes = ultimoDia.getDate();
+                        const inicioSemana = primeiroDia.getDay();
+                        
+                        for (let i = 0; i < inicioSemana; i++) { 
+                    %>
+                        <div class="dia-cell outro-mes"></div>
+                    <% } %>
+                    
+                    <% for (let dia = 1; dia <= diasNoMes; dia++) { 
+                        const dataStr = `${filtros.ano}-${String(filtros.mes).padStart(2,'0')}-${String(dia).padStart(2,'0')}`;
+                        const eventosDia = eventos.filter(e => {
+                            const inicio = new Date(e.data_inicio);
+                            const fim = e.data_fim ? new Date(e.data_fim) : inicio;
+                            const dataAtual = new Date(dataStr);
+                            return dataAtual >= inicio && dataAtual <= fim;
+                        });
+                        const feriadosDia = feriados.filter(f => {
+                            const dataFeriado = new Date(f.data);
+                            return dataFeriado.getDate() === dia && 
+                                   dataFeriado.getMonth() + 1 === filtros.mes;
+                        });
+                    %>
+                        <div class="dia-cell" data-data="<%= dataStr %>">
+                            <div class="dia-numero"><%= dia %></div>
+                            <div class="dia-eventos">
+                                <% feriadosDia.forEach(f => { %>
+                                    <div class="evento-item evento-feriado" title="<%= f.nome %>">
+                                        <i class="fas fa-star"></i> <%= f.nome %>
+                                    </div>
+                                <% }); %>
+                                <% eventosDia.forEach(e => { %>
+                                    <div class="evento-item" style="background: <%= e.cor %>" 
+                                         title="<%= e.titulo %>">
+                                        <%= e.titulo %>
+                                    </div>
+                                <% }); %>
+                            </div>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+            
+            <div class="calendario-sidebar">
+                <h3 style="color: #fff; margin-bottom: 20px;">FILTROS</h3>
+                
+                <div class="filtros-calendario">
+                    <div class="filtro-group">
+                        <label>TURMA</label>
+                        <select class="filtro-select" onchange="filtrarTurma(this.value)">
+                            <option value="">TODAS AS TURMAS</option>
+                            <option value="1º MÉDIO" <%= filtros.turma === '1º MÉDIO' ? 'selected' : '' %>>1º MÉDIO</option>
+                            <option value="2º MÉDIO" <%= filtros.turma === '2º MÉDIO' ? 'selected' : '' %>>2º MÉDIO</option>
+                            <option value="3º MÉDIO" <%= filtros.turma === '3º MÉDIO' ? 'selected' : '' %>>3º MÉDIO</option>
+                            <option value="9º FUNDAMENTAL" <%= filtros.turma === '9º FUNDAMENTAL' ? 'selected' : '' %>>9º FUNDAMENTAL</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <h3 style="color: #fff; margin: 20px 0;">LEGENDA</h3>
+                
+                <div class="legenda-item">
+                    <div class="legenda-cor" style="background: #ff0101;"></div>
+                    <span class="legenda-texto">Feriados</span>
+                </div>
+                
+                <% tipos.forEach(t => { %>
+                    <div class="legenda-item">
+                        <div class="legenda-cor" style="background: <%= t.cor %>;"></div>
+                        <span class="legenda-texto"><%= t.tipo %></span>
+                        <span class="legenda-count"><%= t.total %></span>
+                    </div>
+                <% }); %>
+                
+                <button class="btn-secondary-dash" style="margin-top: 20px; width: 100%; height: 55px; text-align: center; align-items: center; justify-content: center;" onclick="abrirModalEvento()">
+                    <i class="fas fa-plus"></i> NOVO EVENTO
+                </button>
+                
+                <button class="btn-secondary-dash" style="margin-top: 10px; width: 100%; height: 55px; text-align: center; align-items: center; justify-content: center;" onclick="abrirModalFeriado()">
+                    <i class="fas fa-star"></i> NOVO FERIADO
+                </button>
+                
+                <h3 style="color: #fff; margin: 20px 0;">PRÓXIMOS EVENTOS</h3>
+
+                <div class="eventos-lista">
+                    <% 
+                        const todosEventos = [
+                            ...eventos.map(e => ({...e, tipo: 'evento'})),
+                            ...feriados.map(f => ({
+                                id: `feriado-${f.id}`,
+                                titulo: f.nome,
+                                data_inicio: f.data,
+                                data_fim: f.data,
+                                cor: '#ff0101',
+                                tipo: 'feriado',
+                                feriado_id: f.id
+                            }))
+                        ].sort((a, b) => new Date(a.data_inicio) - new Date(b.data_inicio)).slice(0, 10);
+                    %>
+                    
+                    <% todosEventos.forEach(e => { %>
+                        <div class="evento-lista-item">
+                            <div class="evento-lista-cor" style="background: <%= e.cor %>"></div>
+                            <div class="evento-lista-info">
+                                <div class="evento-lista-titulo">
+                                    <%= e.titulo %>
+                                    <% if (e.tipo === 'feriado') { %>
+                                        <span style="color: #ff0101; font-size: 0.7rem;">(FERIADO)</span>
+                                    <% } %>
+                                </div>
+                                <div class="evento-lista-data">
+                                    <%= new Date(e.data_inicio).toLocaleDateString('pt-BR') %>
+                                </div>
+                            </div>
+                            <% if (userCargo === 'Admin') { %>
+                                <button class="evento-lista-remover" onclick="removerItem('<%= e.tipo %>', <%= e.feriado_id || e.id %>)">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            <% } %>
+                        </div>
+                    <% }); %>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="eventoModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 450px; padding: 30px;">
+        <button class="close-btn" onclick="fecharModal('eventoModal')"><i class="ph-bold ph-x"></i></button>
+        
+        <h2 class="section-title-2" style="font-size: 1.1rem; margin-bottom: 20px;">
+            NOVO EVENTO
+        </h2>
+
+        <div class="edit-tabs" style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px; border-bottom: none;">
+            <button type="button" class="tab-btn active" onclick="showEventTab('info')" id="btn-event-info">INFORMAÇÕES</button>
+            <button type="button" class="tab-btn" onclick="showEventTab('data')" id="btn-event-data">AGENDAMENTO</button>
+        </div>
+
+        <form action="/dashboard/calendario/evento" method="POST" style="margin-top: 20px; border-top: 1px solid var(--border-color); padding-top: 15px;">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            
+            <div id="eventInfoTab" class="tab-content active">
+                <div class="filter-options">
+                    <label style="margin-top: 0;">TÍTULO</label>
+                    <input type="text" name="titulo" class="filter-input" style="padding: 12px;" required>
+                    
+                    <label style="margin-top: 15px;">DESCRIÇÃO</label>
+                    <textarea name="descricao" class="filter-input" rows="5" style="padding: 12px; resize: none;"></textarea>
+                </div>
+            </div>
+
+            <div id="eventDataTab" class="tab-content" style="display: none;">
+                <div class="filter-options">
+                    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px; margin-top: 0;">
+                        <div>
+                            <label style="margin-top: 0;">CATEGORIA</label>
+                            <select name="tipo" class="filter-input" style="padding: 10px; font-size: 0.8rem;" required>
+                                <option value="evento">Evento</option>
+                                <option value="prova">Prova</option>
+                                <option value="tarefa">Tarefa</option>
+                                <option value="reuniao">Reunião</option>
+                                <option value="feriado">Feriado</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="margin-top: 0;">COR</label>
+                            <input type="color" name="cor" class="filter-input" style="padding: 5px; height: 42px;" value="#ff0101">
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px;">
+                        <div>
+                            <label style="margin-top: 0;">INÍCIO</label>
+                            <input type="date" name="data_inicio" class="filter-input" style="padding: 10px; font-size: 0.8rem;" required>
+                        </div>
+                        <div>
+                            <label style="margin-top: 0;">TÉRMINO</label>
+                            <input type="date" name="data_fim" class="filter-input" style="padding: 10px; font-size: 0.8rem;">
+                        </div>
+                    </div>
+
+                    <label style="margin-top: 15px;">TURMA ALVO</label>
+                    <select name="turma" class="filter-input" style="padding: 10px; font-size: 0.8rem;">
+                        <option value="">GERAL / TODAS</option>
+                        <option value="1º MÉDIO">1º MÉDIO</option>
+                        <option value="2º MÉDIO">2º MÉDIO</option>
+                        <option value="3º MÉDIO">3º MÉDIO</option>
+                        <option value="9º FUNDAMENTAL">9º FUNDAMENTAL</option>
+                    </select>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-secondary-dash" style="margin-top: 25px; width: 100%; height: 50px; justify-content: center; font-size: 0.8rem;">
+                <i class="fas fa-save"></i> SALVAR EVENTO
+            </button>
+        </form>
+    </div>
+</div>
+
+<div id="feriadoModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 400px; padding: 30px;">
+        <button class="close-btn" onclick="fecharModal('feriadoModal')"><i class="ph-bold ph-x"></i></button>
+        
+        <h2 class="section-title-2" style="font-size: 1.1rem; margin-bottom: 20px;">
+            NOVO FERIADO
+        </h2>
+
+        <form action="/dashboard/calendario/feriado" method="POST" style="margin-top: 5px; border-top: 1px solid var(--border-color); padding-top: 20px;">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <div class="filter-options">
+                <label style="margin-top: 0;">IDENTIFICAÇÃO</label>
+                <input type="text" name="nome" class="filter-input" placeholder="Nome do feriado" style="padding: 12px;" required>
+                
+                <label style="margin-top: 15px;">DATA</label>
+                <input type="date" name="data" class="filter-input" style="padding: 12px;" required>
+                
+                <label style="display:flex; align-items:center; gap:10px; cursor:pointer; background: var(--bg-secondary); padding: 12px; border-radius: 12px; margin-top: 20px;">
+                    <input type="checkbox" name="recorrente" value="true" style="width:16px; height:16px; accent-color: var(--primary-red);">
+                    <span style="color:var(--text-white); font-size: 0.75rem;">REPETIR TODOS OS ANOS</span>
+                </label>
+            </div>
+            
+            <button type="submit" class="btn-secondary-dash" style="margin-top: 25px; width: 100%; height: 50px; justify-content: center; font-size: 0.8rem;">
+                <i class="fas fa-calendar-check"></i> REGISTRAR FERIADO
+            </button>
+        </form>
+    </div>
+</div>
+    
+    <script type="application/json" id="dashboard-calendario-data"><%- safeJson({ mes: filtros.mes, ano: filtros.ano }) %></script>
+<script src="/js/pages/dashboard/calendar.js" defer></script>
+</body>
+</html>

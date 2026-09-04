@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta name="csrf-token" content="<%= csrfToken %>">
+    <meta charset="UTF-8">
+    <script src="/js/shared/theme-init.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnalisAI - Agente</title>
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
+    <script src="/js/shared/phosphor-icons.js" defer></script>
+    <link rel="stylesheet" href="/css/components/sidebar.css">
+    <link rel="stylesheet" href="/css/base/dashboard.css">
+    <link rel="stylesheet" href="/css/pages/ai.css">
+    <link rel="stylesheet" href="/css/base/light-theme.css">
+</head>
+
+<body class="dash-body ai-page-body ai-student-page">
+    <%- include('../partials/barAluno') %>
+        <div class="main-layout">
+            <main class="ai-page-content">
+                <section class="ai-chat" data-endpoint="/api/ia/aluno/chat">
+                    <div class="ai-chat-header">
+                        <div class="ai-chat-actions"><button type="button" class="ai-chat-action" data-new-chat
+                                title="Novo chat"><i class="ph-bold ph-plus"></i><span>Novo chat</span></button><button
+                                type="button" class="ai-chat-action" data-history title="Mostrar histórico"><i
+                                    class="ph-bold ph-clock-counter-clockwise"></i><span>Histórico</span></button><div class="ai-history" aria-hidden="true"><div class="ai-history-backdrop" data-close-history></div><aside class="ai-history-drawer"><div class="ai-history-heading"><button type="button" data-close-history title="Fechar"><i class="ph-bold ph-x"></i></button></div><div class="ai-history-list"></div></aside></div></div>
+                    </div>
+                    <div class="ai-messages" aria-live="polite">
+                        <div class="ai-welcome"><span class="ai-welcome-mark"><i class="ph-bold ph-sparkle" aria-hidden="true"></i></span>
+                            <h2>Qual é o seu foco hoje?</h2>
+                            <p>Converse com o Agente para entender seu desempenho e estudar melhor.</p>
+                            <div class="ai-quick-actions"><button type="button"
+                                    data-prompt="Analise meu desempenho e diga quais competências devo priorizar.">Analisar
+                                    meu desempenho</button><button type="button"
+                                    data-prompt="Crie um plano de estudos de 7 dias baseado nas minhas maiores necessidades.">Criar
+                                    plano de estudos</button><button type="button"
+                                    data-prompt="Explique como posso melhorar minha organização e meu rendimento.">Como
+                                    posso melhorar?</button></div>
+                        </div>
+                    </div>
+                    <form class="ai-form"><textarea maxlength="4000" placeholder="Pergunte ao Agente..."
+                            required></textarea><button type="submit" title="Enviar"><i
+                                class="ph-bold ph-paper-plane-right"></i></button></form>
+                </section>
+            </main>
+        </div>
+        <script src="/js/shared/ai-chat.js" defer></script>
+</body>
+
+</html>

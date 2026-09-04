@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta name="csrf-token" content="<%= csrfToken %>">
+    <meta charset="UTF-8">
+    <script src="/js/shared/theme-init.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnalisAI | Inteligência em Análise Educacional</title>
+    <link rel="stylesheet" href="/css/base/dashboard.css">
+    <link rel="stylesheet" href="/css/components/sidebar.css">
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
+    <script src="/js/shared/phosphor-icons.js" defer></script>
+    
+    <link rel="stylesheet" href="/css/pages/home.css">
+    <link rel="stylesheet" href="/css/base/light-theme.css">
+</head>
+<body class="dash-body">
+    <%- include('partials/header') %> 
+
+    <div class="main-layout">
+        
+        <div class="home-content-wrapper">
+            
+            <header class="dash-header" style="border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 40px;">
+                <div class="header-left">
+                    <img src="/images/logo3-white.png" alt="AnalisAI" style="height: 35px;">
+                </div>
+                <div class="header-user">
+                    <div class="header-actions">
+                        <a href="/login" class="btn-secondary-dash" style=" color: #fff;">
+                            ACESSAR PAINEL
+                        </a>
+                    </div>
+                </div>
+            </header>
+
+            <main>
+                <section id="inicio" class="welcome-banner" style="padding: 100px 60px; border-radius: 30px; margin-bottom: 80px; position: relative;">
+                    <div class="banner-text">
+                        <h1 style="font-size: 4rem; line-height: 1; margin-bottom: 20px;">
+                            SISTEMA DE <br> ANÁLISE DE AVANÇOS
+                        </h1>
+                        <p style="font-size: 1.2rem; max-width: 600px; opacity: 0.9;">
+                            Organize competências, monitore frequências e alcance objetivos educacionais com a precisão de dados em tempo real.
+                        </p>
+                    </div>
+                </section>
+
+                <section id="sobre" style="margin-bottom: 100px;">
+                    <h2 class="section-title-2" style="margin-bottom: 40px;">PILARES ESTRATÉGICOS</h2>
+                    <div class="dash-grid">
+                        <div class="card-elite">
+                            <div class="card-line"></div>
+                            <h3 style="color: #fff; font-size: 1.2rem; margin-bottom: 15px;">SENAI CIC</h3>
+                            <p style="color: #888; font-size: 0.95rem; line-height: 1.6;">Referência em formação profissional, o SENAI CIC atua como hub tecnológico preparando talentos para a Indústria 4.0.</p>
+                        </div>
+
+                        <div class="card-elite">
+                            <div class="card-line"></div>
+                            <h3 style="color: #fff; font-size: 1.2rem; margin-bottom: 15px;">ANÁLISE DE DADOS</h3>
+                            <p style="color: #888; font-size: 0.95rem; line-height: 1.6;">Transformamos avaliações complexas em indicadores visuais claros para identificar a aptidão de cada estudante.</p>
+                        </div>
+
+                        <div class="card-elite">
+                            <div class="card-line"></div>
+                            <h3 style="color: #fff; font-size: 1.2rem; margin-bottom: 15px;">RESULTADOS</h3>
+                            <p style="color: #888; font-size: 0.95rem; line-height: 1.6;">Acompanhe a evolução das turmas e garanta o sucesso acadêmico com decisões baseadas em dados organizados.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="faq" style="margin-bottom: 120px; max-width: 800px;">
+                    <h2 class="section-title-2" style="margin-bottom: 40px;">DÚVIDAS FREQUENTES</h2>
+                    <div class="faq-container">
+                        <details>
+                            <summary>Como o nível do aluno é calculado?</summary>
+                            <p style="color: #666; padding-top: 15px; font-size: 0.9rem;">O sistema cruza a nota (mínima 7.0) com a presença (mínima 75%) para definir o status.</p>
+                        </details>
+                        <details>
+                            <summary>O sistema é exclusivo para o SENAI?</summary>
+                            <p style="color: #666; padding-top: 15px; font-size: 0.9rem;">Sim, é uma ferramenta personalizada para otimização de fluxos internos do SENAI CIC.</p>
+                        </details>
+                    </div>
+                </section>
+            </main>
+
+            <footer class="dash-footer">
+            <div class="footer-credits">
+                <p>© 2026 AnalisAI
+            </div>
+        </footer>
+        </div>
+    </div>
+
+</body>
+</html>

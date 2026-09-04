@@ -1,0 +1,29 @@
+<link rel="stylesheet" href="/css/components/notifications.css">
+
+<div class="notificacoes-container">
+    <a class="header-icon" id="notificacoesBtn" onclick="toggleNotificacoes()">
+        <i id="sinoIcone" class="fas fa-bell"></i>
+        <span id="notificacoesBadge" class="notificacoes-badge" style="display: none;">0</span>
+    </a>
+    
+    <div id="notificacoesPopup" class="notificacoes-popup">
+        <div class="notificacoes-header">
+            <h3>NOTIFICAÇÕES</h3>
+            <button onclick="marcarTodasLidas()" class="notificacoes-limpar" title="Marcar todas como lidas">
+                <i class="fas fa-check-double"></i>
+            </button>
+        </div>
+        <div id="notificacoesLista" class="notificacoes-lista">
+            <div class="notificacoes-loading">
+                <i class="fas fa-circle-notch fa-spin"></i> Carregando...
+            </div>
+        </div>
+        <div class="notificacoes-footer">
+            <a href="#" id="notificacoesConfigLink">
+                <i class="fas fa-cog"></i> Configurações
+            </a>
+        </div>
+    </div>
+</div>
+
+<script src="/js/components/notifications.js" defer></script>

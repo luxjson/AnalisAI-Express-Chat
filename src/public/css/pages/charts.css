@@ -1,0 +1,346 @@
+:root {
+    --bg-dark: #131314;
+    --primary-red: #ff0101;
+    --text-white: #ffffff;
+    --card-bg: #18181b;
+    --font-family: 'helvetica', sans-serif;
+    --border-color: #2c2c2c;
+    --text-muted: #555;
+    --text-secondary: #888;
+    --success-green: #217346;
+    --warning-yellow: #d4a017;
+}
+
+html[data-theme="light"] .dash-card,
+html[data-theme="light"] .card-grafico,
+html[data-theme="light"] .card-grafico-large,
+html[data-theme="light"] .card-grafico-small {
+    background: #fff !important;
+    border-color: #d5d9df !important;
+    color: #202329;
+    box-shadow: 0 5px 16px rgba(38, 46, 57, .06);
+}
+
+@font-face {
+    font-family: 'Inter-Medium';
+    src: url('/fonts/inter-medium.woff') format('woff');
+}
+
+@font-face {
+    font-family: 'helvetica';
+    src: url('/fonts/helvetica-now-display-bold.ttf') format('truetype');
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: var(--font-family);
+    font-weight: normal;
+}
+
+body.dash-body {
+    background-color: #18181b;
+    color: var(--text-white);
+    min-height: 100vh;
+    display: flex;
+    animation: pageReveal 0.65s cubic-bezier(.22, .8, .2, 1);
+}
+
+.main-layout {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 40px 60px;
+    min-height: 100vh;
+    border-radius: 20px;
+}
+
+.dash-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 50px;
+    padding-bottom: 25px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.dash-header .logo img {
+    max-width: 180px;
+    height: auto;
+}
+
+.page-title {
+    color: #ffffff;
+    font-size: 2rem;
+    font-weight: normal;
+}
+
+.dash-content {
+    animation: pageReveal 0.65s cubic-bezier(.22, .8, .2, 1);
+}
+
+.graficos-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding-bottom: 20px;
+}
+
+.section-label {
+    font-size: 1.1rem;
+    color: #888888;
+    margin-top: 40px;
+    text-transform: uppercase;
+    text-align: left;
+}
+
+.row-triple {
+    display: flex;
+    gap: 30px;
+    width: 100%;
+}
+
+.dash-card {
+    background: var(--card-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 25px;
+    transition: all 0.3s ease;
+}
+
+.dash-card:hover {
+    border-color: var(--text-muted);
+}
+
+.card-grafico {
+    flex: 1;
+    padding: 35px 25px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    text-align: center;
+}
+
+.card-grafico-large {
+    width: 100%;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 350px;
+    text-align: center;
+}
+
+.card-grafico-small {
+    width: 100%;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 350px;
+    text-align: center;
+}
+
+.chart-label {
+    font-size: 0.75rem;
+    margin-top: 20px;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.chart-value {
+    font-size: 1.5rem;
+    margin-top: 10px;
+    color: var(--text-white);
+    text-align: center;
+}
+
+.chart-value-large {
+    font-size: 2.5rem;
+    margin-top: 10px;
+    margin-left: 25px;
+    color: var(--primary-red);
+    text-align: center;
+}
+
+.label-verde {
+    color: var(--success-green);
+}
+
+.label-vermelho {
+    color: var(--primary-red);
+}
+
+.label-amarelo {
+    color: var(--warning-yellow);
+}
+
+.empty-chart {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    text-align: center;
+    padding: 30px;
+}
+
+canvas {
+    width: 100% !important;
+    max-height: 200px;
+}
+
+.dash-footer {
+    margin-top: auto;
+    padding: 50px 0 30px;
+    border-top: 1px solid var(--border-soft);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.footer-actions {
+    display: flex;
+    gap: 20px;
+}
+
+.btn-secondary-dash {
+    background: transparent;
+    border: 2px solid #2e3134;
+    color: #888;
+    padding: 15px 30px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    transition: 0.4s;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-secondary-dash:hover {
+    border-color: #444;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.footer-credits {
+    text-align: right;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.footer-credits a {
+    color: var(--text-muted);
+    text-decoration: none;
+    margin-left: 10px;
+}
+
+@media screen and (max-width: 1200px) {
+    .main-layout {
+        margin-left: 85px;
+        padding: 30px;
+    }
+    
+    .row-triple {
+        gap: 20px;
+    }
+    
+    .card-grafico {
+        min-height: 350px;
+        padding: 25px 20px;
+    }
+}
+
+@media screen and (max-width: 992px) {
+    .row-triple {
+        flex-direction: column;
+    }
+    
+    .card-grafico {
+        min-height: 300px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .main-layout {
+        margin-left: 0;
+        padding: 20px;
+    }
+    
+    .dash-header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+    
+    .page-title {
+        font-size: 1rem;
+        text-align: center;
+    }
+    
+    .section-label {
+        text-align: center;
+    }
+    
+    .dash-footer {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+    }
+    
+    .footer-actions {
+        justify-content: center;
+    }
+    
+    .footer-credits {
+        text-align: center;
+    }
+    
+    .footer-credits p {
+        text-align: center;
+    }
+    
+    .card-grafico-large,
+    .card-grafico-small {
+        padding: 30px 20px;
+        min-height: 300px;
+    }
+    
+    .chart-value-large {
+        font-size: 2rem;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .main-layout {
+        padding: 15px;
+    }
+    
+    .card-grafico {
+        padding: 20px 15px;
+        min-height: 280px;
+    }
+    
+    .card-grafico-large,
+    .card-grafico-small {
+        padding: 25px 15px;
+        min-height: 280px;
+    }
+    
+    .chart-value {
+        font-size: 1.2rem;
+    }
+    
+    .chart-value-large {
+        font-size: 1.8rem;
+    }
+    
+    .btn-secondary-dash {
+        padding: 10px 20px;
+        font-size: 0.7rem;
+    }
+}

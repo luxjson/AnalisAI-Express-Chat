@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta name="csrf-token" content="<%= csrfToken %>">
+    <meta charset="UTF-8">
+    <script src="/js/shared/theme-init.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnalisAI - Editor de Notas</title>
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
+    <script src="/js/shared/phosphor-icons.js" defer></script>
+    <link rel="stylesheet" href="/css/components/sidebar.css">
+    <link rel="stylesheet" href="/css/base/dashboard.css">
+    <link rel="stylesheet" href="/css/pages/edit.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="/css/base/light-theme.css">
+</head>
+<body class="dash-body">
+    <%- include('../partials/barProfessor') %>
+
+    <div class="main-layout">
+        <header class="dash-header">
+            <div class="header-left">
+                <h1>
+                    Editor de Notas
+                </h1>
+            </div>
+            
+            <div class="header-user">
+                <div class="user-profile-group">
+                    <div class="user-details">
+                        <span class="user-name"><strong><%= user %></strong></span>
+                        <span class="user-role" style="color: #888888;"><strong><%= userCargo %></strong></span>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <%- include('../partials/notificacoes', { notificacaoClasse: 'header-icon' }) %>
+                     
+                </div>
+            </div>
+        </header>
+
+        <% if (success_msg && success_msg.length > 0) { %>
+            <div class="alert alert-success">
+                <%= success_msg %>
+                <span class="close-alert" onclick="this.parentElement.style.display='none'">&times;</span>
+            </div>
+        <% } %>
+        <% if (error_msg && error_msg.length > 0) { %>
+            <div class="alert alert-error">
+                <%= error_msg %>
+                <span class="close-alert" onclick="this.parentElement.style.display='none'">&times;</span>
+            </div>
+        <% } %>
+
+        <div class="toolbar">
+            <div class="action-buttons">
+                <button class="btn-icon btn-filter" id="btnFilter" onclick="openFilter()" title="Filtrar">
+                    <i class="fas fa-filter"></i>
+                </button>
+                
+                <button class="btn-secondary-dash" onclick="openAddModal()" title="Adicionar Aluno">
+                    <i class="fas fa-plus"></i> ADICIONAR ALUNO
+                </button>
+
+                <button class="btn-secondary-dash" onclick="openImportModal()" title="Importar Planilha">
+                    <i class="fas fa-file-import"></i> IMPORTAR TABELA
+                </button>
+                
+                <button class="btn-secondary-dash" onclick="exportarTabelaParaExcel()" title="Exportar Tabela">
+                    <i class="fas fa-file-export"></i> EXPORTAR TABELA
+                </button>
+
+                <% if (userCargo === 'Admin') { %>
+                    <button class="btn-icon btn-erase" onclick="openErasePassModal()" title="Apagar Todos os Dados">
+                        <i class="ph-bold ph-trash" aria-hidden="true"></i>
+                    </button>
+                    <% } %>
+            </div>
+
+            <div class="search-container">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Pesquisar aluno...">
+            </div>
+        </div>
+
+        <div id="importModal" class="modal-overlay">
+            <div class="modal-content">
+                <button class="close-btn" onclick="closeImportModal()">
+                    <i class="ph-bold ph-x"></i>
+                </button>
+                
+                <h2 class="section-title-2" style="text-align: center; margin-bottom: 30px; font-size: 1.2rem;">
+                    IMPORTAR PLANILHA
+                </h2>
+
+                <a href="/baixar-modelo-importacao" class="btn-secondary-dash" style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 10px; margin-bottom: 15px; text-decoration: none; height: 55px;">
+                    <i class="fas fa-download"></i>
+                    BAIXAR MODELO
+                </a>
+
+                <div class="file-drop-area" onclick="document.getElementById('fileInput').click()" style="padding: 25px; margin: 15px 0;">
+                    <i class="fas fa-cloud-upload-alt" style="font-size: 2rem; color: #555;"></i>
+                    <span class="file-msg" style="font-size: 0.8rem; color: #888;">Clique ou arraste</span>
+                    <span style="color: #666; font-size: 0.7rem;">.xlsx, .xls, .csv</span>
+                    <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" style="display: none;">
+                </div>
+                
+                <div id="fileName" class="file-name" style="font-size: 0.75rem; padding: 6px; text-align: center; color: var(--success-green); background: rgba(33,115,70,0.1); border-radius: 8px; margin-bottom: 10px;"></div>
+
+                <div style="margin: 15px 0; text-align: center;">
+                    <label style="display: inline-flex; align-items: center; gap: 5px; color: var(--text-white); cursor: pointer; font-size: 0.8rem;">
+                        <input type="checkbox" id="primeiraLinhaCabecalho" checked style="accent-color: var(--success-green); width: 16px; height: 16px;">
+                        1ª linha cabeçalho
+                    </label>
+                </div>
+
+                <button type="button" class="btn-secondary-dash" onclick="importarPlanilha()" style="width: 100%; padding: 12px; font-size: 0.9rem; margin-top: 5px; justify-content: center; height: 55px">
+                    <i class="fas fa-file-import"></i> IMPORTAR
+                </button>
+
+                <p style="color: #666; font-size: 0.65rem; text-align: center; margin-top: 20px;">
+                    <i class="fas fa-info-circle" style="color: var(--success-green);"></i>
+                    Use o modelo para formato correto
+                </p>
+            </div>
+        </div>
+
+        <div id="previewImportModal" class="modal-overlay">
+            <div class="modal-content" style="max-width: 600px; border-color: var(--success-green);">
+                <button class="close-btn" onclick="closePreviewModal()">
+                    <i class="ph-bold ph-x"></i>
+                </button>
+                
+                <h2 class="section-title-2" style="text-align: center; margin-bottom: 20px; color: #217346;">
+                    PRÉ-VISUALIZAÇÃO
+                </h2>
+                
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <i class="fas fa-check-circle" style="font-size: 3rem; color: #217346;"></i>
+                    <p style="color: #fff; font-size: 1.1rem; margin: 10px 0;" id="previewCount"></p>
+                </div>
+
+                <div style="background: var(--card-bg); border: 2px solid #217346; border-radius: 12px; padding: 15px; margin-bottom: 20px; max-height: 300px; overflow-y: auto;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="border-bottom: 1px solid #333;">
+                                <th style="padding: 8px; text-align: left; color: #888;">NOME</th>
+                                <th style="padding: 8px; text-align: left; color: #888;">ANO</th>
+                                <th style="padding: 8px; text-align: left; color: #888;">COMPETÊNCIAS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="previewList"></tbody>
+                    </table>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button class="btn-secondary-dash" onclick="confirmarImportacao()" style="flex: 1; justify-content: center; background: #21734610; border-color: #217346; color: var(--text-white);">
+                        <i class="fas fa-check"></i> CONFIRMAR
+                    </button>
+                    <button class="btn-secondary-dash" onclick="closePreviewModal()" style="flex: 1; justify-content: center;">
+                        <i class="fas fa-times"></i> CANCELAR
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <main class="edit-content">
+            <section class="ai-editor-panel">
+                <div class="ai-panel-heading">
+                    <div>
+                        <h2 class="section-title-2">SITUAÇÃO DO ALUNO</h2>
+                        <p>Gere uma leitura objetiva com base nas competências, presença e tarefas registradas.</p>
+                    </div>
+                    <a class="btn-secondary-dash" href="/dashboard/ia"><i class="fas fa-comments"></i> ABRIR CHAT</a>
+                </div>
+                <div class="ai-editor-controls">
+                    <select id="aiStudentSelect">
+                        <option value="">Selecione um aluno</option>
+                        <% alunos.forEach(aluno => { %>
+                            <option value="<%= aluno.id %>"><%= aluno.nome %> - <%= aluno.ano_escolar %></option>
+                        <% }); %>
+                    </select>
+                    <button class="btn-secondary-dash" id="aiAnalyzeStudent" type="button"><i class="fas fa-chart-line"></i> ANALISAR</button>
+                </div>
+                <div class="ai-suggestion-list" aria-label="Sugestões de análise">
+                    <button type="button" class="ai-suggestion" data-ai-prompt="Identifique as três prioridades pedagógicas deste aluno e explique o que deve ser feito primeiro."><i class="fas fa-list-check"></i><span>Prioridades</span></button>
+                    <button type="button" class="ai-suggestion" data-ai-prompt="Sugira intervenções práticas e personalizadas para melhorar as competências mais frágeis deste aluno."><i class="fas fa-lightbulb"></i><span>Intervenções</span></button>
+                    <button type="button" class="ai-suggestion" data-ai-prompt="Analise as tarefas e a frequência deste aluno e sugira ações para melhorar o engajamento."><i class="fas fa-arrow-trend-up"></i><span>Engajamento</span></button>
+                </div>
+                <div id="aiEditorResult" class="ai-result" aria-live="polite">A análise aparecerá aqui.</div>
+            </section>
+            <div class="table-container">
+                <table class="alunos-table" id="alunosTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>ALUNO</th>
+                            <th>ANO ESCOLAR</th>
+                            <th>IDADE</th>
+                            <th>MÉDIA DE NOTAS</th>
+                            <th>PRESENÇA (%)</th>
+                            <th>NÍVEL</th>
+                            <th>AÇÕES</th>
+                        </tr>
+                    </thead>
+                    <tbody id="alunosTableBody">
+                        <% if (alunos && alunos.length > 0) { %>
+                            <% alunos.forEach(aluno => { 
+                                let mediaCompetencias = 0;
+                                let temCompetencias = aluno.competencias && aluno.competencias.length > 0;
+                                
+                                if (temCompetencias) {
+                                    const soma = aluno.competencias.reduce((acc, comp) => acc + parseFloat(comp.nota), 0);
+                                    mediaCompetencias = soma / aluno.competencias.length;
+                                }
+                                
+                                let nivelReal = 'EM DESENVOLVIMENTO';
+                                let nivelClass = 'em-desenvolvimento';
+                                
+                                if (mediaCompetencias >= 7 && aluno.presenca >= 75) {
+                                    nivelReal = 'APTO';
+                                    nivelClass = 'apto';
+                                } else if (mediaCompetencias < 5 || aluno.presenca < 50) {
+                                    nivelReal = 'INAPTO';
+                                    nivelClass = 'inapto';
+                                }
+                            %>
+                                <tr data-aluno-id="<%= aluno.id %>" data-presenca="<%= aluno.presenca %>">
+                                    <td><%= aluno.id %></td>
+                                    <td><%= aluno.nome %></td>
+                                    <td><%= aluno.ano_escolar %></td>
+                                    <td><%= aluno.idade %></td>
+                                    <td class="media-notas">
+                                        <% if (temCompetencias) { %>
+                                            <strong><%= mediaCompetencias.toFixed(1) %></strong>
+                                            <small style="color: #888; display: block;">(<%= aluno.competencias.length %> competências)</small>
+                                        <% } else { %>
+                                            <span style="color: #888;">Sem competências</span>
+                                        <% } %>
+                                    </td>
+                                    <td><%= aluno.presenca %>%</td>
+                                    <td class="status <%= nivelClass %>"><%= nivelReal %></td>
+                                    <td class="td-actions">
+                                        <button type="button" class="btn-table-edit" data-id="<%= aluno.id %>" data-name="<%= aluno.nome %>" data-presenca="<%= aluno.presenca %>" onclick="openEditModal(this.dataset.id, this.dataset.name, this.dataset.presenca)" title="Editar Aluno">
+                                            <i class="ph-bold ph-pen" aria-hidden="true"></i>
+                                        </button>
+                                        <a href="#" data-id="<%= aluno.id %>" data-name="<%= aluno.nome %>" onclick="event.preventDefault(); confirmDelete(this.dataset.id, this.dataset.name)" class="delete-link" title="Excluir Aluno">
+                                            <i class="ph-bold ph-trash" aria-hidden="true"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="competencias-section">
+                <h2 class="section-title-2">COMPETÊNCIAS POR ALUNO</h2>
+                <div class="search-container" style="margin-bottom: 25px; max-width: 400px;">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="competenciasSearchInput" placeholder="Procurar competências de aluno...">
+                </div>
+                <div class="competencias-grid">
+                    <% if (alunos && alunos.length > 0) { %>
+                        <% alunos.forEach(aluno => { 
+                            if (aluno.competencias && aluno.competencias.length > 0) { %>
+                                <div class="competencia-card" data-aluno-nome="<%= aluno.nome.toLowerCase() %>">
+                                    <div class="competencia-header">
+                                        <h3><%= aluno.nome %></h3>
+                                        <span class="competencia-ano"><%= aluno.ano_escolar %></span>
+                                    </div>
+                                    <div class="competencia-list">
+                                        <% aluno.competencias.forEach(comp => { 
+                                            let compClass = 'em-desenvolvimento';
+                                            if (comp.nota >= 7) compClass = 'apto';
+                                            else if (comp.nota < 5) compClass = 'inapto';
+                                        %>
+                                            <div class="competencia-item">
+                                                <div class="competencia-info">
+                                                    <span class="competencia-nome"><%= comp.nome %></span>
+                                                    <% if (comp.observacoes) { %>
+                                                        <span class="competencia-desc"><%= comp.observacoes.substring(0, 30) %><%= comp.observacoes.length > 30 ? '...' : '' %></span>
+                                                    <% } %>
+                                                </div>
+                                                <span class="competencia-nota <%= compClass %>">
+                                                    <%= parseFloat(comp.nota).toFixed(1) %>
+                                                </span>
+                                            </div>
+                                        <% }); %>
+                                    </div>
+                                </div>
+                            <% } %>
+                        <% }); %>
+                    <% } %>
+                </div>
+            </div>
+            
+            <div class="evolution-container">
+                <h2 class="section-title-2">EVOLUÇÃO INDIVIDUAL POR ALUNO</h2>
+                <div class="search-container" style="margin-bottom: 25px; max-width: 400px;">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="chartSearchInput" placeholder="Procurar gráfico de aluno...">
+                </div>
+                <div class="charts-grid">
+                    <% if (alunos && alunos.length > 0) { %>
+                        <% alunos.forEach(aluno => { 
+                            if (aluno.competencias && aluno.competencias.length > 0) { %>
+                                <div class="chart-card" data-aluno-nome="<%= aluno.nome.toLowerCase() %>">
+                                    <h3>ALUNO: <%= aluno.nome %></h3>
+                                    <div class="chart-wrapper" style="position: relative; height: 300px; width: 100%;">
+                                        <canvas id="chart-<%= aluno.id %>"></canvas>
+                                    </div>
+                                </div>
+                            <% } %>
+                        <% }); %>
+                    <% } %>
+                </div>
+            </div>
+        </main>
+
+    <script src="/js/pages/dashboard/ai-editor.js" defer></script>
+
+        <div id="filterModal" class="modal-overlay">
+            <div class="modal-content">
+                <button class="close-btn" onclick="closeFilter()"><i class="ph-bold ph-x"></i></button>
+                <h2 class="section-title-2">FILTRAR LISTA</h2>
+                <div class="filter-options">
+                    <label>ANO ESCOLAR:</label>
+                    <select id="filterAno" class="filter-input">
+                        <option value="">TODOS OS ANOS</option>
+                        <option value="1º MÉDIO">1º MÉDIO</option>
+                        <option value="2º MÉDIO">2º MÉDIO</option>
+                        <option value="3º MÉDIO">3º MÉDIO</option>
+                        <option value="9º FUNDAMENTAL">9º FUNDAMENTAL</option>
+                    </select>
+                    <label style="margin-top: 15px; display: block;">STATUS:</label>
+                    <select id="filterStatus" class="filter-input">
+                        <option value="">TODOS OS NÍVEIS</option>
+                        <option value="APTO">APTO</option>
+                        <option value="INAPTO">INAPTO</option>
+                        <option value="EM DESENVOLVIMENTO">EM DESENVOLVIMENTO</option>
+                    </select>
+                    <div style="display: flex; gap: 10px; margin-top: 25px;">
+                        <button class="btn-secondary-dash" onclick="applyFilter()" style="flex: 2; justify-content: center;">FILTRAR</button>
+                        <button class="btn-secondary-dash" onclick="clearFilters()" style="flex: 1; justify-content: center;">LIMPAR</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="addAlunoModal" class="modal-overlay">
+            <div class="modal-content claude-modal claude-create-student">
+                <button class="close-btn" onclick="closeAddModal()"><i class="ph-bold ph-x"></i></button>
+                <div class="claude-modal-heading"><span class="claude-modal-kicker">Alunos</span><h2>Adicionar aluno</h2><p>Cadastre um novo aluno para acompanhar seu desempenho acadêmico.</p></div>
+                <form action="/dashboard/add-aluno" method="POST" class="filter-options claude-form">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <label>NOME COMPLETO:</label>
+                    <input type="text" name="nome" class="filter-input" pattern="[A-Za-zÀ-ÖØ-öø-ÿ\s]+" oninput="this.value = this.value.replace(/[^A-Za-zÀ-ÖØ-öø-ÿ\s]/g, '')" placeholder="Nome do aluno" required>
+                    <label style="margin-top: 15px; display: block;">ANO ESCOLAR:</label>
+                    <select name="ano_escolar" class="filter-input">
+                        <option value="1º MÉDIO">1º MÉDIO</option>
+                        <option value="2º MÉDIO">2º MÉDIO</option>
+                        <option value="3º MÉDIO">3º MÉDIO</option>
+                        <option value="9º FUNDAMENTAL">9º FUNDAMENTAL</option>
+                    </select>
+                    <div style="display: flex; gap: 10px; margin-top: 15px;">
+                        <div style="flex: 1;"><label>IDADE:</label><input type="number" name="idade" min="14" max="20" class="filter-input" required></div>
+                    </div>
+                    <div class="claude-modal-actions"><button type="button" class="claude-btn-secondary" onclick="closeAddModal()">Cancelar</button><button type="submit" class="claude-btn-primary">Criar aluno</button></div>
+                </form>
+            </div>
+        </div>
+
+        <div id="editAlunoModal" class="modal-overlay">
+            <div class="modal-content" style="max-width: 450px; padding: 30px;">
+                <button class="close-btn" onclick="closeEditModal()"><i class="ph-bold ph-x"></i></button>
+                
+                <h2 class="section-title-2" style="font-size: 1.1rem; margin-bottom: 20px;">
+                    <i class="fas fa-user-edit"></i> <span id="editNomeAluno"></span>
+                </h2>
+                <div class="edit-tabs" style="display: grid; grid-template-columns: 1fr 1fr;border-bottom: none;">
+                    <button class="tab-btn active" onclick="showEditTab('info')" id="btn-tab-info">ACESSO</button>
+                    <button class="tab-btn" onclick="showEditTab('notas')" id="btn-tab-notas">NOTAS</button>
+                    <button class="tab-btn" onclick="showEditTab('add')" id="btn-tab-add">LANÇAR</button>
+                    <button class="tab-btn" onclick="showEditTab('presenca')" id="btn-tab-presenca">FALTAS</button>
+                </div>
+
+                <div style="margin-top: 20px; border-top: 1px solid var(--border-color); padding-top: 15px;">
+            
+                    <div id="editInfoTab" class="tab-content active">
+                        <div id="loginInfo"></div>
+                    </div>
+
+                    <div id="editNotasTab" class="tab-content" style="display: none;">
+                        <h3 style="font-size: 0.7rem; color: var(--text-gray); margin-bottom: 10px; letter-spacing: 1px;">COMPETÊNCIAS REGISTRADAS</h3>
+                        <div id="competenciasListContainer" class="competencias-list-edit" style="max-height: 200px;"></div>
+                    </div>
+
+                    <div id="editAddTab" class="tab-content" style="display: none;">
+                        <form action="/dashboard/adicionar-competencia" method="POST" class="filter-options">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                            <input type="hidden" name="aluno_id" id="editAlunoIdComp">
+                            
+                            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px;">
+                                <div>
+                                    <label style="margin-top: 0;">COMPETÊNCIA:</label>
+                                    <select name="competencia_id" class="filter-input" style="padding: 10px; font-size: 0.8rem;" required>
+                                        <option value="">SELECIONE...</option>
+                                        <% if (listaCompetencias && listaCompetencias.length > 0) { %>
+                                            <% listaCompetencias.forEach(comp => { %>
+                                                <option value="<%= comp.id %>"><%= comp.nome %></option>
+                                            <% }); %>
+                                        <% } %>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label style="margin-top: 0;">NOTA:</label>
+                                    <input type="number" step="0.1" name="nota" min="0" max="10" class="filter-input" style="padding: 10px; font-size: 0.8rem;" required>
+                                </div>
+                            </div>
+                            
+                            <label style="margin-top: 10px;">OBSERVAÇÕES:</label>
+                            <textarea name="observacoes" class="filter-input" style="height: 60px; padding: 10px; font-size: 0.8rem;" placeholder="Feedback..."></textarea>
+                            
+                            <button type="submit" class="btn-secondary-dash" style="margin-top: 15px; height: 45px; justify-content: center; font-size: 0.75rem;">REGISTRAR NOTA</button>
+                        </form>
+                    </div>
+
+                    <div id="editPresencaTab" class="tab-content" style="display: none;">
+                        <form action="/dashboard/atualizar-presenca" method="POST" class="filter-options">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                            <input type="hidden" name="aluno_id" id="editAlunoId">
+                            <label style="margin-top: 0;">FREQUÊNCIA ATUAL (%)</label>
+                            <input type="number" name="presenca" id="editPresencaInput" min="0" max="100" class="filter-input" style="padding: 10px;" required>
+                            <button type="submit" class="btn-secondary-dash" style="margin-top: 20px; height: 45px; justify-content: center; font-size: 0.75rem;">ATUALIZAR STATUS</button>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div id="exportSuccessModal" class="modal-overlay">
+            <div class="modal-content" style="display: flex; flex-direction: column; align-items: center;">
+                <button class="close-btn" onclick="closeExportModal()"><i class="ph-bold ph-x"></i></button>
+                <h2 class="modal-title-success" style="color: #fff;">Relatório Gerado</h2>
+                <p class="modal-text-success">A planilha foi processada com sucesso e o seu download já começou.</p>
+                <button class="btn-secondary-dash" onclick="closeExportModal()">CONCLUIR</button>
+            </div>
+        </div>
+
+        <footer class="dash-footer">
+            <a href="#" onclick="exportarTabelaParaExcel()" class="btn-secondary-dash">
+                <i class="fas fa-file-export"></i> EXPORTAR PLANILHA COMPLETA
+            </a>
+            <div class="footer-credits">
+                <p>© 2026 AnalisAI
+            </div>
+        </footer>
+    </div>
+
+    <div id="eraseAllModal" class="modal-overlay">
+    <div class="modal-content modal-small">
+        <button class="close-btn" onclick="closeEraseModal()"><i class="ph-bold ph-x"></i></button>
+        <div class="modal-icon-warning">
+            <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <h2 class="modal-title-warning">APAGAR TUDO?</h2>
+        <p class="modal-text-warning">
+            Esta ação irá remover <strong>TODOS</strong> os alunos, notas e competências atribuídas.<br>
+            As competências padrão do sistema serão mantidas.<br>
+            <span style="color: #ff0101;">Esta operação não pode ser desfeita.</span>
+        </p>
+        <div class="modal-actions" style="gap: 10px; display: flex; flex-direction: column; align-items: center;">
+            <form action="/dashboard/erase-all" method="POST">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <button type="submit" class="btn-secondary-dash" style="justify-content: center; height: 50px; width: 300px;">
+                    <i class="ph-bold ph-trash" aria-hidden="true"></i> SIM, APAGAR TUDO
+                </button>
+            </form>
+            <button onclick="closeEraseModal()" class="btn-secondary-dash" style="justify-content: center; height: 50px; width: 300px;">
+                CANCELAR
+            </button>
+        </div>
+    </div>
+</div>
+
+    <div id="errorModal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 450px; border-color: #ff0101;">
+            <button class="close-btn" onclick="closeErrorModal()">
+                <i class="ph-bold ph-x"></i>
+            </button>
+            
+            <div style="text-align: center;">
+                <div style="font-size: 4rem; color: #ff0101; margin-bottom: 15px;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                
+                <h2 class="section-title-2" style="color: #ff0101; margin-bottom: 15px;" id="errorTitulo">
+                    ERRO
+                </h2>
+                
+                <p style="color: #888; font-size: 1rem; margin-bottom: 10px;" id="errorMensagem">
+                    Ocorreu um erro
+                </p>
+                
+                <div style="background: var(--bg-secondary); border-radius: 8px; padding: 10px; margin: 15px 0;">
+                    <p style="color: #ff0101; font-size: 0.85rem;" id="errorDetalhe">
+                        
+                    </p>
+                </div>
+
+                <button class="btn-action" onclick="closeErrorModal()" style="width: 100%; justify-content: center; border-color: #ff0101; color: #ff0101;">
+                    <i class="fas fa-times"></i> FECHAR
+                </button>
+            </div>
+        </div>
+    </div>
+
+<div id="loadingModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 400px; text-align: center; border-color: #217346;">
+        <div style="padding: 30px;">
+            <div class="loading-spinner" style="margin: 20px auto;">
+                <i class="fas fa-circle-notch fa-spin" style="font-size: 4rem; color: #217346;"></i>
+            </div>
+            <h3 style="color: #fff; margin-bottom: 15px;">IMPORTANDO DADOS</h3>
+            <p style="color: #888; margin-bottom: 20px;">Processando alunos e competências...</p>
+            <div style="width: 100%; height: 6px; background: var(--bg-secondary); border-radius: 10px; overflow: hidden;">
+                <div id="loadingBar" style="width: 0%; height: 100%; background: #217346; transition: width 0.3s ease;"></div>
+            </div>
+            <p id="loadingStatus" style="color: #888; font-size: 0.8rem; margin-top: 10px;">0% concluído</p>
+        </div>
+    </div>
+</div>
+<div id="credenciaisModal" class="modal-overlay" style="display:none;">
+    <div class="modal-content modal-lg" style="max-width: 800px;">
+        <button class="close-btn" onclick="fecharModalCredenciais()">&times;</button>
+        <h2 style="color: #fff; margin-bottom: 10px; text-align: center; letter-spacing: 1px;">
+            <i class="fas fa-user-check" style="color: #217346;"></i> Alunos Importados com Sucesso!
+        </h2>
+        <p style="color: #888; text-align: center; margin-bottom: 20px;">
+            Abaixo estão as credenciais de acesso para cada aluno. Guarde-as com segurança.
+        </p>
+        <div id="credenciaisLista"></div>
+    </div>
+</div>
+<div id="erasePassModal" class="modal-overlay">
+    <div class="modal-content modal-small">
+        <button class="close-btn" onclick="closeErasePassModal()">&times;</button>
+        
+        <div class="modal-icon-warning">
+            <i class="fas fa-shield-alt" style="color:#ff0101;"></i>
+        </div>
+        <h2 class="modal-title-warning">VERIFICAÇÃO DE SEGURANÇA</h2>
+        <p class="modal-text-warning">
+            Para apagar todos os dados, digite a <strong>senha administrativa</strong> de exclusão.
+        </p>
+        
+        <div id="erasePassError" style="display:none; background:rgba(255,1,1,0.1); border:1px solid #ff0101; color:#ff0101; padding:10px; border-radius:8px; margin-bottom:15px; text-align:center; font-size:0.9rem;">
+            <i class="fas fa-exclamation-circle"></i> <span id="erasePassErrorMessage">Senha incorreta</span>
+        </div>
+        <div style="margin: 15px 0;">
+            <input type="password" id="erasePassInput" 
+                   placeholder="Digite a senha de exclusão" 
+                   style="width:100%; padding:15px; background:var(--card-bg); border:2px solid var(--border-color); border-radius:12px; color:var(--text-white); font-size:1rem; text-align:center; ">
+        </div>
+        
+        
+        <div class="modal-actions">
+            <button id="btnVerifyErasePass" class="btn-secondary-dash" onclick="verifyDeletePassword()">
+                <i class="fas fa-check"></i> VERIFICAR
+            </button>
+        </div>
+    </div>
+</div>
+
+
+    <script type="application/json" id="dashboard-edit-data"><%- safeJson(alunos) %></script>
+<script src="/js/pages/dashboard/edit.js" defer></script>
+</body>
+</html>

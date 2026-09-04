@@ -1,0 +1,315 @@
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .page-title {
+            font-size: 1.5rem;
+            color: #217346;
+            text-transform: uppercase;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+        }
+        
+        .stat-card {
+            background: #030303;
+            border: 2px solid #2e3134;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            transition: 0.3s;
+        }
+        
+        .stat-card:hover {
+            border-color: #217346;
+            transform: translateY(-3px);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            color: #217346;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: #888;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+        
+        .tarefas-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+        
+        .tarefa-card {
+            background: #030303;
+            border: 2px solid #2e3134;
+            border-radius: 15px;
+            padding: 20px;
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .tarefa-card:hover {
+            border-color: #217346;
+            transform: translateY(-5px);
+        }
+        
+        .tarefa-status-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            padding: 5px 15px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            border-bottom-left-radius: 10px;
+        }
+        
+        .tarefa-status-badge.pendente {
+            background: rgba(212, 160, 23, 0.2);
+            color: #d4a017;
+        }
+        
+        .tarefa-status-badge.aguardando {
+            background: rgba(33, 115, 70, 0.2);
+            color: #217346;
+        }
+        
+        .tarefa-status-badge.corrigida {
+            background: rgba(33, 115, 70, 0.2);
+            color: #217346;
+        }
+        
+        .tarefa-status-badge.devolvida {
+            background: rgba(255, 165, 0, 0.2);
+            color: #ffa500;
+        }
+        
+        .tarefa-status-badge.atrasada {
+            background: rgba(255, 1, 1, 0.2);
+            color: #ff0101;
+        }
+        
+        .tarefa-header {
+            margin-bottom: 15px;
+            padding-right: 70px;
+        }
+        
+        .tarefa-titulo {
+            font-size: 1.2rem;
+            color: #fff;
+            margin-bottom: 8px;
+            word-wrap: break-word;
+        }
+        
+        .tarefa-competencia {
+            color: #217346;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(33, 115, 70, 0.1);
+            padding: 4px 10px;
+            border-radius: 15px;
+            display: inline-flex;
+        }
+        
+        .tarefa-descricao {
+            color: #aaa;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin: 15px 0;
+            max-height: 80px;
+            overflow-y: auto;
+            padding-right: 5px;
+            word-wrap: break-word;
+        }
+        
+        .tarefa-descricao::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        .tarefa-descricao::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+        
+        .tarefa-descricao::-webkit-scrollbar-thumb {
+            background: #217346;
+            border-radius: 10px;
+        }
+        
+        .tarefa-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 15px 0;
+            padding: 12px 0;
+            border-top: 1px solid #2e3134;
+            border-bottom: 1px solid #2e3134;
+        }
+        
+        .tarefa-data {
+            color: #888;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .tarefa-data i {
+            color: #217346;
+            width: 16px;
+        }
+        
+        .tarefa-data.urgente {
+            color: #ff0101;
+        }
+        
+        .tarefa-data.urgente i {
+            color: #ff0101;
+        }
+        
+        .tarefa-feedback {
+            background: #1a1a1a;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 3px solid #ffa500;
+        }
+        
+        .tarefa-feedback p {
+            color: #ffa500;
+            font-style: italic;
+            line-height: 1.5;
+            margin: 0;
+            word-wrap: break-word;
+        }
+        
+        .tarefa-nota-container {
+            text-align: center;
+            margin: 15px 0;
+            padding: 15px;
+            background: #1a1a1a;
+            border-radius: 10px;
+        }
+        
+        .tarefa-nota {
+            display: inline-block;
+            padding: 8px 20px;
+            background: rgba(33, 115, 70, 0.1);
+            border: 2px solid #217346;
+            border-radius: 30px;
+            color: #217346;
+            font-size: 1.5rem;
+        }
+        
+        .tarefa-feedback-correcao {
+            margin-top: 12px;
+            color: #888;
+            font-size: 0.9rem;
+            padding: 10px;
+            background: #030303;
+            border-radius: 8px;
+            border-left: 3px solid #217346;
+            text-align: left;
+            word-wrap: break-word;
+        }
+        
+        .tarefa-footer {
+            margin-top: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .btn-entregar {
+            background: #217346;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: 0.3s;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-entregar:hover {
+            background: #2a8e4f;
+            transform: translateY(-2px);
+        }
+        
+        .btn-entregar:disabled {
+            background: #444;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .info-entrega {
+            background: #1a1a1a;
+            padding: 10px;
+            border-radius: 8px;
+            color: #888;
+            font-size: 0.8rem;
+            text-align: center;
+            word-wrap: break-word;
+        }
+        
+        .info-entrega i {
+            color: #217346;
+            margin-right: 5px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: #030303;
+            border: 2px solid #2e3134;
+            border-radius: 20px;
+            grid-column: 1 / -1;
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .empty-state h3 {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+        
+        .empty-state p {
+            color: #444;
+            font-size: 0.9rem;
+        }
+        
+        @media screen and (max-width: 768px) {
+            .tarefas-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tarefa-meta {
+                flex-direction: column;
+                gap: 8px;
+                align-items: flex-start;
+            }
+        }
