@@ -287,8 +287,8 @@ function abrirModalCredenciais(credenciais) {
             </table>
         </div>
         <div style="display: flex; gap: 10px; margin-top: 20px;">
-            <button onclick="fecharModalCredenciais()" class="btn-action-2" style="flex:1; justify-content:center;">Fechar</button>
-            <button onclick="copiarCredenciais()" class="btn-action" style="flex:1; justify-content:center; border-color: #217346; color: #217346;">
+            <button onclick="fecharModalCredenciais()" class="btn-secondary-dash" >Fechar</button>
+            <button onclick="copiarCredenciais()" class="btn-secondary-dash">
                 <i class="fas fa-copy"></i> Copiar Tudo
             </button>
         </div>
