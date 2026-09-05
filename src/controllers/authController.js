@@ -30,9 +30,11 @@ exports.showManualDeUso = (req, res) => res.render('manualDoProfessor', {
 });
 
 exports.showManualDoAluno = (req, res) => res.render('manualDoAluno', {
+    aluno: req.session.aluno || null,
     user: req.session.user,
     userCargo: req.session.userCargo,
-    isAdmin: req.session.userCargo === 'Admin'
+    isAdmin: req.session.userCargo === 'Admin',
+    csrfToken: req.session.csrfToken
 });
 
 exports.showLogin = (req, res) => {
