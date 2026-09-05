@@ -40,7 +40,7 @@ const stats = getPageData('dashboard-graficos-data') || {};
                     data: {
                         datasets: [{
                             data: [stats.apto, stats.total - stats.apto],
-                            backgroundColor: ['#217346', '#131314'],
+                            backgroundColor: ['#217346', '#151515'],
                             borderWidth: 0,
                             cutout: '75%',
                             borderRadius: 6
@@ -54,7 +54,7 @@ const stats = getPageData('dashboard-graficos-data') || {};
                     data: {
                         datasets: [{
                             data: [stats.inapto, stats.total - stats.inapto],
-                            backgroundColor: ['#ff0101', '#131314'],
+                            backgroundColor: ['#ff0101', '#151515'],
                             borderWidth: 0,
                             cutout: '75%',
                             borderRadius: 6
@@ -68,7 +68,7 @@ const stats = getPageData('dashboard-graficos-data') || {};
                     data: {
                         datasets: [{
                             data: [stats.desenvolvimento, stats.total - stats.desenvolvimento],
-                            backgroundColor: ['#d4a017', '#131314'],
+                            backgroundColor: ['#d4a017', '#151515'],
                             borderWidth: 0,
                             cutout: '75%',
                             borderRadius: 6

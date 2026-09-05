@@ -1,11 +1,11 @@
 :root {
     --primary-red: #ff0101;
-    --bg-dark: #18181b;
-    --card-bg: #18181b;
+    --bg-dark: #111111;
+    --card-bg: #111111;
     --text-white: #ffffff;
     --text-muted: #888;
     --font-family: 'helvetica', sans-serif;
-    --border-color: #1a1a1a;
+    --border-color: #151515;
 }
 
 @font-face {
@@ -69,7 +69,7 @@ body {
 }
 
 .equipe-container {
-    background: #131314;
+    background: #151515;
     border: 2px solid var(--text-muted);
     border-radius: 25px;
     padding: 30px;

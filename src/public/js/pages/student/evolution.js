@@ -55,7 +55,7 @@ var historicoData = getPageData('aluno-evolucao-data') || [];
                     plugins: {
                         legend: { display: false },
                         tooltip: {
-                            backgroundColor: '#1a1a1a',
+                            backgroundColor: '#151515',
                             titleColor: '#fff',
                             borderColor: '#333',
                             borderWidth: 1

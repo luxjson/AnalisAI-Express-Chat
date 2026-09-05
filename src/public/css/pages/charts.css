@@ -1,8 +1,8 @@
 :root {
-    --bg-dark: #131314;
+    --bg-dark: #151515;
     --primary-red: #ff0101;
     --text-white: #ffffff;
-    --card-bg: #18181b;
+    --card-bg: #151515;
     --font-family: 'helvetica', sans-serif;
     --border-color: #2c2c2c;
     --text-muted: #555;
@@ -37,23 +37,6 @@ html[data-theme="light"] .card-grafico-small {
     box-sizing: border-box;
     font-family: var(--font-family);
     font-weight: normal;
-}
-
-body.dash-body {
-    background-color: #18181b;
-    color: var(--text-white);
-    min-height: 100vh;
-    display: flex;
-    animation: pageReveal 0.65s cubic-bezier(.22, .8, .2, 1);
-}
-
-.main-layout {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    padding: 40px 60px;
-    min-height: 100vh;
-    border-radius: 20px;
 }
 
 .dash-header {

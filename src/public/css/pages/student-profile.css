@@ -66,7 +66,7 @@
         .tabs-nav {
             display: flex;
             gap: 10px;
-            background: #131314;
+            background: #151515;
             padding: 8px;
             border-radius: 200000px;
             margin-bottom: 35px;
@@ -114,7 +114,7 @@
         .info-display-item .value { 
             color: white; 
             font-size: 1rem; 
-            font-weight: 500; 
+            font-weight: normal; 
             display: flex; 
             align-items: center; 
             gap: 12px; 
@@ -360,7 +360,7 @@
     border-radius: 9px;
     color: #96969e;
     font-size: .72rem;
-    font-weight: 600;
+    font-weight: normal;
     letter-spacing: .04em;
 }
 
@@ -392,6 +392,7 @@
     color: #85858d;
     font-size: .63rem;
     letter-spacing: .06em;
+    font-weight: normal;
 }
 
 .config-page-student .info-display-item .value {
@@ -413,7 +414,7 @@
     margin: 16px 0 7px !important;
     color: #85858d !important;
     font-size: .66rem !important;
-    font-weight: 600;
+    font-weight: normal;
     letter-spacing: .06em;
 }
 
@@ -435,7 +436,7 @@
     border-color: #217346;
     color: #fff;
     font-size: .72rem;
-    font-weight: 700;
+    font-weight: normal;
 }
 
 .config-page-student .btn-secondary-dash:hover {

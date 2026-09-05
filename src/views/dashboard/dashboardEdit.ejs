@@ -32,7 +32,7 @@
                 <div class="user-profile-group">
                     <div class="user-details">
                         <span class="user-name"><strong><%= user %></strong></span>
-                        <span class="user-role" style="color: #888888;"><strong><%= userCargo %></strong></span>
+                        <span class="user-role" style="color: var(--text-gray);"><strong><%= userCargo %></strong></span>
                     </div>
                 </div>
                 <div class="header-actions">
@@ -72,12 +72,6 @@
                 <button class="btn-secondary-dash" onclick="exportarTabelaParaExcel()" title="Exportar Tabela">
                     <i class="fas fa-file-export"></i> EXPORTAR TABELA
                 </button>
-
-                <% if (userCargo === 'Admin') { %>
-                    <button class="btn-icon btn-erase" onclick="openErasePassModal()" title="Apagar Todos os Dados">
-                        <i class="ph-bold ph-trash" aria-hidden="true"></i>
-                    </button>
-                    <% } %>
             </div>
 
             <div class="search-container">
@@ -102,13 +96,13 @@
                 </a>
 
                 <div class="file-drop-area" onclick="document.getElementById('fileInput').click()" style="padding: 25px; margin: 15px 0;">
-                    <i class="fas fa-cloud-upload-alt" style="font-size: 2rem; color: #555;"></i>
-                    <span class="file-msg" style="font-size: 0.8rem; color: #888;">Clique ou arraste</span>
-                    <span style="color: #666; font-size: 0.7rem;">.xlsx, .xls, .csv</span>
+                    <i class="fas fa-cloud-upload-alt" style="font-size: 2rem; color: var(--text-muted);"></i>
+                    <span class="file-msg" style="font-size: 0.8rem; color: var(--text-gray);">Clique ou arraste</span>
+                    <span style="color: var(--text-muted); font-size: 0.7rem;">.xlsx, .xls, .csv</span>
                     <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" style="display: none;">
                 </div>
                 
-                <div id="fileName" class="file-name" style="font-size: 0.75rem; padding: 6px; text-align: center; color: var(--success-green); background: rgba(33,115,70,0.1); border-radius: 8px; margin-bottom: 10px;"></div>
+                <div id="fileName" class="file-name" style="font-size: 0.75rem; padding: 6px; text-align: center; color: var(--success-green); background: var(--success-green-alpha); border-radius: 8px; margin-bottom: 10px;"></div>
 
                 <div style="margin: 15px 0; text-align: center;">
                     <label style="display: inline-flex; align-items: center; gap: 5px; color: var(--text-white); cursor: pointer; font-size: 0.8rem;">
@@ -121,7 +115,7 @@
                     <i class="fas fa-file-import"></i> IMPORTAR
                 </button>
 
-                <p style="color: #666; font-size: 0.65rem; text-align: center; margin-top: 20px;">
+                <p style="color: var(--text-muted); font-size: 0.65rem; text-align: center; margin-top: 20px;">
                     <i class="fas fa-info-circle" style="color: var(--success-green);"></i>
                     Use o modelo para formato correto
                 </p>
@@ -134,22 +128,22 @@
                     <i class="ph-bold ph-x"></i>
                 </button>
                 
-                <h2 class="section-title-2" style="text-align: center; margin-bottom: 20px; color: #217346;">
+                <h2 class="section-title-2" style="text-align: center; margin-bottom: 20px; color: var(--success-green);">
                     PRÉ-VISUALIZAÇÃO
                 </h2>
                 
                 <div style="text-align: center; margin-bottom: 20px;">
-                    <i class="fas fa-check-circle" style="font-size: 3rem; color: #217346;"></i>
-                    <p style="color: #fff; font-size: 1.1rem; margin: 10px 0;" id="previewCount"></p>
+                    <i class="fas fa-check-circle" style="font-size: 3rem; color: var(--success-green);"></i>
+                    <p style="color: var(--text-white); font-size: 1.1rem; margin: 10px 0;" id="previewCount"></p>
                 </div>
 
-                <div style="background: var(--card-bg); border: 2px solid #217346; border-radius: 12px; padding: 15px; margin-bottom: 20px; max-height: 300px; overflow-y: auto;">
+                <div style="background: var(--card-bg); border: 2px solid var(--success-green); border-radius: 12px; padding: 15px; margin-bottom: 20px; max-height: 300px; overflow-y: auto;">
                     <table style="width: 100%; border-collapse: collapse;">
                         <thead>
-                            <tr style="border-bottom: 1px solid #333;">
-                                <th style="padding: 8px; text-align: left; color: #888;">NOME</th>
-                                <th style="padding: 8px; text-align: left; color: #888;">ANO</th>
-                                <th style="padding: 8px; text-align: left; color: #888;">COMPETÊNCIAS</th>
+                            <tr style="border-bottom: 1px solid var(--border-color);">
+                                <th style="padding: 8px; text-align: left; color: var(--text-gray);">NOME</th>
+                                <th style="padding: 8px; text-align: left; color: var(--text-gray);">ANO</th>
+                                <th style="padding: 8px; text-align: left; color: var(--text-gray);">COMPETÊNCIAS</th>
                             </tr>
                         </thead>
                         <tbody id="previewList"></tbody>
@@ -157,7 +151,7 @@
                 </div>
 
                 <div style="display: flex; gap: 10px; margin-top: 20px;">
-                    <button class="btn-secondary-dash" onclick="confirmarImportacao()" style="flex: 1; justify-content: center; background: #21734610; border-color: #217346; color: var(--text-white);">
+                    <button class="btn-secondary-dash" onclick="confirmarImportacao()" style="flex: 1; justify-content: center; background: var(--success-green-alpha); border-color: var(--success-green); color: var(--text-white);">
                         <i class="fas fa-check"></i> CONFIRMAR
                     </button>
                     <button class="btn-secondary-dash" onclick="closePreviewModal()" style="flex: 1; justify-content: center;">
@@ -186,9 +180,9 @@
                     <button class="btn-secondary-dash" id="aiAnalyzeStudent" type="button"><i class="fas fa-chart-line"></i> ANALISAR</button>
                 </div>
                 <div class="ai-suggestion-list" aria-label="Sugestões de análise">
-                    <button type="button" class="ai-suggestion" data-ai-prompt="Identifique as três prioridades pedagógicas deste aluno e explique o que deve ser feito primeiro."><i class="fas fa-list-check"></i><span>Prioridades</span></button>
-                    <button type="button" class="ai-suggestion" data-ai-prompt="Sugira intervenções práticas e personalizadas para melhorar as competências mais frágeis deste aluno."><i class="fas fa-lightbulb"></i><span>Intervenções</span></button>
-                    <button type="button" class="ai-suggestion" data-ai-prompt="Analise as tarefas e a frequência deste aluno e sugira ações para melhorar o engajamento."><i class="fas fa-arrow-trend-up"></i><span>Engajamento</span></button>
+                    <button type="button" class="ai-suggestion" data-ai-prompt="Elabore um diagnóstico pedagógico em texto corrido sobre este aluno, analisando rendimento geral, competências e pontos de atenção."><i class="fas fa-list-check"></i><span>Diagnóstico</span></button>
+                    <button type="button" class="ai-suggestion" data-ai-prompt="Sugira intervenções pedagógicas personalizadas e estratégias ativas para fortalecer o aprendizado deste aluno."><i class="fas fa-lightbulb"></i><span>Intervenções</span></button>
+                    <button type="button" class="ai-suggestion" data-ai-prompt="Faça uma análise detalhada sobre o engajamento, frequência e tarefas deste aluno, propondo ações práticas."><i class="fas fa-arrow-trend-up"></i><span>Engajamento</span></button>
                 </div>
                 <div id="aiEditorResult" class="ai-result" aria-live="polite">A análise aparecerá aqui.</div>
             </section>
@@ -463,58 +457,32 @@
         </footer>
     </div>
 
-    <div id="eraseAllModal" class="modal-overlay">
-    <div class="modal-content modal-small">
-        <button class="close-btn" onclick="closeEraseModal()"><i class="ph-bold ph-x"></i></button>
-        <div class="modal-icon-warning">
-            <i class="fas fa-exclamation-triangle"></i>
-        </div>
-        <h2 class="modal-title-warning">APAGAR TUDO?</h2>
-        <p class="modal-text-warning">
-            Esta ação irá remover <strong>TODOS</strong> os alunos, notas e competências atribuídas.<br>
-            As competências padrão do sistema serão mantidas.<br>
-            <span style="color: #ff0101;">Esta operação não pode ser desfeita.</span>
-        </p>
-        <div class="modal-actions" style="gap: 10px; display: flex; flex-direction: column; align-items: center;">
-            <form action="/dashboard/erase-all" method="POST">
-                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                <button type="submit" class="btn-secondary-dash" style="justify-content: center; height: 50px; width: 300px;">
-                    <i class="ph-bold ph-trash" aria-hidden="true"></i> SIM, APAGAR TUDO
-                </button>
-            </form>
-            <button onclick="closeEraseModal()" class="btn-secondary-dash" style="justify-content: center; height: 50px; width: 300px;">
-                CANCELAR
-            </button>
-        </div>
-    </div>
-</div>
-
     <div id="errorModal" class="modal-overlay">
-        <div class="modal-content" style="max-width: 450px; border-color: #ff0101;">
+        <div class="modal-content" style="max-width: 450px; border-color: var(--primary-red);">
             <button class="close-btn" onclick="closeErrorModal()">
                 <i class="ph-bold ph-x"></i>
             </button>
             
             <div style="text-align: center;">
-                <div style="font-size: 4rem; color: #ff0101; margin-bottom: 15px;">
+                <div style="font-size: 4rem; color: var(--primary-red); margin-bottom: 15px;">
                     <i class="fas fa-exclamation-triangle"></i>
                 </div>
                 
-                <h2 class="section-title-2" style="color: #ff0101; margin-bottom: 15px;" id="errorTitulo">
+                <h2 class="section-title-2" style="color: var(--primary-red); margin-bottom: 15px;" id="errorTitulo">
                     ERRO
                 </h2>
                 
-                <p style="color: #888; font-size: 1rem; margin-bottom: 10px;" id="errorMensagem">
+                <p style="color: var(--text-gray); font-size: 1rem; margin-bottom: 10px;" id="errorMensagem">
                     Ocorreu um erro
                 </p>
                 
                 <div style="background: var(--bg-secondary); border-radius: 8px; padding: 10px; margin: 15px 0;">
-                    <p style="color: #ff0101; font-size: 0.85rem;" id="errorDetalhe">
+                    <p style="color: var(--primary-red); font-size: 0.85rem;" id="errorDetalhe">
                         
                     </p>
                 </div>
 
-                <button class="btn-action" onclick="closeErrorModal()" style="width: 100%; justify-content: center; border-color: #ff0101; color: #ff0101;">
+                <button class="btn-action" onclick="closeErrorModal()" style="width: 100%; justify-content: center; border-color: var(--primary-red); color: var(--primary-red);">
                     <i class="fas fa-times"></i> FECHAR
                 </button>
             </div>
@@ -522,62 +490,33 @@
     </div>
 
 <div id="loadingModal" class="modal-overlay">
-    <div class="modal-content" style="max-width: 400px; text-align: center; border-color: #217346;">
+    <div class="modal-content" style="max-width: 400px; text-align: center; border-color: var(--success-green);">
         <div style="padding: 30px;">
             <div class="loading-spinner" style="margin: 20px auto;">
-                <i class="fas fa-circle-notch fa-spin" style="font-size: 4rem; color: #217346;"></i>
+                <i class="fas fa-circle-notch fa-spin" style="font-size: 4rem; color: var(--success-green);"></i>
             </div>
-            <h3 style="color: #fff; margin-bottom: 15px;">IMPORTANDO DADOS</h3>
-            <p style="color: #888; margin-bottom: 20px;">Processando alunos e competências...</p>
+            <h3 style="color: var(--text-white); margin-bottom: 15px;">IMPORTANDO DADOS</h3>
+            <p style="color: var(--text-gray); margin-bottom: 20px;">Processando alunos e competências...</p>
             <div style="width: 100%; height: 6px; background: var(--bg-secondary); border-radius: 10px; overflow: hidden;">
-                <div id="loadingBar" style="width: 0%; height: 100%; background: #217346; transition: width 0.3s ease;"></div>
+                <div id="loadingBar" style="width: 0%; height: 100%; background: var(--success-green); transition: width 0.3s ease;"></div>
             </div>
-            <p id="loadingStatus" style="color: #888; font-size: 0.8rem; margin-top: 10px;">0% concluído</p>
+            <p id="loadingStatus" style="color: var(--text-gray); font-size: 0.8rem; margin-top: 10px;">0% concluído</p>
         </div>
     </div>
 </div>
+
 <div id="credenciaisModal" class="modal-overlay" style="display:none;">
     <div class="modal-content modal-lg" style="max-width: 800px;">
         <button class="close-btn" onclick="fecharModalCredenciais()">&times;</button>
-        <h2 style="color: #fff; margin-bottom: 10px; text-align: center; letter-spacing: 1px;">
-            <i class="fas fa-user-check" style="color: #217346;"></i> Alunos Importados com Sucesso!
+        <h2 style="color: var(--text-white); margin-bottom: 10px; text-align: center; letter-spacing: 1px;">
+            <i class="fas fa-user-check" style="color: var(--success-green);"></i> Alunos Importados com Sucesso!
         </h2>
-        <p style="color: #888; text-align: center; margin-bottom: 20px;">
+        <p style="color: var(--text-gray); text-align: center; margin-bottom: 20px;">
             Abaixo estão as credenciais de acesso para cada aluno. Guarde-as com segurança.
         </p>
         <div id="credenciaisLista"></div>
     </div>
 </div>
-<div id="erasePassModal" class="modal-overlay">
-    <div class="modal-content modal-small">
-        <button class="close-btn" onclick="closeErasePassModal()">&times;</button>
-        
-        <div class="modal-icon-warning">
-            <i class="fas fa-shield-alt" style="color:#ff0101;"></i>
-        </div>
-        <h2 class="modal-title-warning">VERIFICAÇÃO DE SEGURANÇA</h2>
-        <p class="modal-text-warning">
-            Para apagar todos os dados, digite a <strong>senha administrativa</strong> de exclusão.
-        </p>
-        
-        <div id="erasePassError" style="display:none; background:rgba(255,1,1,0.1); border:1px solid #ff0101; color:#ff0101; padding:10px; border-radius:8px; margin-bottom:15px; text-align:center; font-size:0.9rem;">
-            <i class="fas fa-exclamation-circle"></i> <span id="erasePassErrorMessage">Senha incorreta</span>
-        </div>
-        <div style="margin: 15px 0;">
-            <input type="password" id="erasePassInput" 
-                   placeholder="Digite a senha de exclusão" 
-                   style="width:100%; padding:15px; background:var(--card-bg); border:2px solid var(--border-color); border-radius:12px; color:var(--text-white); font-size:1rem; text-align:center; ">
-        </div>
-        
-        
-        <div class="modal-actions">
-            <button id="btnVerifyErasePass" class="btn-secondary-dash" onclick="verifyDeletePassword()">
-                <i class="fas fa-check"></i> VERIFICAR
-            </button>
-        </div>
-    </div>
-</div>
-
 
     <script type="application/json" id="dashboard-edit-data"><%- safeJson(alunos) %></script>
 <script src="/js/pages/dashboard/edit.js" defer></script>

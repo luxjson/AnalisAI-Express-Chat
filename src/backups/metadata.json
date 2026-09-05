@@ -1,0 +1,63 @@
+{
+  "lastBackup": "2026-09-05T18:35:20.354Z",
+  "nextBackup": "2026-09-12T18:35:20.354Z",
+  "intervalDays": 7,
+  "backups": [
+    {
+      "filename": "backup-analisai-2026-09-05T18-35-20-354Z.json",
+      "createdAt": "2026-09-05T18:35:20.354Z",
+      "origem": "manual-admin",
+      "sizeBytes": 18653,
+      "tableCount": 16
+    },
+    {
+      "filename": "backup-analisai-2026-09-05T18-31-54-809Z.json",
+      "createdAt": "2026-09-05T18:31:54.809Z",
+      "origem": "manual-admin",
+      "sizeBytes": 18653,
+      "tableCount": 16
+    },
+    {
+      "filename": "backup-analisai-2026-09-05T17-53-18-303Z.json",
+      "createdAt": "2026-09-05T17:53:18.303Z",
+      "origem": "test-verification",
+      "sizeBytes": 18658,
+      "tableCount": 16
+    },
+    {
+      "filename": "backup-analisai-2026-09-05T17-50-06-916Z.json",
+      "createdAt": "2026-09-05T17:50:06.916Z",
+      "origem": "manual-admin",
+      "sizeBytes": 18653,
+      "tableCount": 16
+    },
+    {
+      "filename": "backup-analisai-2026-09-05T17-47-57-082Z.json",
+      "createdAt": "2026-09-05T17:47:57.082Z",
+      "origem": "manual-admin",
+      "sizeBytes": 18653,
+      "tableCount": 16
+    },
+    {
+      "filename": "backup-analisai-2026-09-05T16-28-22-243Z.json",
+      "createdAt": "2026-09-05T16:28:22.243Z",
+      "origem": "manual-admin",
+      "sizeBytes": 18653,
+      "tableCount": 16
+    },
+    {
+      "filename": "backup-analisai-2026-09-05T16-27-41-584Z.json",
+      "createdAt": "2026-09-05T16:27:41.584Z",
+      "origem": "manual-admin",
+      "sizeBytes": 18653,
+      "tableCount": 16
+    },
+    {
+      "filename": "backup-analisai-2026-09-05T15-51-37-086Z.json",
+      "createdAt": "2026-09-05T15:51:37.086Z",
+      "origem": "inicial-7dias",
+      "sizeBytes": 18654,
+      "tableCount": 16
+    }
+  ]
+}

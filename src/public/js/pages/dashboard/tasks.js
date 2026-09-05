@@ -123,20 +123,20 @@ function showEditTaskTab(tabName) {
                                         <span style="color:#fff; font-size:1rem;">${escapeHtml(aluno.nome)}</span>
                                         <span style="color:#888; font-size:0.75rem; margin-left:8px;">${escapeHtml(aluno.ano_escolar)}</span>
                                     </div>
-                                    <span style="color:${statusCor}; font-size:0.8rem; background:#080808; padding:4px 10px; border-radius:15px;">
+                                    <span style="color:${statusCor}; font-size:0.8rem; background:#151515; padding:4px 10px; border-radius:15px;">
                                         ${statusText}
                                     </span>
                                 </div>
                                 
                                 ${aluno.resposta_texto ? `
-                                    <div style="background:#080808; padding:8px; border-radius:6px; margin-top:8px;">
+                                    <div style="background:#151515; padding:8px; border-radius:6px; margin-top:8px;">
                                         <span style="color:#888; font-size:0.7rem;">Resposta:</span>
                                         <p style="color:#ccc; font-size:0.85rem; margin-top:5px;">${escapeHtml(aluno.resposta_texto)}</p>
                                     </div>
                                 ` : ''}
                                 
                                 ${aluno.resposta_arquivo ? `
-                                    <div style="background:#080808; padding:8px; border-radius:6px; margin-top:8px;">
+                                    <div style="background:#151515; padding:8px; border-radius:6px; margin-top:8px;">
                                         <span style="color:#888; font-size:0.7rem;">Arquivo:</span>
                                         <a href="/uploads/${escapeHtml(aluno.resposta_arquivo)}" target="_blank" style="color:#217346; display:block; margin-top:5px; text-decoration:none;">
                                             <i class="fas fa-file"></i> ${aluno.resposta_arquivo.length > 20 ? aluno.resposta_arquivo.substring(0,15)+'...'+aluno.resposta_arquivo.split('.').pop() : aluno.resposta_arquivo}
@@ -210,7 +210,7 @@ function showEditTaskTab(tabName) {
                 }
                 
                 html += `
-                    <div style="background: #080808; border: 2px solid #2e3134; border-radius: 12px; padding: 18px; margin-bottom: 20px;">
+                    <div style="background: #111111; border: 2px solid #2e3134; border-radius: 12px; padding: 18px; margin-bottom: 20px;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                             <div>
                                 <span style="color: #fff; font-size: 1.1rem;">${escapeHtml(aluno.nome)}</span>
@@ -222,7 +222,7 @@ function showEditTaskTab(tabName) {
                         </div>
                         
                         ${aluno.data_entrega_aluno ? `
-                            <div style="background: #1a1a1a; border-radius: 8px; padding: 12px; margin-bottom: 15px;">
+                            <div style="background: #151515; border-radius: 8px; padding: 12px; margin-bottom: 15px;">
                                 <div style="display: flex; align-items: center; gap: 8px;">
                                     <i class="fas fa-clock" style="color: #217346; font-size: 0.9rem;"></i>
                                     <span style="color: #888; font-size: 0.85rem;">
@@ -233,7 +233,7 @@ function showEditTaskTab(tabName) {
                         ` : ''}
                         
                         ${aluno.resposta_texto ? `
-                            <div style="background: #1a1a1a; border-radius: 8px; padding: 15px; margin-bottom: 15px;">
+                            <div style="background: #151515; border-radius: 8px; padding: 15px; margin-bottom: 15px;">
                                 <span style="color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 8px;">
                                     <i class="fas fa-quote-right" style="margin-right: 5px;"></i>RESPOSTA DO ALUNO:
                                 </span>
@@ -244,11 +244,11 @@ function showEditTaskTab(tabName) {
                         ` : ''}
                         
                         ${aluno.resposta_arquivo ? `
-                            <div style="background: #1a1a1a; border-radius: 8px; padding: 12px; margin-bottom: 15px;">
+                            <div style="background: #151515; border-radius: 8px; padding: 12px; margin-bottom: 15px;">
                                 <span style="color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 8px;">
                                     <i class="fas fa-paperclip" style="margin-right: 5px;"></i>ARQUIVO ANEXADO:
                                 </span>
-                                <a href="/uploads/${escapeHtml(aluno.resposta_arquivo)}" target="_blank" style="color: #217346; text-decoration: none; display: flex; align-items: center; gap: 8px; background: #080808; padding: 8px 12px; border-radius: 6px; border: 2px solid #217346;">
+                                <a href="/uploads/${escapeHtml(aluno.resposta_arquivo)}" target="_blank" style="color: #217346; text-decoration: none; display: flex; align-items: center; gap: 8px; background: #151515; padding: 8px 12px; border-radius: 6px; border: 2px solid #217346;">
                                     <i class="fas fa-file-download" style="font-size: 1rem;"></i>
                                     <span style="word-wrap: break-word; font-size: 0.85rem;">${abreviarNomeArquivo(aluno.resposta_arquivo)}</span>
                                 </a>
@@ -266,10 +266,10 @@ function showEditTaskTab(tabName) {
                             </div>
                         ` : ''}
                         
-                        <div id="avaliacao-${aluno.id}" style="display: none; margin-top: 15px; padding: 15px; background: #1a1a1a; border-radius: 8px;">
+                        <div id="avaliacao-${aluno.id}" style="display: none; margin-top: 15px; padding: 15px; background: #151515; border-radius: 8px;">
                             <h4 style="color:#fff; margin-bottom:15px; font-size:1rem;">Avaliar: ${escapeHtml(aluno.nome)}</h4>
-                            <input type="number" id="nota-${aluno.id}" placeholder="Nota (0-10)" min="0" max="10" step="0.1" style="width: 100%; padding: 12px; background: #080808; border: 2px solid #333; border-radius: 6px; color: #fff; font-size: 1rem; margin-bottom: 10px;">
-                            <textarea id="feedback-${aluno.id}" placeholder="Feedback para o aluno..." style="width: 100%; padding: 12px; background: #080808; border: 2px solid #333; border-radius: 6px; color: #fff; font-size: 0.9rem; min-height: 80px; margin-bottom: 10px; resize: vertical;"></textarea>
+                            <input type="number" id="nota-${aluno.id}" placeholder="Nota (0-10)" min="0" max="10" step="0.1" style="width: 100%; padding: 12px; background: #151515; border: 2px solid #333; border-radius: 6px; color: #fff; font-size: 1rem; margin-bottom: 10px;">
+                            <textarea id="feedback-${aluno.id}" placeholder="Feedback para o aluno..." style="width: 100%; padding: 12px; background: #151515; border: 2px solid #333; border-radius: 6px; color: #fff; font-size: 0.9rem; min-height: 80px; margin-bottom: 10px; resize: vertical;"></textarea>
                             <button onclick="salvarAvaliacao(${data.tarefa.id}, ${aluno.id})" style="width: 100%; background: #217346; color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; transition: all 0.3s;">
                                 <i class="fas fa-save"></i> SALVAR AVALIAÇÃO
                             </button>

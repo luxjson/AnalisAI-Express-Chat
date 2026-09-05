@@ -313,15 +313,8 @@ function copiarCredenciais() {
         alert('Credenciais copiadas para a área de transferência!');
     });
 }
-        function openEraseModal() {
-            document.getElementById('eraseAllModal').style.display = 'flex';
-        }
 
-        function closeEraseModal() {
-            document.getElementById('eraseAllModal').style.display = 'none';
-        }
-
-        document.getElementById('competenciasSearchInput').addEventListener('keyup', function() {
+document.getElementById('competenciasSearchInput').addEventListener('keyup', function() {
             const searchTerm = this.value.toLowerCase();
             document.querySelectorAll(".competencia-card").forEach(card => {
                 const studentName = card.getAttribute('data-aluno-nome') || '';
@@ -358,7 +351,7 @@ function openEditModal(id, nome, presenca) {
             const loginInfo = document.getElementById('loginInfo');
             if (loginInfo) {
                 loginInfo.innerHTML = `
-                    <div style="background: #1a1a1a; padding: 15px; border-radius: 12px; border: 1px solid #333; ">
+                    <div style="background: #151515; padding: 15px; border-radius: 12px; border: 1px solid #333; ">
                         <p style="color: #888; font-size: 0.7rem; text-transform: uppercase; margin-bottom: 12px;">Credenciais do Aluno</p>
                         <p style="color: #fff; margin-bottom: 10px; font-size: 0.9rem;">
                             <i class="fas fa-envelope" style="color: var(--primary-red); width: 20px;"></i>
@@ -701,95 +694,3 @@ function showEditTab(tabName) {
             saveAs(new Blob([buffer]), `Relatorio_Completo_AnalisAI.xlsx`);
             openExportModal();
         }
-// ==================== MODAL DE VERIFICAÇÃO DE SENHA ====================
-
-function openErasePassModal() {
-    // Limpa campos e erros anteriores
-    document.getElementById('erasePassInput').value = '';
-    document.getElementById('erasePassError').style.display = 'none';
-    document.getElementById('erasePassModal').style.display = 'flex';
-    // Foca no input
-    setTimeout(() => document.getElementById('erasePassInput').focus(), 100);
-}
-
-function closeErasePassModal() {
-    document.getElementById('erasePassModal').style.display = 'none';
-}
-
-function verifyDeletePassword() {
-    const input = document.getElementById('erasePassInput');
-    const password = input.value.trim();
-    const errorDiv = document.getElementById('erasePassError');
-    const errorMsg = document.getElementById('erasePassErrorMessage');
-    const btn = document.getElementById('btnVerifyErasePass');
-    
-    if (!password) {
-        errorMsg.textContent = 'Digite a senha de exclusão.';
-        errorDiv.style.display = 'block';
-        input.focus();
-        return;
-    }
-    
-    // Desabilita o botão para evitar múltiplos envios
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> VERIFICANDO...';
-    
-    // Obtém o token CSRF do meta tag
-    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
-    
-    fetch('/dashboard/verify-delete-password', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-Token': csrfToken
-        },
-        body: JSON.stringify({ password: password })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.valid) {
-            // Senha correta: fecha o modal de verificação e abre o de confirmação
-            closeErasePassModal();
-            // Pequeno delay para suavizar a transição
-            setTimeout(() => {
-                openEraseModal(); // Abre o modal de confirmação final
-            }, 200);
-        } else {
-            // Senha incorreta
-            errorMsg.textContent = data.message || 'Senha administrativa incorreta.';
-            errorDiv.style.display = 'block';
-            input.value = '';
-            input.focus();
-        }
-    })
-    .catch(error => {
-        console.error('Erro ao verificar senha:', error);
-        errorMsg.textContent = 'Erro ao conectar ao servidor. Tente novamente.';
-        errorDiv.style.display = 'block';
-    })
-    .finally(() => {
-        // Reabilita o botão
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-check"></i> VERIFICAR';
-    });
-}
-
-// ==================== MODAL DE CONFIRMAÇÃO FINAL ====================
-
-function openEraseModal() {
-    // Limpa o campo do modal de senha (caso tenha ficado algo)
-    document.getElementById('erasePassInput').value = '';
-    document.getElementById('erasePassError').style.display = 'none';
-    document.getElementById('eraseAllModal').style.display = 'flex';
-}
-
-function closeEraseModal() {
-    document.getElementById('eraseAllModal').style.display = 'none';
-}
-
-// Função para confirmar a exclusão (já existente, mas vamos garantir)
-function confirmEraseAll() {
-    if (confirm('⚠️ ATENÇÃO: Esta ação é irreversível! Apagar todos os dados?')) {
-        document.getElementById('eraseAllForm').submit();
-    }
-}

@@ -318,12 +318,6 @@
                 <a href="#" onclick="event.preventDefault(); history.back()" class="btn">
                     Voltar <i class="fas fa-arrow-left arrow"></i>
                 </a>
-
-                <% if (isAdmin) { %>
-                    <a href="#" onclick="event.preventDefault(); openEraseModal()" class="btn">
-                        Limpar base de dados <i class="fas fa-database arrow"></i>
-                    </a>
-                <% } %>
             </div>
         </div>
 
@@ -335,42 +329,5 @@
 
         <footer class="credits">© 2026 AnalisAI</footer>
     </div>
-
-    <% if (isAdmin) { %>
-    <div id="eraseAllModal" class="modal-overlay">
-        <div class="modal-content">
-            <button class="close-btn" onclick="closeEraseModal()"><i class="ph-bold ph-x"></i></button>
-            <div class="modal-icon-warning">
-                <i class="fas fa-exclamation-triangle"></i>
-            </div>
-            <h2 class="modal-title-warning">APAGAR TUDO?</h2>
-            <p class="modal-text-warning">
-                Esta ação irá remover <strong>TODOS</strong> os alunos, notas e competências atribuídas.<br>
-                As competências padrão do sistema serão mantidas.<br>
-                <span style="color: var(--accent);">Esta operação não pode ser desfeita.</span>
-            </p>
-            <div class="modal-actions">
-                <form action="/dashboard/erase-all" method="POST">
-                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                    <button type="submit" class="btn-secondary-dash">
-                        SIM, APAGAR TUDO
-                    </button>
-                </form>
-                <button onclick="closeEraseModal()" class="btn-secondary-dash">
-                    CANCELAR
-                </button>
-            </div>
-        </div>
-    </div>
-    <% } %>
-
-    <script>
-        function openEraseModal() {
-            document.getElementById('eraseAllModal').classList.add('active');
-        }
-        function closeEraseModal() {
-            document.getElementById('eraseAllModal').classList.remove('active');
-        }
-    </script>
 </body>
 </html>

@@ -4,10 +4,6 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        body.dash-body {
-            background-color: #18181b;
-        }
-
         .home-content-wrapper {
             max-width: 1200px;
             margin: 0 auto;
@@ -16,17 +12,17 @@
 
         .card-elite {
             background: var(--card-bg);
-            border: 2px solid #2e3134;
-            border-radius: 28px;
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
             padding: 40px;
             position: relative;
             overflow: hidden;
-            transition: 0.3s ease;
+            transition: var(--transition-smooth);
         }
 
         .card-elite:hover {
-            border-color: #444;
-            transform: translateY(-5px);
+            border-color: var(--text-muted);
+            transform: translateY(-3px);
         }
         .card-line {
             position: absolute;
@@ -34,28 +30,29 @@
             left: 50%;
             transform: translateX(-50%);
             width: 60px;
-            height: 4px;
-            background: #ff0101;
+            height: 3px;
+            background: var(--primary-red);
             border-radius: 0 0 10px 10px;
         }
 
         .icon-accent {
             font-size: 2rem;
-            color: #ff0101;
+            color: var(--primary-red);
             margin-bottom: 20px;
             display: block;
         }
 
         details {
             background: var(--card-bg);
-            border: 2px solid #2e3134;
-            border-radius: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
             padding: 20px 30px;
             margin-bottom: 15px;
             cursor: pointer;
+            transition: var(--transition-smooth);
         }
-        summary { list-style: none; display: flex; justify-content: space-between; color: #fff; font-size: 0.95rem; }
-        summary::after { content: '+'; color: #ff0101; }
+        summary { list-style: none; display: flex; justify-content: space-between; color: var(--text-white); font-size: 0.95rem; }
+        summary::after { content: '+'; color: var(--primary-red); }
 
 @media screen and (max-width: 768px) {
     .main-layout {

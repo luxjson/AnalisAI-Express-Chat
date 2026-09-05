@@ -271,13 +271,14 @@ exports.tarefas = async (req, res) => {
         const statsResult = await db.query(`
             SELECT 
                 COUNT(*) as total,
-                COUNT(CASE WHEN status = 'PENDENTE' AND data_entrega >= CURRENT_DATE THEN 1 END) as pendentes,
-                COUNT(CASE WHEN status = 'ENTREGUE' THEN 1 END) as aguardando,
-                COUNT(CASE WHEN status = 'CONCLUIDA' THEN 1 END) as concluidas,
-                COUNT(CASE WHEN status = 'DEVOLVIDA' THEN 1 END) as devolvidas,
-                COUNT(CASE WHEN status = 'ATRASADA' OR (status = 'PENDENTE' AND data_entrega < CURRENT_DATE) THEN 1 END) as atrasadas
-            FROM tarefas_alunos
-            WHERE aluno_id = $1
+                COUNT(CASE WHEN ta.status = 'PENDENTE' AND (t.data_entrega IS NULL OR t.data_entrega >= CURRENT_DATE) THEN 1 END) as pendentes,
+                COUNT(CASE WHEN ta.status = 'ENTREGUE' THEN 1 END) as aguardando,
+                COUNT(CASE WHEN ta.status = 'CONCLUIDA' THEN 1 END) as concluidas,
+                COUNT(CASE WHEN ta.status = 'DEVOLVIDA' THEN 1 END) as devolvidas,
+                COUNT(CASE WHEN ta.status = 'ATRASADA' OR (ta.status = 'PENDENTE' AND t.data_entrega < CURRENT_DATE) THEN 1 END) as atrasadas
+            FROM tarefas_alunos ta
+            JOIN tarefas t ON ta.tarefa_id = t.id
+            WHERE ta.aluno_id = $1
         `, [alunoId]);
         res.render('aluno/alunoTarefas', {
             aluno: req.session.aluno,

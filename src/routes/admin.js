@@ -11,5 +11,10 @@ router.get('/dashboard/solicitacoes-senha', checkAuth, checkAdmin, adminControll
 router.post('/dashboard/solicitacoes-senha/aprovar/:id', checkAuth, checkAdmin, adminController.aprovarSolicitacaoSenha);
 router.post('/dashboard/solicitacoes-senha/rejeitar/:id', checkAuth, checkAdmin, adminController.rejeitarSolicitacaoSenha);
 router.post('/dashboard/verify-delete-password', checkAuth, checkAdmin, adminController.verifyDeletePassword);
+router.post('/dashboard/checkup/run', checkAuth, checkAdmin, adminController.runCheckup);
+router.post('/dashboard/checkup/repair', checkAuth, checkAdmin, adminController.executeRepair);
+router.get('/dashboard/checkup/backup-status', checkAuth, checkAdmin, adminController.getBackupInfo);
+router.post('/dashboard/checkup/backup-now', checkAuth, checkAdmin, adminController.triggerBackup);
+router.get('/dashboard/checkup/download/:filename', checkAuth, checkAdmin, adminController.downloadBackupFile);
 
 module.exports = router;

@@ -59,32 +59,169 @@
     }
 
     function renderAssistantText(value) {
-        let html = escapeHtml(String(value).replace(/\r/g, ''));
+        if (!value) return '';
+        let text = String(value).replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+
+        // 1. Math formulas
         const mathBlocks = [];
-        html = html.replace(/\$\$([\s\S]+?)\$\$|\\\[([\s\S]+?)\\\]|\\\(([\s\S]+?)\\\)|(?<!\$)\$([^$\n]+)\$(?!\$)/g, (_, block, bracket, inline, dollar) => {
+        text = text.replace(/\$\$([\s\S]+?)\$\$|\\\[([\s\S]+?)\\\]|\\\(([\s\S]+?)\\\)|(?<!\$)\$([^$\n]+)\$(?!\$)/g, (_, block, bracket, inline, dollar) => {
             const token = `@@AI_MATH_${mathBlocks.length}@@`;
             mathBlocks.push(renderMath(block || bracket || inline || dollar));
             return token;
         });
-        html = html
-            .replace(/^### (.+)$/gm, '<h4>$1</h4>')
-            .replace(/^## (.+)$/gm, '<h3>$1</h3>')
-            .replace(/^# (.+)$/gm, '<h3>$1</h3>')
-            .replace(/^---+$/gm, '<hr>')
-            .replace(/^\* (.+)$/gm, '<li>$1</li>')
-            .replace(/^- (.+)$/gm, '<li>$1</li>')
-            .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-            .replace(/__(.+?)__/g, '<strong>$1</strong>')
-            .replace(/`([^`]+)`/g, '<code>$1</code>')
-            .replace(/\n{2,}/g, '</p><p>')
-            .replace(/\n/g, '<br>');
-        html = html.replace(/(<li>.*?<\/li>)(?:<br>|\s)*(?=<li>)/g, '$1');
-        html = html.replace(/((?:<li>.*?<\/li>)+)/g, '<ul>$1</ul>');
-        mathBlocks.forEach((formula, index) => {
-            html = html.replace(`@@AI_MATH_${index}@@`, formula);
+
+        // 2. Code blocks
+        const codeBlocks = [];
+        text = text.replace(/```([a-z0-9_-]*)\n([\s\S]*?)```/gi, (_, lang, code) => {
+            const token = `@@AI_CODE_${codeBlocks.length}@@`;
+            codeBlocks.push(`<pre><code class="language-${escapeHtml(lang || 'text')}">${escapeHtml(code.trim())}</code></pre>`);
+            return token;
         });
-        return `<p>${html}</p>`;
+
+        // 3. Inline code
+        const inlineCodes = [];
+        text = text.replace(/`([^`\n]+)`/g, (_, code) => {
+            const token = `@@AI_INLINE_${inlineCodes.length}@@`;
+            inlineCodes.push(`<code>${escapeHtml(code)}</code>`);
+            return token;
+        });
+
+        // Escape HTML for security
+        text = escapeHtml(text);
+
+        // Format inline markdown (bold, italic, bold+italic)
+        function formatInline(str) {
+            return str
+                // Bold + Italic: ***text*** or ___text___
+                .replace(/\*\*\*([^\*\n]+?)\*\*\*/g, '<strong><em>$1</em></strong>')
+                .replace(/___([^_\n]+?)___/g, '<strong><em>$1</em></strong>')
+                // Bold: **text** or __text__
+                .replace(/\*\*([^\*\n]+?)\*\*/g, '<strong>$1</strong>')
+                .replace(/__([^_\n]+?)__/g, '<strong>$1</strong>')
+                // Italic: *text* (avoiding lone asterisks)
+                .replace(/\*([^\*\n\s](?:[^\*\n]*?[^\*\n\s])?)\*/g, '<em>$1</em>')
+                .replace(/(^|[\s\(\[\{])_([^_\n\s](?:[^_\n]*?[^_\n\s])?)_([\s\)\]\}]|$)/g, '$1<em>$2</em>$3');
+        }
+
+        const lines = text.split('\n');
+        const out = [];
+        let currentList = null; // 'ul' | 'ol'
+        let currentParagraph = [];
+
+        function flushParagraph() {
+            if (currentParagraph.length > 0) {
+                out.push(`<p>${currentParagraph.map(formatInline).join('<br>')}</p>`);
+                currentParagraph = [];
+            }
+        }
+
+        function flushList() {
+            if (currentList) {
+                out.push(`</${currentList}>`);
+                currentList = null;
+            }
+        }
+
+        for (let i = 0; i < lines.length; i++) {
+            let line = lines[i];
+            let trimmed = line.trim();
+
+            if (!trimmed) {
+                flushParagraph();
+                flushList();
+                continue;
+            }
+
+            // Standalone horizontal rules: ---, ***, ___
+            if (/^([*_-][ \t]*){3,}$/.test(trimmed)) {
+                flushParagraph();
+                flushList();
+                out.push('<hr>');
+                continue;
+            }
+
+            // Decorative leading dividers before text: *** --- Texto
+            const decoMatch = trimmed.match(/^((?:[*_-]{3,}[ \t]*)+)(.+)$/);
+            if (decoMatch) {
+                flushParagraph();
+                flushList();
+                out.push('<hr>');
+                trimmed = decoMatch[2].trim();
+                line = trimmed;
+            }
+
+            // Headings: #, ##, ###, ####, #####
+            const headingMatch = line.match(/^(#{1,6})\s+(.+)$/);
+            if (headingMatch) {
+                flushParagraph();
+                flushList();
+                const level = Math.min(Math.max(headingMatch[1].length, 2), 5);
+                out.push(`<h${level}>${formatInline(headingMatch[2])}</h${level}>`);
+                continue;
+            }
+
+            // Unordered list items: * or - (with optional indentation)
+            const ulMatch = line.match(/^(\s*)([*+-])\s+(.+)$/);
+            if (ulMatch) {
+                flushParagraph();
+                const indent = ulMatch[1].length;
+                const content = formatInline(ulMatch[3]);
+                if (currentList !== 'ul') {
+                    flushList();
+                    out.push('<ul>');
+                    currentList = 'ul';
+                }
+                if (indent >= 2) {
+                    out.push(`  <li class="ai-nested-li">${content}</li>`);
+                } else {
+                    out.push(`  <li>${content}</li>`);
+                }
+                continue;
+            }
+
+            // Ordered list items: 1. 2. etc
+            const olMatch = line.match(/^(\s*)(\d+)\.\s+(.+)$/);
+            if (olMatch) {
+                flushParagraph();
+                const content = formatInline(olMatch[3]);
+                if (currentList !== 'ol') {
+                    flushList();
+                    out.push('<ol>');
+                    currentList = 'ol';
+                }
+                out.push(`  <li value="${olMatch[2]}">${content}</li>`);
+                continue;
+            }
+
+            // Regular paragraph line
+            flushList();
+            currentParagraph.push(trimmed);
+        }
+
+        flushParagraph();
+        flushList();
+
+        let result = out.join('\n');
+
+        // Restore math formulas
+        mathBlocks.forEach((formula, index) => {
+            result = result.replace(`@@AI_MATH_${index}@@`, formula);
+        });
+
+        // Restore inline codes
+        inlineCodes.forEach((code, index) => {
+            result = result.replace(`@@AI_INLINE_${index}@@`, code);
+        });
+
+        // Restore code blocks
+        codeBlocks.forEach((code, index) => {
+            result = result.replace(`@@AI_CODE_${index}@@`, code);
+        });
+
+        return result;
     }
+
+    window.renderAssistantMarkdown = renderAssistantText;
 
     function addMessage(text, type) {
         chat.classList.add('has-messages');

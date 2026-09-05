@@ -1,7 +1,10 @@
 const db = require('../db');
 const { criarNotificacao } = require('../utils/notificacao');
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 const { text, email, password, integerId, ALLOWED_CARGOS, ALLOWED_STATUS } = require('../utils/validation');
+const checkupService = require('../services/checkupService');
+const backupService = require('../services/backupService');
 
 exports.listarUsuarios = async (req, res) => {
     try {
@@ -289,13 +292,14 @@ exports.verifyDeletePassword = async (req, res) => {
                 message: 'Erro de configuração do servidor.' 
             });
         }
-        const crypto = require('crypto');
-        const isMatch = crypto.timingSafeEqual(
-            Buffer.from(password),
-            Buffer.from(expectedPassword)
-        );
+
+        // Comparação segura contra ataques de timing usando digest sha256 de tamanho fixo
+        const hashProvided = crypto.createHash('sha256').update(password).digest();
+        const hashExpected = crypto.createHash('sha256').update(expectedPassword).digest();
+        const isMatch = crypto.timingSafeEqual(hashProvided, hashExpected);
 
         if (isMatch) {
+            req.session.adminCheckupUnlocked = true;
             return res.json({ valid: true });
         } else {
             return res.status(401).json({ 
@@ -304,10 +308,100 @@ exports.verifyDeletePassword = async (req, res) => {
             });
         }
     } catch (err) {
-        console.error('Erro ao verificar senha:', err);
+        console.error('Erro ao verificar senha administrativa:', err);
         return res.status(500).json({ 
             valid: false, 
             message: 'Erro interno ao verificar senha.' 
         });
+    }
+};
+
+/**
+ * Executa o diagnóstico completo do banco de dados
+ */
+exports.runCheckup = async (req, res) => {
+    try {
+        if (!req.session.adminCheckupUnlocked) {
+            return res.status(403).json({ error: 'Acesso bloqueado. Confirme a senha administrativa primeiro.' });
+        }
+        const diagnostic = await checkupService.runSystemCheckup();
+        const backupStatus = backupService.getBackupStatus();
+        res.json({
+            ...diagnostic,
+            backupStatus
+        });
+    } catch (err) {
+        console.error('Erro ao executar diagnóstico do sistema:', err);
+        res.status(500).json({ error: 'Falha ao executar o diagnóstico das tabelas.' });
+    }
+};
+
+/**
+ * Executa o reparo e isolamento de inconsistências no banco de dados
+ */
+exports.executeRepair = async (req, res) => {
+    try {
+        if (!req.session.adminCheckupUnlocked) {
+            return res.status(403).json({ error: 'Acesso bloqueado. Confirme a senha administrativa primeiro.' });
+        }
+        const targetTable = req.body.table || 'all';
+        const result = await checkupService.repairSystem(targetTable);
+        res.json(result);
+    } catch (err) {
+        console.error('Erro ao executar reparo no banco de dados:', err);
+        res.status(500).json({ error: 'Falha ao executar o procedimento de correção.' });
+    }
+};
+
+/**
+ * Retorna as informações do status do backup de 7 dias
+ */
+exports.getBackupInfo = async (req, res) => {
+    try {
+        if (!req.session.adminCheckupUnlocked) {
+            return res.status(403).json({ error: 'Acesso não autorizado.' });
+        }
+        const info = backupService.getBackupStatus();
+        res.json(info);
+    } catch (err) {
+        console.error('Erro ao consultar backup:', err);
+        res.status(500).json({ error: 'Erro ao consultar status de backup.' });
+    }
+};
+
+/**
+ * Dispara um backup manual do banco de dados imediatamente
+ */
+exports.triggerBackup = async (req, res) => {
+    try {
+        if (!req.session.adminCheckupUnlocked) {
+            return res.status(403).json({ error: 'Acesso não autorizado.' });
+        }
+        const backup = await backupService.createBackup('manual-admin');
+        const status = backupService.getBackupStatus();
+        res.json({ success: true, backup, status });
+    } catch (err) {
+        console.error('Erro ao gerar backup sob demanda:', err);
+        res.status(500).json({ error: 'Falha ao gerar o arquivo de backup.' });
+    }
+};
+
+/**
+ * Download seguro do snapshot de backup para o administrador
+ */
+exports.downloadBackupFile = async (req, res) => {
+    try {
+        if (!req.session.adminCheckupUnlocked) {
+            return res.status(403).send('Acesso negado.');
+        }
+        const filename = req.params.filename;
+        const filePath = backupService.getBackupFilePath(filename);
+        if (!filePath) {
+            return res.status(404).send('Arquivo de backup não encontrado.');
+        }
+        res.download(filePath, filename);
+    } catch (err) {
+        console.error('Erro no download do backup:', err);
+        res.status(500).send('Erro ao baixar snapshot.');
     }
 };

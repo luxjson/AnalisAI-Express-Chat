@@ -6,7 +6,7 @@
         }
         
         .solicitacao-card {
-            background: #18181b;
+            background: #111111;
             border: 2px solid #2e3134;
             border-radius: 15px;
             padding: 20px;
@@ -73,7 +73,7 @@
         .empty-state {
             text-align: center;
             padding: 60px 20px;
-            background: #18181b;
+            background: #111111;
             border: 2px solid #2e3134;
             border-radius: 20px;
         }

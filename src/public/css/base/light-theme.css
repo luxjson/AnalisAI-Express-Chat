@@ -5,18 +5,23 @@
  */
 :root, html[data-theme="dark"] {
   color-scheme: dark;
-  --ui-bg: #18181b;
-  --ui-surface: #181819;
+  --ui-bg: #111111;
+  --ui-surface: #151515;
+  --ui-surface-nav: #151516;
   --ui-surface-2: #1f1f20;
-  --ui-surface-3: #252527;
-  --ui-hover: #2b2b2d;
+  --ui-surface-3: #242426;
+  --ui-hover: #29292b;
+  --ui-active: #3a3a3c;
   --ui-border: #303033;
-  --ui-border-soft: #29292b;
-  --ui-text: #f2f2f2;
-  --ui-text-secondary: #b0b0b4;
+  --ui-border-soft: #2b2b2e;
+  --ui-border-strong: #3a3a3d;
+  --ui-text: #f4f4f5;
+  --ui-text-secondary: #b9b9bd;
   --ui-text-muted: #7f7f85;
   --ui-danger: #ff4d4d;
-  --ui-accent: #d9d9dc;
+  --ui-accent: #e7e7e8;
+  --ui-white: #ffffff;
+  --ui-black: #171718;
 }
 
 html, body { background: var(--ui-bg); color: var(--ui-text); }
@@ -28,33 +33,35 @@ body.dash-body, .dash-body { background: var(--ui-bg) !important; color: var(--u
 /* Claude-inspired settings modal: same information architecture, original AnalisAI styling. */
 .settings-modal { background: rgba(0,0,0,.70) !important; backdrop-filter: blur(10px) !important; }
 .settings-modal-card {
-  width: min(980px, calc(100vw - 48px)) !important;
-  min-height: min(720px, 88vh) !important;
-  max-height: 88vh !important;
-  grid-template-columns: 180px minmax(0,1fr) !important;
-  border: 1px solid #303033 !important;
+  width: min(960px, calc(100vw - 48px)) !important;
+  height: 660px !important;
+  max-height: 90vh !important;
+  min-height: min(660px, 90vh) !important;
+  grid-template-columns: 190px minmax(0,1fr) !important;
+  border: 1px solid var(--ui-border) !important;
   border-radius: 13px !important;
-  background: #1b1b1c !important;
+  background: var(--ui-surface) !important;
   box-shadow: 0 24px 70px rgba(0,0,0,.48) !important;
+  overflow: hidden !important;
 }
-.settings-modal-nav { background: #151516 !important; border-right: 1px solid #2d2d30 !important; padding: 12px 10px !important; }
-.settings-search { background:#202021 !important; border:1px solid #353538 !important; border-radius:7px !important; min-height:32px; }
-.settings-nav-item { border-radius:7px !important; padding:8px 9px !important; color:#b9b9bd !important; }
-.settings-nav-item:hover { background:#29292b !important; color:#f1f1f1 !important; }
-.settings-nav-item.active { background:#3a3a3c !important; color:#fff !important; }
-.settings-nav-label { color:#77777d !important; }
-.settings-modal-content { padding: 48px 52px 44px !important; background:#1b1b1c !important; }
-.settings-modal-content h2 { font-size: 1rem !important; font-weight:500 !important; color:#f4f4f5 !important; margin-bottom:24px !important; }
-.settings-modal-content h3 { color:#eee !important; font-weight:500 !important; }
-.settings-help { color:#929297 !important; font-size:.86rem !important; max-width:680px !important; }
-.settings-field, .settings-avatar-row { border-bottom:1px solid #2b2b2e !important; min-height:52px !important; }
-.settings-field label, .settings-avatar-row strong { color:#e8e8ea !important; font-size:.82rem !important; }
-.settings-field > span { color:#a5a5aa !important; }
-.settings-password-form input { background:#242426 !important; border:1px solid #3a3a3d !important; border-radius:7px !important; color:#f4f4f5 !important; }
-.settings-action, .settings-save { background:#303033 !important; border:1px solid #414145 !important; border-radius:7px !important; color:#f4f4f5 !important; }
-.settings-action:hover, .settings-save:hover { background:#3b3b3e !important; }
-.settings-modal-close { color:#a7a7ab !important; }
-.settings-modal-close:hover { color:#fff !important; }
+.settings-modal-nav { background: var(--ui-surface-nav) !important; border-right: 1px solid var(--ui-border-soft) !important; padding: 12px 10px !important; overflow-y: auto !important; height: 100% !important; }
+.settings-search { background: var(--ui-surface-2) !important; border: 1px solid var(--ui-border-strong) !important; border-radius: 7px !important; min-height: 32px; }
+.settings-nav-item { border-radius: 7px !important; padding: 8px 9px !important; color: var(--ui-text-secondary) !important; }
+.settings-nav-item:hover { background: var(--ui-hover) !important; color: var(--ui-text) !important; }
+.settings-nav-item.active { background: var(--ui-active) !important; color: var(--ui-white) !important; }
+.settings-nav-label { color: var(--ui-text-muted) !important; }
+.settings-modal-content { padding: 40px 48px 36px !important; background: var(--ui-surface) !important; overflow-y: auto !important; overflow-x: hidden !important; height: 100% !important; }
+.settings-modal-content h2 { font-size: 1rem !important; font-weight: normal !important; color: var(--ui-text) !important; margin-bottom: 24px !important; }
+.settings-modal-content h3 { color: var(--ui-text) !important; font-weight: normal !important; }
+.settings-help { color: var(--ui-text-muted) !important; font-size: .86rem !important; max-width: 680px !important; }
+.settings-field, .settings-avatar-row { border-bottom: 1px solid var(--ui-border-soft) !important; min-height: 52px !important; }
+.settings-field label, .settings-avatar-row strong { color: var(--ui-text) !important; font-size: .82rem !important; font-weight: normal !important; }
+.settings-field > span { color: var(--ui-text-secondary) !important; }
+.settings-password-form input { background: var(--ui-surface-3) !important; border: 1px solid var(--ui-border-strong) !important; border-radius: 7px !important; color: var(--ui-text) !important; }
+.settings-action, .settings-save { background: var(--ui-border) !important; border: 1px solid var(--ui-border-strong) !important; border-radius: 7px !important; color: var(--ui-text) !important; font-weight: normal !important; }
+.settings-action:hover, .settings-save:hover { background: var(--ui-hover) !important; }
+.settings-modal-close { color: var(--ui-text-secondary) !important; }
+.settings-modal-close:hover { color: var(--ui-white) !important; }
 
 /* Unified application dialogs. No red frame, no oversized pill shape: compact and quiet like Claude. */
 .modal-overlay {
@@ -67,60 +74,60 @@ body.dash-body, .dash-body { background: var(--ui-bg) !important; color: var(--u
   width: min(560px, calc(100vw - 32px)) !important;
   max-width: 560px !important;
   max-height: min(760px, calc(100vh - 48px)) !important;
-  overflow-y:auto !important;
-  background:#1b1b1c !important;
-  color:#f1f1f2 !important;
-  border:1px solid #303033 !important;
-  border-radius:14px !important;
-  padding:28px !important;
-  box-shadow:0 24px 70px rgba(0,0,0,.52) !important;
-  text-align:left !important;
+  overflow-y: auto !important;
+  background: var(--ui-surface) !important;
+  color: var(--ui-text) !important;
+  border: 1px solid var(--ui-border) !important;
+  border-radius: 14px !important;
+  padding: 28px !important;
+  box-shadow: 0 24px 70px rgba(0,0,0,.52) !important;
+  text-align: left !important;
 }
-.modal-overlay .modal-content::before { display:none !important; }
+.modal-overlay .modal-content::before { display: none !important; }
 .modal-overlay .modal-content .close-btn {
-  top:14px !important; right:14px !important; width:30px !important; height:30px !important;
-  border:0 !important; background:transparent !important; color:#8e8e93 !important;
-  border-radius:7px !important;
+  top: 14px !important; right: 14px !important; width: 30px !important; height: 30px !important;
+  border: 0 !important; background: transparent !important; color: var(--ui-text-muted) !important;
+  border-radius: 7px !important;
 }
-.modal-overlay .modal-content .close-btn:hover { background:#2a2a2c !important; color:#f3f3f4 !important; transform:none !important; }
+.modal-overlay .modal-content .close-btn:hover { background: var(--ui-hover) !important; color: var(--ui-text) !important; transform: none !important; }
 .modal-overlay .section-title-2,
 .modal-overlay .modal-title-success,
 .modal-overlay .modal-title-warning {
-  color:#f3f3f4 !important; font-size:1.05rem !important; font-weight:500 !important;
-  letter-spacing:0 !important; text-transform:none !important;
+  color: var(--ui-text) !important; font-size: 1.05rem !important; font-weight: normal !important;
+  letter-spacing: 0 !important; text-transform: none !important;
 }
-.modal-overlay .modal-text-success, .modal-overlay .modal-text-warning { color:#96969b !important; line-height:1.55 !important; }
+.modal-overlay .modal-text-success, .modal-overlay .modal-text-warning { color: var(--ui-text-muted) !important; line-height: 1.55 !important; }
 
 /* Student creation dialog: intentionally follows the settings popup's spacing and hierarchy. */
-.claude-create-student { padding:30px !important; }
-.claude-modal-heading { padding:2px 0 22px; border-bottom:1px solid #2b2b2e; margin-bottom:4px; }
-.claude-modal-kicker { display:block; margin-bottom:7px; color:#85858b; font-size:.72rem; }
-.claude-modal-heading h2 { margin:0 0 7px !important; color:#f4f4f5 !important; font-size:1.18rem !important; font-weight:500 !important; }
-.claude-modal-heading p { margin:0; color:#919196; font-size:.84rem; line-height:1.5; max-width:470px; }
-.claude-form { display:grid !important; gap:0 !important; }
-.claude-form label { display:block !important; margin:0 !important; padding:16px 0 7px !important; color:#dedee1 !important; font-size:.78rem !important; letter-spacing:0 !important; }
-.claude-form .filter-input { width:100% !important; min-height:42px !important; padding:9px 11px !important; background:#242426 !important; border:1px solid #3a3a3d !important; border-radius:7px !important; color:#f1f1f2 !important; box-shadow:none !important; }
-.claude-form .filter-input:focus { border-color:#68686e !important; box-shadow:0 0 0 2px rgba(255,255,255,.05) !important; }
-.claude-form .filter-input::placeholder { color:#707077 !important; }
-.claude-form select.filter-input { appearance:auto; }
-.claude-form > div[style*="display: flex"] { display:grid !important; grid-template-columns:1fr !important; gap:0 !important; margin-top:0 !important; }
-.claude-modal-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:24px; padding-top:18px; border-top:1px solid #2b2b2e; }
-.claude-btn-primary, .claude-btn-secondary { min-height:38px; padding:8px 15px; border-radius:7px; font:inherit; font-size:.82rem; cursor:pointer; transition:.16s ease; }
-.claude-btn-secondary { background:transparent; border:1px solid #3a3a3d; color:#c1c1c5; }
-.claude-btn-secondary:hover { background:#272729; color:#fff; }
-.claude-btn-primary { background:#e7e7e8; border:1px solid #e7e7e8; color:#171718; font-weight:500; }
-.claude-btn-primary:hover { background:#fff; border-color:#fff; }
+.claude-create-student { padding: 30px !important; }
+.claude-modal-heading { padding: 2px 0 22px; border-bottom: 1px solid var(--ui-border-soft); margin-bottom: 4px; }
+.claude-modal-kicker { display: block; margin-bottom: 7px; color: var(--ui-text-muted); font-size: .72rem; }
+.claude-modal-heading h2 { margin: 0 0 7px !important; color: var(--ui-text) !important; font-size: 1.18rem !important; font-weight: normal !important; }
+.claude-modal-heading p { margin: 0; color: var(--ui-text-muted); font-size: .84rem; line-height: 1.5; max-width: 470px; }
+.claude-form { display: grid !important; gap: 0 !important; }
+.claude-form label { display: block !important; margin: 0 !important; padding: 16px 0 7px !important; color: var(--ui-text-secondary); font-size: .78rem !important; letter-spacing: 0 !important; font-weight: normal !important; }
+.claude-form .filter-input { width: 100% !important; min-height: 42px !important; padding: 9px 11px !important; background: var(--ui-surface-3) !important; border: 1px solid var(--ui-border-strong) !important; border-radius: 7px !important; color: var(--ui-text) !important; box-shadow: none !important; }
+.claude-form .filter-input:focus { border-color: var(--ui-text-secondary) !important; box-shadow: 0 0 0 2px rgba(255,255,255,.05) !important; }
+.claude-form .filter-input::placeholder { color: var(--ui-text-muted) !important; }
+.claude-form select.filter-input { appearance: auto; }
+.claude-form > div[style*="display: flex"] { display: grid !important; grid-template-columns: 1fr !important; gap: 0 !important; margin-top: 0 !important; }
+.claude-modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--ui-border-soft); }
+.claude-btn-primary, .claude-btn-secondary { min-height: 38px; padding: 8px 15px; border-radius: 7px; font: inherit; font-size: .82rem; cursor: pointer; transition: .16s ease; font-weight: normal !important; }
+.claude-btn-secondary { background: transparent; border: 1px solid var(--ui-border-strong); color: var(--ui-text-secondary); }
+.claude-btn-secondary:hover { background: var(--ui-hover); color: var(--ui-white); }
+.claude-btn-primary { background: var(--ui-accent); border: 1px solid var(--ui-accent); color: var(--ui-black); font-weight: normal; }
+.claude-btn-primary:hover { background: var(--ui-white); border-color: var(--ui-white); }
 
 /* Other dialogs inherit the same field language. */
 .modal-overlay input:not([type="hidden"]),
 .modal-overlay select,
-.modal-overlay textarea { background:#242426 !important; color:#f1f1f2 !important; border-color:#3a3a3d !important; border-radius:7px !important; }
-.modal-overlay input:not([type="hidden"]):focus, .modal-overlay select:focus, .modal-overlay textarea:focus { border-color:#68686e !important; }
+.modal-overlay textarea { background: var(--ui-surface-3) !important; color: var(--ui-text) !important; border-color: var(--ui-border-strong) !important; border-radius: 7px !important; }
+.modal-overlay input:not([type="hidden"]):focus, .modal-overlay select:focus, .modal-overlay textarea:focus { border-color: var(--ui-text-secondary) !important; }
 
 @media (max-width:700px) {
-  .settings-modal { padding:10px !important; }
-  .settings-modal-card { width:100% !important; max-height:94vh !important; min-height:0 !important; grid-template-columns:1fr !important; }
-  .settings-modal-nav { display:none !important; }
-  .settings-modal-content { padding:42px 20px 24px !important; }
-  .modal-overlay .modal-content { width:calc(100vw - 24px) !important; padding:22px !important; }
+  .settings-modal { padding: 10px !important; }
+  .settings-modal-card { width: 100% !important; max-height: 94vh !important; min-height: 0 !important; grid-template-columns: 1fr !important; }
+  .settings-modal-nav { display: none !important; }
+  .settings-modal-content { padding: 42px 20px 24px !important; }
+  .modal-overlay .modal-content { width: calc(100vw - 24px) !important; padding: 22px !important; }
 }

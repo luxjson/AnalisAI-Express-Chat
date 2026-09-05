@@ -27,6 +27,9 @@
     "pg": "^8.13.0",
     "serve-favicon": "^2.5.1"
   },
+  "nodemonConfig": {
+    "ignore": ["src/public/*", "src/uploads/*", "src/backups/*"]
+  },
   "engines": {
     "node": ">=20"
   }

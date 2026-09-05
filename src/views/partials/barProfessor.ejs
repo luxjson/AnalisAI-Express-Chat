@@ -80,6 +80,10 @@
                 <button class="settings-nav-item" data-settings-section="account"><i class="ph-bold ph-identification-card"></i> Conta</button>
                 <button class="settings-nav-item" data-settings-section="privacy"><i class="ph-bold ph-shield-check"></i> Privacidade</button>
                 <button class="settings-nav-item" data-settings-section="notifications"><i class="ph-bold ph-bell"></i> Notificações</button>
+                <% if (userCargo === 'Admin') { %>
+                <span class="settings-nav-label">Administração</span>
+                <button class="settings-nav-item" data-settings-section="checkup"><i class="ph-bold ph-heartbeat"></i> Checkup do Sistema</button>
+                <% } %>
              </aside>
             <section class="settings-modal-content">
                 <button type="button" class="settings-modal-close" data-close-settings aria-label="Fechar"><i class="ph-bold ph-x"></i></button>
@@ -95,10 +99,116 @@
                 <div class="settings-section" data-settings-panel="notifications"><h2>Notificações</h2><div class="settings-field"><label>Notificações gerais</label><button class="settings-switch" data-notification="notificacoes_ativas" type="button"></button></div><div class="settings-field"><label>Atividades de alunos</label><button class="settings-switch" data-notification="notificacoes_tarefas" type="button"></button></div><div class="settings-field"><label>Avaliações</label><button class="settings-switch" data-notification="notificacoes_avaliacoes" type="button"></button></div><button class="settings-save" data-save-notifications type="button">Salvar notificações</button><span class="settings-feedback" data-settings-feedback></span></div>
                 <div class="settings-section" data-settings-panel="appearance"><h2>Aparência</h2><div class="settings-field settings-choice"><label>Tema da interface</label><span class="settings-theme-options"><button type="button" data-theme="dark"><i class="ph-bold ph-moon"></i> Escuro</button><button type="button" data-theme="light"><i class="ph-bold ph-sun"></i> Claro</button></span></div></div>
                 <div class="settings-section" data-settings-panel="preferences"><h2>Preferências</h2><div class="settings-field"><label>Reduzir animações</label><button class="settings-switch" data-preference="reduced-motion" type="button"></button></div></div>
+
+                <% if (userCargo === 'Admin') { %>
+                <div class="settings-section" data-settings-panel="checkup">
+                    <!-- FASE 1: DESBLOQUEIO DE SEGURANÇA -->
+                    <div id="checkupAuthContainer" class="checkup-step">
+                        <h2>Checkup do Sistema</h2>
+                        <p class="settings-help">Acesso exclusivo para administradores. Digite a senha administrativa de segurança para desbloquear o diagnóstico do banco de dados.</p>
+                        
+                        <div id="checkupAuthError" class="checkup-alert-error" style="display: none;">
+                            <i class="ph-bold ph-warning-circle"></i>
+                            <span id="checkupAuthErrorMsg">Senha incorreta.</span>
+                        </div>
+
+                        <form id="checkupAuthForm" class="settings-password-form" onsubmit="event.preventDefault(); submitCheckupPassword();">
+                            <label for="checkupPasswordInput">Senha administrativa</label>
+                            <input type="password" id="checkupPasswordInput" placeholder="Digite a senha administrativa" required autocomplete="current-password">
+                            <button class="settings-save" type="submit" id="btnUnlockCheckup">
+                                <i class="ph-bold ph-lock-key-open"></i> Desbloquear Diagnóstico
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- FASE 2: PAINEL DE DIAGNÓSTICO E REPARO -->
+                    <div id="checkupDashboardContainer" class="checkup-step" style="display: none;">
+                        <div class="checkup-header">
+                            <div>
+                                <h2>Integridade do Banco de Dados</h2>
+                                <p class="settings-help">Varredura profunda tabela a tabela em busca de anomalias, órfãos e dados corrompidos.</p>
+                            </div>
+                            <div class="checkup-top-actions">
+                                <button type="button" class="btn-secondary-dash" onclick="refreshCheckup()" id="btnScanAgain" title="Escanear Novamente">
+                                    <i class="ph-bold ph-arrows-clockwise"></i> Escanear Novamente
+                                </button>
+                                <button type="button" class="btn-secondary-dash" onclick="executeSystemRepair('all')" id="btnFixAll" title="Corrigir Todas as Tabelas">
+                                    <i class="ph-bold ph-wrench"></i> Corrigir Todas as Tabelas
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- BANNER DE BACKUP (A CADA 7 DIAS) -->
+                        <div class="checkup-backup-banner">
+                            <div class="backup-banner-info">
+                                <div class="backup-icon">
+                                    <i class="ph-bold ph-database"></i>
+                                </div>
+                                <div class="backup-text">
+                                    <span class="backup-title">Rotina de Backup Ativa (a cada 7 dias)</span>
+                                    <span id="backupBannerDetails">Carregando informações do backup...</span>
+                                </div>
+                            </div>
+                            <div class="backup-banner-actions">
+                                <button type="button" class="btn-secondary-dash" onclick="triggerManualBackup()" id="btnTriggerBackup">
+                                    <i class="ph-bold ph-floppy-disk"></i> Fazer Backup Agora
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- MÉTRICAS DE RESUMO -->
+                        <div class="checkup-overview-grid">
+                            <div class="checkup-metric-card" id="metricTotalTables">
+                                <span class="metric-label">Tabelas Analisadas</span>
+                                <span class="metric-value" id="valTotalTables">16</span>
+                            </div>
+                            <div class="checkup-metric-card metric-success" id="metricHealthy">
+                                <span class="metric-label">Tabelas Íntegras</span>
+                                <span class="metric-value" id="valHealthyTables">-</span>
+                            </div>
+                            <div class="checkup-metric-card metric-warning" id="metricIssues">
+                                <span class="metric-label">Inconsistências</span>
+                                <span class="metric-value" id="valTotalIssues">-</span>
+                            </div>
+                        </div>
+
+                        <!-- LISTAGEM DINÂMICA DAS TABELAS -->
+                        <div class="checkup-tables-list" id="checkupTablesList">
+                            <div class="checkup-loading-state">
+                                <i class="ph-bold ph-circle-notch checkup-spin"></i>
+                                <span>Verificando integridade das tabelas e índices relacionais...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
             </section>
         </div>
     </div>
 </aside>
+
+<% if (userCargo === 'Admin') { %>
+<div id="checkupReportModal" class="checkup-modal-overlay" style="display: none;" onclick="if(event.target === this) closeCheckupReportModal()">
+    <div class="checkup-modal-card" role="dialog" aria-modal="true" aria-labelledby="checkupReportTitle">
+        <button class="checkup-modal-close" type="button" onclick="closeCheckupReportModal()" aria-label="Fechar">
+            <i class="ph-bold ph-x"></i>
+        </button>
+        <div class="checkup-report-header">
+            <div class="checkup-report-icon-wrapper" id="checkupReportIcon">
+                <i class="ph-bold ph-check-circle"></i>
+            </div>
+            <h2 class="checkup-report-title" id="checkupReportTitle">Relatório de Alterações</h2>
+            <p class="checkup-report-subtitle" id="checkupReportSubtitle">O sistema isolou e corrigiu com sucesso os problemas detectados no banco de dados.</p>
+        </div>
+        <div id="checkupReportList" class="checkup-report-container"></div>
+        <div class="checkup-report-footer">
+            <button type="button" class="btn-secondary-dash" onclick="closeCheckupReportModal()">
+                <i class="ph-bold ph-check-circle"></i> CONCLUIR
+            </button>
+        </div>
+    </div>
+</div>
+<% } %>
 
 <div id="infoModal" class="modal-new-overlay">
     <div class="modal-new-card">
