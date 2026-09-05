@@ -35,7 +35,7 @@
         right: 0;
         width: 340px;
         max-height: 420px;
-        background: #17181c;
+        background: #151515;
         border: 1px solid #2e3134;
         border-radius: 12px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
@@ -108,7 +108,7 @@
     }
 
     .notificacoes-lista::-webkit-scrollbar-track {
-        background: #17181c;
+        background: #151515;
     }
 
     .notificacoes-lista::-webkit-scrollbar-thumb {
