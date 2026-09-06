@@ -81,7 +81,7 @@ router.post(
   aiController.updateGrade,
 );
 router.get('/', (req, res) => {
-    res.render('api', {
+    res.render('API/index', {
         title: 'AnalisAI API',
         baseUrl: `${req.protocol}://${req.get('host')}/api`
     });
