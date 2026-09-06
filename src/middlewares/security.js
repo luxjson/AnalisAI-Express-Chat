@@ -195,20 +195,9 @@ function csrfProtection(req, res, next) {
 }
 
 function securityHeaders(req, res, next) {
- res.setHeader(
-    'Content-Security-Policy',
-    "default-src 'self'; " +
-    "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://cdn.sheetjs.com; " +
-    "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com https://unpkg.com; " +
-    "font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com https://unpkg.com; " +
-    "img-src 'self' data: blob:; " +
-    "connect-src 'self'; " +
-    "media-src 'self'; " +
-    "worker-src 'self' blob:; " +
-    "base-uri 'self'; " +
-    "object-src 'none'; " +
-    "frame-ancestors 'none'; " +
-    "form-action 'self';"
+  res.setHeader(
+    "Content-Security-Policy",
+    "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://cdn.sheetjs.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com https://unpkg.com; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com https://unpkg.com; img-src 'self' data: blob:; connect-src 'self'; media-src 'self'; worker-src 'self' blob:",
   );
   res.setHeader("X-Content-Type-Options", "nosniff");
   res.setHeader("X-Frame-Options", "DENY");
