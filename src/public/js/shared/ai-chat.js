@@ -106,7 +106,7 @@
     text = escapeHtml(text);
 
     function formatInline(str) {
-      return StrictMode.replace(
+      return str.replace(
         /\*\*\*([^\*\n]+?)\*\*\*/g,
         "<strong><em>$1</em></strong>",
       )
