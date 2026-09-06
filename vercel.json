@@ -4,11 +4,9 @@
   "functions": {
     "api/index.js": {
       "maxDuration": 60,
-      "includeFiles": ["src/views/**", "src/public/**", "src/uploads/**"]
+      "includeFiles": "src/views/** src/public/** src/uploads/**"
     }
   },
   "crons": [{ "path": "/api/internal/backup", "schedule": "0 3 * * 0" }],
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/api/index" }
-  ]
+  "rewrites": [{ "source": "/(.*)", "destination": "/api/index" }]
 }
