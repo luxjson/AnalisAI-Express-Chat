@@ -1,72 +1,97 @@
 body.dash-body {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            min-height: 100vh;
-        }
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    min-height: 100vh;
+}
 
-        .login-wrapper {
-            width: 100%;
-            max-width: 550px;
-            animation: pageReveal 0.65s cubic-bezier(.22, .8, .2, 1);
-        }
+.login-wrapper {
+    width: 100%;
+    max-width: 550px;
+    animation: pageReveal 0.65s cubic-bezier(.22, .8, .2, 1);
+}
 
-        .login-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 25px;
-            padding: 40px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
-        }
+.login-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 25px;
+    padding: 40px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+}
 
-        .termos-header {
-            text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 20px;
-        }
+.termos-header {
+    text-align: center;
+    margin-bottom: 30px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 20px;
+}
 
-        .termos-header h2 {
-            font-size: 1.2rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: white;
-            margin-top: 15px;
-        }
+.termos-header h2 {
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: white;
+    margin-top: 15px;
+}
 
-        .termos-scroller {
-            max-height: 400px;
-            overflow-y: auto;
-            padding-right: 15px;
-            margin-bottom: 30px;
-            text-align: justify;
-        }
+.termos-scroller {
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 15px;
+    margin-bottom: 30px;
+    text-align: justify;
+}
 
-        .termos-scroller p {
-            color: var(--text-gray);
-            font-size: 0.9rem;
-            line-height: 1.6;
-            margin-bottom: 20px;
-        }
+.termos-scroller p {
+    color: var(--text-gray);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
 
-        .termos-scroller strong {
-            color: #fff;
-            font-weight: normal;
-        }
+.termos-scroller strong {
+    color: #fff;
+    font-weight: normal;
+}
 
-        .termos-scroller::-webkit-scrollbar {
-            width: 5px;
-        }
-        .termos-scroller::-webkit-scrollbar-track {
-            background: rgba(255,255,255,0.02);
-        }
-        .termos-scroller::-webkit-scrollbar-thumb {
-            background: var(--border-color);
-            border-radius: 10px;
-        }
+.termos-scroller::-webkit-scrollbar {
+    width: 5px;
+}
 
-        .button-area {
-            display: flex;
-            justify-content: center;
-        }
+.termos-scroller::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.termos-scroller::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 10px;
+}
+
+.button-area {
+    display: flex;
+    justify-content: center;
+}
+
+@media screen and (max-width: 768px) {
+    body.dash-body {
+        padding: 12px;
+    }
+
+    .login-wrapper,
+    .login-card {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+    }
+
+    .login-card {
+        padding: 28px 16px;
+    }
+
+    .termos-scroller {
+        max-width: 100%;
+        width: 100%;
+        overflow-x: hidden;
+    }
+}

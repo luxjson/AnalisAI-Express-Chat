@@ -17,7 +17,7 @@
             <div class="icon-box"><i class="fas fa-home"></i></div>
             <span class="link-text">Início</span>
             <div class="active-indicator"></div>
-        </a>
+        </button></form>
 
         <a href="/aluno/competencias" data-sidebar-id="competencies" class="side-link">
             <div class="icon-box"><i class="ph-bold ph-medal" aria-hidden="true"></i></div>
@@ -51,10 +51,10 @@
             <div class="active-indicator"></div>
         </a>
         
-        <a href="/logout" class="side-link exit-link">
+        <form action="/logout" method="POST" class="logout-form"><input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>"><button type="submit" class="side-link exit-link">
             <div class="icon-box"><i class="fas fa-sign-out-alt"></i></div>
             <span class="link-text">Sair</span>
-        </a>
+        </button></form>
     </div>
 
     <div id="settingsModal" class="settings-modal" aria-hidden="true">

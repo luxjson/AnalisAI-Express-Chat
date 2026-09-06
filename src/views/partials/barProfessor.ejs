@@ -1,9 +1,8 @@
-
-
 <button class="mobile-menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false">
     <i class="fas fa-bars"></i>
 </button>
 <div class="mobile-menu-backdrop" data-close-mobile-menu></div>
+
 <aside class="sidebar">
     <div class="sidebar-top">
         <div class="logo-container">
@@ -36,7 +35,6 @@
             <div class="active-indicator"></div>
         </a>
 
-        
         <a href="/dashboard/calendario" data-sidebar-id="calendar" class="side-link">
             <div class="icon-box"><i class="fas fa-calendar"></i></div>
             <span class="link-text">Calendário</span>
@@ -65,10 +63,13 @@
             <div class="active-indicator"></div>
         </a>
         
-        <a href="/logout" class="side-link exit-link">
-            <div class="icon-box"><i class="fas fa-sign-out-alt"></i></div>
-            <span class="link-text">Sair</span>
-        </a>
+        <form action="/logout" method="POST" class="logout-form">
+            <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
+            <button type="submit" class="side-link exit-link">
+                <div class="icon-box"><i class="fas fa-sign-out-alt"></i></div>
+                <span class="link-text">Sair</span>
+            </button>
+        </form>
     </div>
 
     <div id="settingsModal" class="settings-modal" aria-hidden="true">
@@ -102,16 +103,13 @@
 
                 <% if (userCargo === 'Admin') { %>
                 <div class="settings-section" data-settings-panel="checkup">
-                    <!-- FASE 1: DESBLOQUEIO DE SEGURANÇA -->
                     <div id="checkupAuthContainer" class="checkup-step">
                         <h2>Checkup do Sistema</h2>
                         <p class="settings-help">Acesso exclusivo para administradores. Digite a senha administrativa de segurança para desbloquear o diagnóstico do banco de dados.</p>
-                        
                         <div id="checkupAuthError" class="checkup-alert-error" style="display: none;">
                             <i class="ph-bold ph-warning-circle"></i>
                             <span id="checkupAuthErrorMsg">Senha incorreta.</span>
                         </div>
-
                         <form id="checkupAuthForm" class="settings-password-form" onsubmit="event.preventDefault(); submitCheckupPassword();">
                             <label for="checkupPasswordInput">Senha administrativa</label>
                             <input type="password" id="checkupPasswordInput" placeholder="Digite a senha administrativa" required autocomplete="current-password">
@@ -120,8 +118,6 @@
                             </button>
                         </form>
                     </div>
-
-                    <!-- FASE 2: PAINEL DE DIAGNÓSTICO E REPARO -->
                     <div id="checkupDashboardContainer" class="checkup-step" style="display: none;">
                         <div class="checkup-header">
                             <div>
@@ -137,13 +133,9 @@
                                 </button>
                             </div>
                         </div>
-
-                        <!-- BANNER DE BACKUP (A CADA 7 DIAS) -->
                         <div class="checkup-backup-banner">
                             <div class="backup-banner-info">
-                                <div class="backup-icon">
-                                    <i class="ph-bold ph-database"></i>
-                                </div>
+                                <div class="backup-icon"><i class="ph-bold ph-database"></i></div>
                                 <div class="backup-text">
                                     <span class="backup-title">Rotina de Backup Ativa (a cada 7 dias)</span>
                                     <span id="backupBannerDetails">Carregando informações do backup...</span>
@@ -155,8 +147,6 @@
                                 </button>
                             </div>
                         </div>
-
-                        <!-- MÉTRICAS DE RESUMO -->
                         <div class="checkup-overview-grid">
                             <div class="checkup-metric-card" id="metricTotalTables">
                                 <span class="metric-label">Tabelas Analisadas</span>
@@ -171,8 +161,6 @@
                                 <span class="metric-value" id="valTotalIssues">-</span>
                             </div>
                         </div>
-
-                        <!-- LISTAGEM DINÂMICA DAS TABELAS -->
                         <div class="checkup-tables-list" id="checkupTablesList">
                             <div class="checkup-loading-state">
                                 <i class="ph-bold ph-circle-notch checkup-spin"></i>
@@ -215,20 +203,16 @@
         <button class="modal-new-close" onclick="closeModal()">
             <i class="fas fa-times"></i>
         </button>
-
         <div class="modal-new-header" style="justify-content: center;align-items: center;display: flex;flex-direction: column;">
             <img src="/images/logo3-white.png" alt="AnalisAI" class="modal-new-logo">
             <div class="version-badge">Versão 1.0.4</div>
         </div>
-
         <div class="modal-new-body">
             <p class="modal-new-text">
                 Plataforma avançada para gestão de competências e análise de desempenho educacional. 
                 Desenvolvida para facilitar a visualização de dados e tomada de decisão pedagógica.
             </p>
-            
             <div class="modal-new-divider"></div>
-            
             <div class="modal-new-info-grid">
                 <div class="info-item">
                     <span>Ambiente</span>
@@ -240,7 +224,6 @@
                 </div>
             </div>
         </div>
-
         <div class="modal-new-footer">
             <p>© 2026 AnalisAI</p>
             <a href="/dashboard/equipe" class="modal-link">Time de desenvolvimento</a>

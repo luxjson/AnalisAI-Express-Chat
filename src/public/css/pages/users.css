@@ -231,8 +231,15 @@
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .close-btn {
@@ -351,49 +358,80 @@ select.filter-input option {
         margin-left: 0;
         padding: 20px;
     }
-    
+
     .toolbar {
         flex-direction: column;
         align-items: stretch;
     }
-    
+
     .action-buttons {
         justify-content: center;
     }
-    
+
     .search-container {
         max-width: 100%;
     }
-    
+
     .dash-header {
         flex-direction: column;
         gap: 15px;
-        text-align: center;
     }
-    
+
     .page-title {
         font-size: 1rem;
     }
-    
+
     .table-container {
         padding: 20px;
     }
-    
+
 }
 
 @media (max-width: 480px) {
     .main-layout {
         padding: 15px;
     }
-    
+
     .btn-icon {
         width: 45px;
         height: 45px;
         font-size: 16px;
     }
-    
+
     .alunos-table td {
         padding: 15px 10px;
         font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .toolbar {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .action-buttons {
+        width: 100%;
+        display: grid;
+        grid-template-columns: minmax(44px, 1fr);
+        gap: 9px;
+    }
+
+    .action-buttons>* {
+        width: 100%;
+    }
+
+    .search-container {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .table-container {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .alunos-table {
+        min-width: 700px;
     }
 }

@@ -254,8 +254,13 @@ html[data-theme="light"] .analysis-card {
 }
 
 @keyframes fa-spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(359deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(359deg);
+    }
 }
 
 .table-container {
@@ -603,8 +608,15 @@ html[data-theme="light"] .analysis-card {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .close-btn:hover {
@@ -841,6 +853,7 @@ select.filter-input option {
     background: rgba(255, 1, 1, 0.05);
     transform: translateY(-2px);
 }
+
 .btn-action-2 {
     padding: 0 35px;
     height: 55px;
@@ -948,6 +961,7 @@ select.filter-input option {
         transform: translateY(-20px);
         opacity: 0;
     }
+
     to {
         transform: translateY(0);
         opacity: 1;
@@ -1121,6 +1135,7 @@ select.filter-input option {
 #importModal input[type="file"]:hover {
     border-color: var(--success-green);
 }
+
 @media screen and (max-width: 768px) {
     #importModal .modal-content {
         padding: 30px 20px !important;
@@ -1206,6 +1221,7 @@ select.filter-input option {
 .ai-editor-controls .btn-secondary-dash {
     height: 55px;
 }
+
 .ai-suggestion-list {
     position: relative;
     z-index: 1;
@@ -1257,31 +1273,61 @@ select.filter-input option {
     word-break: break-word;
 }
 
-.ai-result p { margin: 0 0 10px; }
-.ai-result p:last-child { margin-bottom: 0; }
-.ai-result strong { font-weight: 700; color: #ffffff; }
-.ai-result em { font-style: italic; }
-.ai-result h2, .ai-result h3 { font-size: 1.12rem; font-weight: 700; color: #ffffff; margin: 14px 0 8px; }
-.ai-result h4 { font-size: 1.02rem; font-weight: 700; color: #ffffff; margin: 12px 0 6px; }
-.ai-result h5 { font-size: 0.94rem; font-weight: 700; color: #ffffff; margin: 10px 0 4px; }
-.ai-result ul, .ai-result ol { margin: 8px 0 12px 22px; padding: 0; }
-.ai-result li { margin: 4px 0; line-height: 1.55; }
-.ai-result hr { border: 0; border-top: 1px solid #343438; margin: 16px 0; opacity: 0.6; }
+.ai-result p {
+    margin: 0 0 10px;
+}
 
-@media (max-width: 700px) {
-    .ai-editor-panel {
-        padding: 20px;
-    }
+.ai-result p:last-child {
+    margin-bottom: 0;
+}
 
-    .ai-panel-heading,
-    .ai-editor-controls {
-        align-items: stretch;
-        flex-direction: column;
-    }
+.ai-result strong {
+    font-weight: 700;
+    color: #ffffff;
+}
 
-    .ai-editor-controls .btn-secondary-dash {
-        justify-content: center;
-    }
+.ai-result em {
+    font-style: italic;
+}
+
+.ai-result h2,
+.ai-result h3 {
+    font-size: 1.12rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 14px 0 8px;
+}
+
+.ai-result h4 {
+    font-size: 1.02rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 12px 0 6px;
+}
+
+.ai-result h5 {
+    font-size: 0.94rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 10px 0 4px;
+}
+
+.ai-result ul,
+.ai-result ol {
+    margin: 8px 0 12px 22px;
+    padding: 0;
+}
+
+.ai-result li {
+    margin: 4px 0;
+    line-height: 1.55;
+}
+
+.ai-result hr {
+    border: 0;
+    border-top: 1px solid #343438;
+    margin: 16px 0;
+    opacity: 0.6;
 }
 
 .file-drop-area {
@@ -1299,14 +1345,14 @@ select.filter-input option {
     margin: 20px 0;
 }
 
-.file-drop-area:hover { 
-    border-color: var(--success-green); 
-    background: var(--success-green-alpha, rgba(33, 115, 70, 0.05)); 
+.file-drop-area:hover {
+    border-color: var(--success-green);
+    background: var(--success-green-alpha, rgba(33, 115, 70, 0.05));
 }
 
-.file-drop-area i { 
-    font-size: 2.5rem; 
-    color: var(--text-muted); 
+.file-drop-area i {
+    font-size: 2.5rem;
+    color: var(--text-muted);
     transition: color 0.3s ease;
 }
 
@@ -1314,18 +1360,18 @@ select.filter-input option {
     color: var(--success-green);
 }
 
-.file-msg { 
-    color: var(--text-muted); 
-    font-size: 0.9rem; 
+.file-msg {
+    color: var(--text-muted);
+    font-size: 0.9rem;
 }
 
 .file-name {
-    color: var(--success-green); 
-    font-size: 0.85rem; 
-    margin-top: 10px; 
-    text-align: center; 
-    padding: 8px; 
-    background: var(--success-green-alpha, rgba(33, 115, 70, 0.1)); 
+    color: var(--success-green);
+    font-size: 0.85rem;
+    margin-top: 10px;
+    text-align: center;
+    padding: 8px;
+    background: var(--success-green-alpha, rgba(33, 115, 70, 0.1));
     border-radius: 8px;
 }
 
@@ -1342,9 +1388,20 @@ select.filter-input option {
 }
 
 @keyframes pulseWarning {
-    0% { transform: scale(1); opacity: 0.8; }
-    50% { transform: scale(1.1); opacity: 1; }
-    100% { transform: scale(1); opacity: 0.8; }
+    0% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+
+    50% {
+        transform: scale(1.1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
 }
 
 .modal-title-warning {
@@ -1441,6 +1498,7 @@ select.filter-input option {
     color: #fff;
     background: rgba(255, 255, 255, 0.05);
 }
+
 .modal-overlay {
     display: none;
     position: fixed;
@@ -1455,6 +1513,7 @@ select.filter-input option {
     align-items: center;
     animation: fadeInModal 0.3s ease;
 }
+
 .modal-content {
     background-color: #0d0d0d;
     border: 1px solid #262626;
@@ -1464,7 +1523,7 @@ select.filter-input option {
     padding: 40px 35px;
     position: relative;
     text-align: center;
-    box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
     animation: scaleInModal 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -1653,19 +1712,42 @@ select.filter-input option {
 }
 
 @keyframes fadeInModal {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 @keyframes scaleInModal {
-    from { opacity: 0; transform: scale(0.95); }
-    to { opacity: 1; transform: scale(1); }
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 @keyframes pulseWarning {
-    0% { transform: scale(1); opacity: 0.8; }
-    50% { transform: scale(1.05); opacity: 1; }
-    100% { transform: scale(1); opacity: 0.8; }
+    0% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+
+    50% {
+        transform: scale(1.05);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
 }
 
 .modal-lg .filter-options {
@@ -1678,14 +1760,451 @@ select.filter-input option {
     margin-bottom: 15px;
 }
 
-@media (max-width: 600px) {
+@media screen and (max-width: 1024px) {
+    .main-layout {
+        padding: 25px 30px;
+    }
+
+    .charts-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .edit-content {
+        padding: 0;
+    }
+
+    .dash-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+        margin-bottom: 30px;
+        padding-bottom: 15px;
+    }
+
+    .page-title {
+        font-size: 1rem;
+    }
+
+    .toolbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+
+    .action-buttons {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .search-container {
+        max-width: 100%;
+    }
+
+    .search-container input {
+        height: 48px;
+        font-size: 0.85rem;
+        padding: 0 15px 0 50px;
+    }
+
+    .table-container {
+        padding: 15px;
+        border-radius: 16px;
+        overflow-x: auto;
+    }
+
+    .alunos-table {
+        min-width: 700px;
+        font-size: 0.8rem;
+    }
+
+    .alunos-table th,
+    .alunos-table td {
+        padding: 12px 10px;
+    }
+
+    .td-actions {
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .btn-icon {
+        width: 45px;
+        height: 45px;
+        font-size: 16px;
+    }
+
+    .btn-icon-2 {
+        height: 45px;
+        font-size: 0.75rem;
+        padding: 0 20px;
+    }
+
+    .btn-action,
+    .btn-action-2,
+    .btn-action-3 {
+        height: 48px;
+        padding: 0 20px;
+        font-size: 0.75rem;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .btn-secondary-dash {
+        width: 100%;
+        justify-content: center;
+        padding: 12px 20px;
+    }
+
+    .competencias-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .charts-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .chart-card {
+        padding: 20px;
+    }
+
+    .chart-wrapper {
+        height: 200px;
+    }
+
+    .competencia-card {
+        padding: 20px;
+    }
+
+    .competencia-header h3 {
+        font-size: 0.8rem;
+    }
+
     .modal-content {
         padding: 30px 25px;
+        max-width: 95%;
+        border-radius: 24px;
     }
+
     .modal-lg {
-        padding: 35px 25px;
+        padding: 30px 20px;
     }
+
     .modal-small {
         padding: 25px 20px;
+    }
+
+    .modal-icon-warning i {
+        font-size: 3rem;
+    }
+
+    .edit-tabs {
+        flex-direction: column;
+        gap: 5px;
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .tab-btn {
+        padding: 12px 15px;
+        font-size: 0.7rem;
+        border-radius: 20px;
+        flex: none;
+    }
+
+    .filter-options label {
+        font-size: 0.65rem;
+        margin-top: 15px;
+    }
+
+    .filter-input {
+        padding: 12px;
+        font-size: 0.85rem;
+    }
+
+    .ai-editor-panel {
+        padding: 16px;
+    }
+
+    .ai-panel-heading {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .ai-editor-controls {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .ai-editor-controls select {
+        height: 28px;
+        width: 100%;
+    }
+
+    .ai-editor-controls .btn-secondary-dash {
+        width: 100%;
+        justify-content: center;
+        height: 48px;
+    }
+
+    .ai-suggestion-list {
+        flex-wrap: wrap;
+    }
+
+    .ai-suggestion {
+        font-size: 0.7rem;
+        padding: 6px 12px;
+    }
+
+    .file-drop-area {
+        padding: 25px 15px;
+    }
+
+    .file-drop-area i {
+        font-size: 2rem;
+    }
+
+    .dash-footer {
+        flex-direction: column;
+        gap: 15px;
+        padding: 30px 0 15px;
+    }
+
+    .footer-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .footer-credits {
+        text-align: center;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .btn-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 14px;
+    }
+
+    .btn-icon-2 {
+        height: 40px;
+        font-size: 0.7rem;
+        padding: 0 15px;
+    }
+
+    .btn-action,
+    .btn-action-2,
+    .btn-action-3 {
+        height: 42px;
+        font-size: 0.7rem;
+        padding: 0 15px;
+    }
+
+    .search-container input {
+        height: 42px;
+        font-size: 0.8rem;
+        padding: 0 12px 0 40px;
+    }
+
+    .table-container {
+        padding: 10px;
+        border-radius: 12px;
+    }
+
+    .alunos-table {
+        min-width: 600px;
+        font-size: 0.7rem;
+    }
+
+    .alunos-table th,
+    .alunos-table td {
+        padding: 8px 6px;
+    }
+
+    .modal-content {
+        padding: 20px 15px;
+        max-width: 98%;
+    }
+
+    .modal-title-warning {
+        font-size: 1rem;
+    }
+
+    .modal-text-warning {
+        font-size: 0.8rem;
+    }
+
+    .btn-cancel,
+    .btn-danger-action,
+    .btn-success-action {
+        padding: 10px;
+        font-size: 0.75rem;
+    }
+
+    .competencia-card {
+        padding: 15px;
+    }
+
+    .competencia-item {
+        padding: 8px;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+
+    .competencia-nota {
+        font-size: 0.85rem;
+        padding: 3px 8px;
+        min-width: 40px;
+    }
+
+    .competencia-edit-item {
+        padding: 10px;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+
+    .competencia-edit-nota {
+        font-size: 0.85rem;
+        padding: 3px 8px;
+        min-width: 40px;
+    }
+
+    .chart-wrapper {
+        height: 160px;
+    }
+
+    .edit-tabs .tab-btn {
+        padding: 10px 12px;
+        font-size: 0.65rem;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .toolbar {
+        gap: 12px;
+    }
+
+    .action-buttons {
+        width: 100%;
+        display: grid;
+        grid-template-columns: minmax(44px, 1fr);
+        gap: 9px;
+    }
+
+    .action-buttons .btn-secondary-dash,
+    .action-buttons .btn-action,
+    .action-buttons .btn-action-2,
+    .action-buttons .btn-action-3 {
+        width: 100%;
+    }
+
+    .action-buttons .btn-filter,
+    .action-buttons .btn-icon {
+        width: 100%;
+        min-width: 44px;
+    }
+
+    .td-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .td-actions>* {
+        flex: 0 0 auto;
+    }
+
+    .modal-actions {
+        flex-direction: column;
+    }
+
+    .modal-actions>* {
+        width: 100%;
+        flex: 0 0 auto;
+    }
+
+    .claude-modal-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .claude-modal-actions>* {
+        width: 100%;
+    }
+
+    .competencias-grid,
+    .charts-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .competencia-header {
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+}
+
+
+
+.ai-accordion {
+    border: none;
+    background: transparent;
+}
+
+.ai-accordion-summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 8px 0;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.ai-accordion-summary::-webkit-details-marker {
+    display: none;
+}
+
+.ai-accordion-summary .ai-accordion-icon {
+    transition: transform 0.25s ease;
+    font-size: 1.3rem;
+    color: var(--text-gray);
+}
+
+.ai-accordion[open] .ai-accordion-summary .ai-accordion-icon {
+    transform: rotate(180deg);
+}
+
+.ai-accordion-content {
+    padding-top: 16px;
+    animation: fadeIn 0.3s ease;
+}
+
+.ai-accordion-content .ai-editor-controls {
+    margin-top: 0;
+}
+
+.ai-accordion-content .ai-suggestion-list {
+    margin-top: 12px;
+}
+
+.ai-accordion-content .ai-result {
+    margin-top: 16px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }

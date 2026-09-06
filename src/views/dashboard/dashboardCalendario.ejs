@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <script src="/js/shared/theme-init.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AnalisAI - Calendário Escolar</title>
+    <title>Calendário Escolar</title>
     <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
     <script src="/js/shared/phosphor-icons.js" defer></script>
     <link rel="stylesheet" href="/css/pages/calendar.css">
@@ -202,7 +202,7 @@
                                 </div>
                             </div>
                             <% if (userCargo === 'Admin') { %>
-                                <button class="evento-lista-remover" onclick="removerItem('<%= e.tipo %>', <%= e.feriado_id || e.id %>)">
+                                <button class="evento-lista-remover" onclick='removerItem(<%- safeJson(e.tipo).replace(/'/g, '\\u0027') %>, <%= e.feriado_id || e.id %>)'>
                                     <i class="fas fa-times"></i>
                                 </button>
                             <% } %>

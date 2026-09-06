@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <script src="/js/shared/theme-init.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AnalisAI - Minhas Tarefas</title>
+    <title>Tarefas</title>
     <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
     <script src="/js/shared/phosphor-icons.js" defer></script>
     <link rel="stylesheet" href="/css/components/sidebar.css">
@@ -164,7 +164,7 @@
                                 <div style="margin-top: auto; padding-top: 15px;">
                                     <% if (canSubmit) { %>
                                         <button class="btn-secondary-dash" style=" justify-content: center;"
-                                                onclick="abrirModalEnvio(<%= tarefa.tarefa_aluno_id %>, '<%= tarefa.titulo.replace(/'/g, "\\'") %>')">
+                                                onclick='abrirModalEnvio(<%= tarefa.tarefa_aluno_id %>, <%- safeJson(tarefa.titulo).replace(/'/g, '\\u0027') %>)'>
                                             <i class="fas fa-paper-plane"></i> <%= tarefa.status === 'DEVOLVIDA' ? 'REENVIAR TAREFA' : 'ENVIAR TAREFA' %>
                                         </button>
                                     <% } else if (tarefa.status === 'ENTREGUE') { %>

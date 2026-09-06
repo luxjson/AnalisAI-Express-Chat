@@ -9,6 +9,7 @@
     --text-secondary: #888;
     --success-green: #217346;
     --warning-yellow: #d4a017;
+    --border-soft: rgba(255, 255, 255, 0.05);
 }
 
 html[data-theme="light"] .dash-card,
@@ -224,14 +225,13 @@ canvas {
 
 @media screen and (max-width: 1200px) {
     .main-layout {
-        margin-left: 85px;
         padding: 30px;
     }
-    
+
     .row-triple {
         gap: 20px;
     }
-    
+
     .card-grafico {
         min-height: 350px;
         padding: 25px 20px;
@@ -239,91 +239,196 @@ canvas {
 }
 
 @media screen and (max-width: 992px) {
+    .main-layout {
+        padding: 25px 30px;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        border-radius: 0;
+    }
+
     .row-triple {
         flex-direction: column;
+        gap: 20px;
     }
-    
+
     .card-grafico {
+        min-height: 300px;
+        width: 100%;
+    }
+
+    .card-grafico-large,
+    .card-grafico-small {
         min-height: 300px;
     }
 }
 
 @media screen and (max-width: 768px) {
     .main-layout {
-        margin-left: 0;
-        padding: 20px;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        border-radius: 0;
     }
-    
+
     .dash-header {
         flex-direction: column;
         gap: 15px;
-        text-align: center;
+        margin-bottom: 30px;
+        padding-bottom: 15px;
     }
-    
+
     .page-title {
-        font-size: 1rem;
+        font-size: 1.25rem;
         text-align: center;
     }
-    
+
     .section-label {
         text-align: center;
+        font-size: 0.95rem;
+        margin-top: 25px;
     }
-    
+
+    .graficos-grid {
+        gap: 15px;
+    }
+
+    .row-triple {
+        gap: 15px;
+    }
+
+    .card-grafico {
+        min-height: 250px;
+        padding: 20px 15px;
+        border-radius: 16px;
+    }
+
+    .card-grafico-large,
+    .card-grafico-small {
+        padding: 20px 15px;
+        min-height: 250px;
+        border-radius: 16px;
+    }
+
+    .chart-label {
+        font-size: 0.65rem;
+        margin-top: 12px;
+    }
+
+    .chart-value {
+        font-size: 1.2rem;
+        margin-top: 8px;
+    }
+
+    .chart-value-large {
+        font-size: 1.8rem;
+        margin-top: 8px;
+        margin-left: 0;
+    }
+
+    canvas {
+        max-height: 150px;
+    }
+
     .dash-footer {
         flex-direction: column;
-        gap: 20px;
+        gap: 15px;
         text-align: center;
+        padding: 30px 0 15px;
     }
-    
+
     .footer-actions {
+        flex-direction: column;
         justify-content: center;
+        gap: 10px;
+        width: 100%;
     }
-    
+
+    .btn-secondary-dash {
+        width: 100%;
+        justify-content: center;
+        padding: 12px 20px;
+        font-size: 0.75rem;
+    }
+
     .footer-credits {
         text-align: center;
     }
-    
+
     .footer-credits p {
         text-align: center;
-    }
-    
-    .card-grafico-large,
-    .card-grafico-small {
-        padding: 30px 20px;
-        min-height: 300px;
-    }
-    
-    .chart-value-large {
-        font-size: 2rem;
     }
 }
 
 @media screen and (max-width: 480px) {
-    .main-layout {
-        padding: 15px;
+
+    .page-title {
+        font-size: 1rem;
     }
-    
+
+    .dash-header {
+        margin-bottom: 20px;
+        gap: 10px;
+    }
+
+    .section-label {
+        font-size: 0.8rem;
+        margin-top: 20px;
+    }
+
     .card-grafico {
-        padding: 20px 15px;
-        min-height: 280px;
+        min-height: 200px;
+        padding: 15px 12px;
+        border-radius: 12px;
     }
-    
+
     .card-grafico-large,
     .card-grafico-small {
-        padding: 25px 15px;
-        min-height: 280px;
+        min-height: 200px;
+        padding: 15px 12px;
+        border-radius: 12px;
     }
-    
+
     .chart-value {
-        font-size: 1.2rem;
+        font-size: 1rem;
     }
-    
+
     .chart-value-large {
-        font-size: 1.8rem;
+        font-size: 1.5rem;
     }
-    
+
+    canvas {
+        max-height: 120px;
+    }
+
     .btn-secondary-dash {
-        padding: 10px 20px;
-        font-size: 0.7rem;
+        padding: 10px 15px;
+        font-size: 0.65rem;
+        border-radius: 8px;
+    }
+
+    .dash-footer {
+        padding: 20px 0 10px;
+        gap: 10px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+
+    .graficos-grid,
+    .row-triple {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .card-grafico,
+    .card-grafico-large,
+    .card-grafico-small {
+        width: 100%;
+        min-width: 0;
+        overflow: hidden;
+    }
+
+    canvas {
+        width: 100% !important;
+        max-width: 100%;
     }
 }

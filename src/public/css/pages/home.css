@@ -1,64 +1,77 @@
 * {
-            font-family: 'helvetica', sans-serif;
-            font-weight: normal;
-            -webkit-font-smoothing: antialiased;
-        }
+    font-family: 'helvetica', sans-serif;
+    font-weight: normal;
+    -webkit-font-smoothing: antialiased;
+}
 
-        .home-content-wrapper {
-            max-width: 1200px;
-            margin: 0 auto;
-            width: 100%;
-        }
+.home-content-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
 
-        .card-elite {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 24px;
-            padding: 40px;
-            position: relative;
-            overflow: hidden;
-            transition: var(--transition-smooth);
-        }
+.card-elite {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
+    padding: 40px;
+    position: relative;
+    overflow: hidden;
+    transition: var(--transition-smooth);
+}
 
-        .card-elite:hover {
-            border-color: var(--text-muted);
-            transform: translateY(-3px);
-        }
-        .card-line {
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60px;
-            height: 3px;
-            background: var(--primary-red);
-            border-radius: 0 0 10px 10px;
-        }
+.card-elite:hover {
+    border-color: var(--text-muted);
+    transform: translateY(-3px);
+}
 
-        .icon-accent {
-            font-size: 2rem;
-            color: var(--primary-red);
-            margin-bottom: 20px;
-            display: block;
-        }
+.card-line {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: var(--primary-red);
+    border-radius: 0 0 10px 10px;
+}
 
-        details {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 14px;
-            padding: 20px 30px;
-            margin-bottom: 15px;
-            cursor: pointer;
-            transition: var(--transition-smooth);
-        }
-        summary { list-style: none; display: flex; justify-content: space-between; color: var(--text-white); font-size: 0.95rem; }
-        summary::after { content: '+'; color: var(--primary-red); }
+.icon-accent {
+    font-size: 2rem;
+    color: var(--primary-red);
+    margin-bottom: 20px;
+    display: block;
+}
+
+details {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 20px 30px;
+    margin-bottom: 15px;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+
+summary {
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    color: var(--text-white);
+    font-size: 0.95rem;
+}
+
+summary::after {
+    content: '+';
+    color: var(--primary-red);
+}
 
 @media screen and (max-width: 768px) {
     .main-layout {
         margin: 0 !important;
         padding: 20px !important;
     }
+
     .dash-header {
         flex-direction: column;
         gap: 20px;
@@ -89,7 +102,8 @@
         padding: 30px 20px !important;
     }
 
-    #sobre, #faq {
+    #sobre,
+    #faq {
         margin-bottom: 60px !important;
     }
 
@@ -112,15 +126,16 @@
         border-top: 1px solid #262626;
     }
 
-    .sidebar-top, .sidebar-bottom {
+    .sidebar-top,
+    .sidebar-bottom {
         flex-direction: row;
         width: auto;
         gap: 5px;
     }
 
-    .logo-container, 
-    .divider, 
-    .link-text, 
+    .logo-container,
+    .divider,
+    .link-text,
     .active-indicator {
         display: none !important;
     }
@@ -170,8 +185,29 @@
     .sidebar {
         padding: 0 5px;
     }
+
     .icon-box {
         width: 38px;
         height: 38px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+
+    .home-container,
+    .home-content,
+    .cards,
+    .card-elite {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+    }
+
+    .card-elite {
+        overflow: hidden;
+    }
+
+    .modal-new-info-grid {
+        flex-wrap: wrap;
     }
 }

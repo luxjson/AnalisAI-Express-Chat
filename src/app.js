@@ -3,12 +3,14 @@ const session = require('express-session');
 const flash = require('connect-flash');
 const favicon = require('serve-favicon');
 const path = require('path');
+const fs = require('fs');
 const db = require('./db');
 const morgan = require('morgan');
 const { securityHeaders, sameOriginProtection, attachCsrfToken } = require('./middlewares/security');
 const { checkAnyAuth } = require('./middlewares/auth');
 const { escapeJsonForHtml } = require('./utils/validation');
 const PostgresSessionStore = require('./sessionStore');
+const fileStore = require('./fileStore');
 
 const app = express();
 
@@ -64,6 +66,7 @@ app.use(session({
   }
 }));
 app.use(attachCsrfToken);
+app.use(async (req, res, next) => { try { await db.ensureRuntimeSchema(); next(); } catch (err) { console.error('Falha na inicialização do schema:', err.message); res.status(503).send('Serviço temporariamente indisponível.'); } });
 app.use((req, res, next) => { res.locals.safeJson = escapeJsonForHtml; next(); });
 app.use(sameOriginProtection);
 app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
@@ -73,6 +76,7 @@ app.use(flashMiddleware);
 app.get('/uploads/:filename', checkAnyAuth, async (req, res, next) => {
   try {
     const filename = path.basename(req.params.filename);
+    if (filename.length > 255) return res.status(400).send('Arquivo inválido');
     if (!filename || filename !== req.params.filename || !/^[a-zA-Z0-9._-]+$/.test(filename)) {
       return res.status(400).send('Arquivo inválido');
     }
@@ -93,12 +97,26 @@ app.get('/uploads/:filename', checkAnyAuth, async (req, res, next) => {
     const isTaskOwner = isProfessor && (row.criado_por === req.session.userId || req.session.userCargo === 'Admin');
     if (!isOwnerAluno && !isTaskOwner) return res.status(403).send('Acesso negado');
 
-    const filePath = path.join(__dirname, 'uploads', filename);
     res.setHeader('Content-Disposition', `attachment; filename="${filename.replace(/"/g, '')}"`);
     res.setHeader('X-Content-Type-Options', 'nosniff');
-    return res.sendFile(filePath, { dotfiles: 'deny' }, (err) => {
-      if (err && !res.headersSent) next(err);
-    });
+
+    const filePath = path.join(__dirname, 'uploads', filename);
+    if (fs.existsSync(filePath)) {
+      return res.sendFile(filePath, { dotfiles: 'deny' }, (err) => {
+        if (err && !res.headersSent) next(err);
+      });
+    }
+
+    {
+      const stored = await fileStore.get(filename);
+      if (!stored) return res.status(404).send('Arquivo não encontrado');
+      res.setHeader('Content-Type', stored.mime_type || 'application/octet-stream');
+      res.setHeader('Content-Length', String(stored.size_bytes));
+      res.setHeader('Cache-Control', 'private, no-store');
+      return res.end(stored.content);
+    }
+
+    return res.status(404).send('Arquivo não encontrado');
   } catch (err) {
     next(err);
   }
@@ -108,6 +126,21 @@ app.use('/', indexRoutes);
 app.use('/', professorRoutes);
 app.use('/', alunoRoutes);
 app.use('/', adminRoutes);
+app.get('/api/internal/backup', async (req, res, next) => {
+  try {
+    const configured = process.env.CRON_SECRET;
+    const authorization = req.get('authorization') || '';
+    if (!configured || authorization !== `Bearer ${configured}`) {
+      return res.status(401).json({ error: 'Não autorizado.' });
+    }
+    const backupService = require('./services/backupService');
+    const backup = await backupService.checkAndRunScheduledBackup();
+    return res.json({ ok: true, created: Boolean(backup), backup });
+  } catch (err) {
+    next(err);
+  }
+});
+
 app.use('/api', apiRoutes);
 
 app.use((req, res) => {
@@ -122,8 +155,33 @@ app.use((req, res) => {
 });
 
 app.use((err, req, res, next) => {
-  if (process.env.NODE_ENV !== 'production') console.error(err.stack);
+  if (res.headersSent) return next(err);
+  if (process.env.NODE_ENV !== 'production') console.error(err.stack || err);
   else console.error(err.message);
+
+  if (err?.type === 'entity.too.large' || err?.code === 'LIMIT_FILE_SIZE') {
+    const status = err?.code === 'LIMIT_FILE_SIZE' ? 413 : 413;
+    const message = err?.code === 'LIMIT_FILE_SIZE' ? 'O arquivo excede o limite permitido de 10 MB.' : 'A requisição excede o tamanho permitido.';
+    if (req.accepts('html')) { req.flash('error_msg', message); return res.status(status).redirect(req.get('referer') || '/'); }
+    return res.status(status).json({ error: message });
+  }
+
+  if (err?.type === 'entity.parse.failed') {
+    return res.status(400).json({ error: 'Corpo da requisição inválido.' });
+  }
+
+  if (err?.name === 'MulterError') {
+    const status = err.code === 'LIMIT_FILE_SIZE' ? 413 : 400;
+    const message = err.code === 'LIMIT_FILE_SIZE'
+      ? 'O arquivo excede o limite permitido de 10 MB.'
+      : 'Arquivo inválido ou tipo de arquivo não permitido.';
+    if (req.accepts('html')) {
+      req.flash('error_msg', message);
+      return res.redirect(req.get('referer') || '/aluno/tarefas');
+    }
+    return res.status(status).json({ error: message });
+  }
+
   if (err.code === '23514') {
     req.flash('error_msg', process.env.NODE_ENV === 'development' ? (err.detail || 'Erro de validação') : 'Dados inválidos.');
     return res.redirect('/dashboard');
@@ -138,13 +196,17 @@ app.use((err, req, res, next) => {
   });
 });
 
-const PORT = Number(process.env.PORT) || 3000;
-app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
-  try {
-    const backupService = require('./services/backupService');
-    backupService.init();
-  } catch (err) {
-    console.error('Falha ao inicializar o serviço de backup:', err.message);
-  }
-});
+if (require.main === module) {
+  const PORT = Number(process.env.PORT) || 3000;
+  app.listen(PORT, () => {
+    console.log(`Servidor rodando na porta ${PORT}`);
+    try {
+      const backupService = require('./services/backupService');
+      backupService.init();
+    } catch (err) {
+      console.error('Falha ao inicializar o serviço de backup:', err.message);
+    }
+  });
+}
+
+module.exports = app;

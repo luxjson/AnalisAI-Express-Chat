@@ -23,8 +23,8 @@ CREATE TABLE IF NOT EXISTS alunos (
     id SERIAL PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     ano_escolar VARCHAR(50) NOT NULL CHECK (ano_escolar IN ('1º MÉDIO', '2º MÉDIO', '3º MÉDIO', '9º FUNDAMENTAL')),
-    idade INTEGER NOT NULL,
-    nota DECIMAL(3,1) DEFAULT 0.0,
+    idade INTEGER NOT NULL CHECK (idade >= 10 AND idade <= 20),
+    nota DECIMAL(3,1) DEFAULT 0.0 CHECK (nota >= 0 AND nota <= 10),
     presenca INTEGER DEFAULT 100 CHECK (presenca >= 0 AND presenca <= 100),
     nivel VARCHAR(30) DEFAULT 'EM DESENVOLVIMENTO'
 );
@@ -137,7 +137,7 @@ CREATE TABLE IF NOT EXISTS calendario_eventos (
     descricao TEXT,
     tipo VARCHAR(50) NOT NULL,
     data_inicio DATE NOT NULL,
-    data_fim DATE,
+    data_fim DATE CHECK (data_fim IS NULL OR data_fim >= data_inicio),
     turma VARCHAR(50),
     cor VARCHAR(20) DEFAULT '#ff0101',
     criado_por INTEGER REFERENCES usuarios(id) ON DELETE SET NULL,
@@ -162,6 +162,101 @@ CREATE TABLE IF NOT EXISTS solicitacoes_senha (
     data_resposta TIMESTAMP,
     respondido_por INTEGER REFERENCES usuarios(id) ON DELETE SET NULL
 );
+
+
+
+-- Serverless/security infrastructure used by the application.
+CREATE TABLE IF NOT EXISTS security_rate_limits (
+    rate_key TEXT PRIMARY KEY,
+    window_start TIMESTAMPTZ NOT NULL,
+    request_count INTEGER NOT NULL CHECK (request_count >= 0)
+);
+CREATE INDEX IF NOT EXISTS idx_security_rate_limits_window ON security_rate_limits(window_start);
+
+CREATE TABLE IF NOT EXISTS uploaded_files (
+    storage_key TEXT PRIMARY KEY,
+    original_name TEXT NOT NULL,
+    mime_type TEXT NOT NULL,
+    size_bytes INTEGER NOT NULL CHECK (size_bytes >= 0 AND size_bytes <= 10485760),
+    content BYTEA NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_uploaded_files_created_at ON uploaded_files(created_at DESC);
+
+CREATE TABLE IF NOT EXISTS system_backups (
+    id BIGSERIAL PRIMARY KEY,
+    filename TEXT UNIQUE NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    origem TEXT NOT NULL,
+    size_bytes INTEGER NOT NULL CHECK (size_bytes >= 0),
+    table_count INTEGER NOT NULL CHECK (table_count >= 0),
+    content JSONB NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_system_backups_created_at ON system_backups(created_at DESC);
+
+-- Runtime-compatible migration for installations created with older schemas.
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='system_backups' AND column_name='filename') THEN
+    ALTER TABLE system_backups ADD COLUMN filename TEXT;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='system_backups' AND column_name='created_at') THEN
+    ALTER TABLE system_backups ADD COLUMN created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='system_backups' AND column_name='origem') THEN
+    ALTER TABLE system_backups ADD COLUMN origem TEXT NOT NULL DEFAULT 'migracao';
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='system_backups' AND column_name='size_bytes') THEN
+    ALTER TABLE system_backups ADD COLUMN size_bytes INTEGER NOT NULL DEFAULT 0;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='system_backups' AND column_name='table_count') THEN
+    ALTER TABLE system_backups ADD COLUMN table_count INTEGER NOT NULL DEFAULT 0;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='system_backups' AND column_name='content') THEN
+    ALTER TABLE system_backups ADD COLUMN content JSONB NOT NULL DEFAULT '{}'::jsonb;
+  END IF;
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='system_backups' AND column_name='reason') THEN
+    ALTER TABLE system_backups ALTER COLUMN reason SET DEFAULT 'migracao';
+    UPDATE system_backups SET reason = 'migracao' WHERE reason IS NULL OR reason = '';
+  END IF;
+END $$;
+UPDATE system_backups SET filename = 'backup-analisai-migrado-' || id || '.json' WHERE filename IS NULL OR filename = '';
+CREATE UNIQUE INDEX IF NOT EXISTS uq_system_backups_filename ON system_backups(filename);
+
+
+CREATE TABLE IF NOT EXISTS ia_conversas (
+    id SERIAL PRIMARY KEY,
+    usuario_id INTEGER REFERENCES usuarios(id) ON DELETE CASCADE,
+    aluno_id INTEGER REFERENCES alunos(id) ON DELETE CASCADE,
+    titulo VARCHAR(120) NOT NULL DEFAULT 'Nova conversa',
+    data_criacao TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    data_atualizacao TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    fixado BOOLEAN NOT NULL DEFAULT FALSE,
+    CHECK ((usuario_id IS NOT NULL AND aluno_id IS NULL) OR (usuario_id IS NULL AND aluno_id IS NOT NULL))
+);
+CREATE INDEX IF NOT EXISTS idx_ia_conversas_usuario ON ia_conversas(usuario_id, data_atualizacao DESC);
+CREATE INDEX IF NOT EXISTS idx_ia_conversas_aluno ON ia_conversas(aluno_id, data_atualizacao DESC);
+CREATE INDEX IF NOT EXISTS idx_ia_conversas_fixadas ON ia_conversas(fixado, data_atualizacao DESC);
+
+CREATE TABLE IF NOT EXISTS ia_mensagens (
+    id SERIAL PRIMARY KEY,
+    conversa_id INTEGER NOT NULL REFERENCES ia_conversas(id) ON DELETE CASCADE,
+    papel VARCHAR(20) NOT NULL CHECK (papel IN ('user', 'model')),
+    conteudo TEXT NOT NULL,
+    data_criacao TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_ia_mensagens_conversa ON ia_mensagens(conversa_id, data_criacao ASC);
+
+CREATE TABLE IF NOT EXISTS ia_auditoria_notas (
+    id SERIAL PRIMARY KEY,
+    usuario_id INTEGER NOT NULL REFERENCES usuarios(id) ON DELETE CASCADE,
+    aluno_id INTEGER NOT NULL REFERENCES alunos(id) ON DELETE CASCADE,
+    competencia_id INTEGER NOT NULL REFERENCES competencias(id) ON DELETE CASCADE,
+    nota_anterior DECIMAL(3,1),
+    nota_nova DECIMAL(3,1) NOT NULL CHECK (nota_nova >= 0 AND nota_nova <= 10),
+    data_criacao TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_ia_auditoria_notas_usuario ON ia_auditoria_notas(usuario_id, data_criacao DESC);
 
 CREATE INDEX IF NOT EXISTS idx_calendario_data ON calendario_eventos(data_inicio, data_fim);
 CREATE INDEX IF NOT EXISTS idx_calendario_turma ON calendario_eventos(turma);
@@ -190,13 +285,16 @@ INSERT INTO competencias (nome, descricao, categoria) VALUES
 ('Ética', 'Compromisso com valores e princípios morais', 'Comportamental')
 ON CONFLICT (nome) DO NOTHING;
 
-INSERT INTO alunos (nome, ano_escolar, idade, nota, presenca, nivel) VALUES 
-('LUCAS SILVA', '3º MÉDIO', 17, 9.5, 100, 'APTO'),
-('MARIA OLIVEIRA', '2º MÉDIO', 16, 4.2, 85, 'INAPTO'),
-('JOÃO PEDRO', '1º MÉDIO', 15, 6.5, 90, 'EM DESENVOLVIMENTO'),
-('ANA BEATRIZ', '9º FUNDAMENTAL', 14, 8.0, 95, 'APTO'),
-('CARLOS EDUARDO', '9º FUNDAMENTAL', 13, 3.5, 60, 'INAPTO'),
-('BEATRIZ SOUZA', '3º MÉDIO', 17, 7.0, 80, 'APTO');
+INSERT INTO alunos (nome, ano_escolar, idade, nota, presenca, nivel)
+SELECT * FROM (VALUES
+('LUCAS SILVA', '3º MÉDIO', 17, 9.5::numeric, 100, 'APTO'),
+('MARIA OLIVEIRA', '2º MÉDIO', 16, 4.2::numeric, 85, 'INAPTO'),
+('JOÃO PEDRO', '1º MÉDIO', 15, 6.5::numeric, 90, 'EM DESENVOLVIMENTO'),
+('ANA BEATRIZ', '9º FUNDAMENTAL', 14, 8.0::numeric, 95, 'APTO'),
+('CARLOS EDUARDO', '9º FUNDAMENTAL', 13, 3.5::numeric, 60, 'INAPTO'),
+('BEATRIZ SOUZA', '3º MÉDIO', 17, 7.0::numeric, 80, 'APTO')
+) AS seed(nome, ano_escolar, idade, nota, presenca, nivel)
+WHERE NOT EXISTS (SELECT 1 FROM alunos a WHERE a.nome = seed.nome);
 
 INSERT INTO aluno_competencias (aluno_id, competencia_id, nota, observacoes)
 SELECT 
@@ -230,6 +328,21 @@ WHERE
 ON CONFLICT DO NOTHING;
 
 
+-- Future writes on older databases are also protected. NOT VALID keeps the migration safe
+-- when an existing database contains legacy rows that the repair tool will clean later.
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'alunos_idade_range_check') THEN
+    ALTER TABLE alunos ADD CONSTRAINT alunos_idade_range_check CHECK (idade >= 10 AND idade <= 20) NOT VALID;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'alunos_nota_range_check') THEN
+    ALTER TABLE alunos ADD CONSTRAINT alunos_nota_range_check CHECK (nota >= 0 AND nota <= 10) NOT VALID;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'calendario_data_fim_check') THEN
+    ALTER TABLE calendario_eventos ADD CONSTRAINT calendario_data_fim_check CHECK (data_fim IS NULL OR data_fim >= data_inicio) NOT VALID;
+  END IF;
+END $$;
+
 -- Idempotent integrity constraints. These blocks are safe to run against
 -- databases that already contain the named constraints.
 DO $$
@@ -259,6 +372,14 @@ BEGIN
       CHECK (status IN ('PENDENTE', 'ENTREGUE', 'CONCLUIDA', 'DEVOLVIDA', 'ATRASADA'));
   END IF;
 END $$;
+
+-- Remove duplicate notification configurations before creating unique indexes.
+DELETE FROM configuracoes_notificacoes a
+USING configuracoes_notificacoes b
+WHERE a.id < b.id AND a.usuario_id IS NOT NULL AND a.usuario_id = b.usuario_id;
+DELETE FROM configuracoes_notificacoes a
+USING configuracoes_notificacoes b
+WHERE a.id < b.id AND a.aluno_id IS NOT NULL AND a.aluno_id = b.aluno_id;
 
 -- A notification configuration belongs to exactly one principal and should
 -- have at most one row per principal, preventing concurrent duplicate rows.

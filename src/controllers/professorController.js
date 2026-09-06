@@ -2,10 +2,20 @@ const db = require("../db");
 const ExcelJS = require("exceljs");
 const path = require("path");
 const fs = require("fs");
-const bcrypt = require('bcryptjs');
+const bcrypt = require("bcryptjs");
 
 const crypto = require("crypto");
-const { text, personName, password, integerId, numberInRange, ALLOWED_YEARS, randomPassword, normalizeToEmailName, generateStudentEmail } = require('../utils/validation');
+const {
+  text,
+  personName,
+  password,
+  integerId,
+  numberInRange,
+  ALLOWED_YEARS,
+  randomPassword,
+  normalizeToEmailName,
+  generateStudentEmail,
+} = require("../utils/validation");
 
 exports.dashboard = async (req, res) => {
   try {
@@ -250,7 +260,7 @@ exports.graficos = async (req, res) => {
       user: req.session.user,
     });
   } catch (err) {
-  if (process.env.NODE_ENV !== "production") console.error(err);
+    if (process.env.NODE_ENV !== "production") console.error(err);
     req.flash("error_msg", "Erro ao carregar gráficos");
     res.render("dashboard/dashboardGraficos", {
       stats: {
@@ -272,9 +282,13 @@ exports.equipe = (req, res) => {
 };
 
 exports.alterarSenha = async (req, res) => {
-  const senha_atual = typeof req.body.senha_atual === 'string' ? req.body.senha_atual : '';
+  const senha_atual =
+    typeof req.body.senha_atual === "string" ? req.body.senha_atual : "";
   const nova_senha = password(req.body.nova_senha);
-  const confirmar_senha = typeof req.body.confirmar_senha === 'string' ? req.body.confirmar_senha : '';
+  const confirmar_senha =
+    typeof req.body.confirmar_senha === "string"
+      ? req.body.confirmar_senha
+      : "";
   try {
     const result = await db.query("SELECT senha FROM usuarios WHERE id = $1", [
       req.session.userId,
@@ -311,12 +325,16 @@ exports.alterarSenha = async (req, res) => {
       user: req.session.user,
       userStatus: req.session.userStatus,
       userId: req.session.userId,
-      userCargo: req.session.userCargo
+      userCargo: req.session.userCargo,
     };
-    await new Promise((resolve, reject) => req.session.regenerate(err => err ? reject(err) : resolve()));
+    await new Promise((resolve, reject) =>
+      req.session.regenerate((err) => (err ? reject(err) : resolve())),
+    );
     Object.assign(req.session, oldSessionData);
     req.session.csrfToken = crypto.randomBytes(32).toString("hex");
-    await new Promise((resolve, reject) => req.session.save(err => err ? reject(err) : resolve()));
+    await new Promise((resolve, reject) =>
+      req.session.save((err) => (err ? reject(err) : resolve())),
+    );
 
     req.flash("success_msg", "Senha alterada com sucesso!");
     res.redirect("/dashboard?settings=account");
@@ -330,7 +348,8 @@ exports.alterarSenha = async (req, res) => {
 exports.alunoDados = async (req, res) => {
   try {
     const alunoId = integerId(req.params.id);
-    if (!alunoId) return res.status(400).json({ error: 'ID de aluno inválido' });
+    if (!alunoId)
+      return res.status(400).json({ error: "ID de aluno inválido" });
     const result = await db.query(
       `
             SELECT 
@@ -358,26 +377,38 @@ exports.alunoDados = async (req, res) => {
 exports.gerarSenhaAluno = async (req, res) => {
   try {
     const alunoId = integerId(req.params.id);
-    if (!alunoId) return res.status(400).json({ error: 'ID de aluno inválido' });
+    if (!alunoId)
+      return res.status(400).json({ error: "ID de aluno inválido" });
 
     const senha = randomPassword();
     const senhaHash = await bcrypt.hash(senha, 12);
     const result = await db.query(
-      'UPDATE alunos_login SET senha = $1 WHERE aluno_id = $2 RETURNING email, matricula',
+      "UPDATE alunos_login SET senha = $1 WHERE aluno_id = $2 RETURNING email, matricula",
       [senhaHash, alunoId],
     );
 
-    if (result.rows.length === 0) return res.status(404).json({ error: 'Credenciais do aluno não encontradas' });
-    res.json({ sucesso: true, email: result.rows[0].email, matricula: result.rows[0].matricula, senha });
+    if (result.rows.length === 0)
+      return res
+        .status(404)
+        .json({ error: "Credenciais do aluno não encontradas" });
+    await db.query("DELETE FROM web_sessions WHERE sess->'aluno'->>'id' = $1", [
+      String(alunoId),
+    ]);
+    return res.json({
+      sucesso: true,
+      email: result.rows[0].email,
+      matricula: result.rows[0].matricula,
+      senha,
+    });
   } catch (err) {
-    console.error('Erro ao gerar senha do aluno:', err);
-    res.status(500).json({ error: 'Erro ao gerar nova senha' });
+    console.error("Erro ao gerar senha do aluno:", err);
+    res.status(500).json({ error: "Erro ao gerar nova senha" });
   }
 };
 
 exports.competenciasAluno = async (req, res) => {
   const alunoId = integerId(req.params.id);
-  if (!alunoId) return res.status(400).json({ error: 'ID de aluno inválido' });
+  if (!alunoId) return res.status(400).json({ error: "ID de aluno inválido" });
   try {
     const result = await db.query(
       `
@@ -445,8 +476,8 @@ exports.adicionarCompetencia = async (req, res) => {
 exports.deletarCompetencia = async (req, res) => {
   const compId = integerId(req.params.id);
   if (!compId) {
-    req.flash('error_msg', 'Competência inválida');
-    return res.redirect('/dashboard/edit');
+    req.flash("error_msg", "Competência inválida");
+    return res.redirect("/dashboard/edit");
   }
   try {
     await db.query("DELETE FROM aluno_competencias WHERE id = $1", [compId]);
@@ -463,8 +494,8 @@ exports.atualizarPresenca = async (req, res) => {
   const aluno_id = integerId(req.body.aluno_id);
   const presenca = numberInRange(req.body.presenca, 0, 100);
   if (!aluno_id || presenca === null) {
-    req.flash('error_msg', 'Dados de presença inválidos');
-    return res.redirect('/dashboard/edit');
+    req.flash("error_msg", "Dados de presença inválidos");
+    return res.redirect("/dashboard/edit");
   }
   try {
     await db.query("UPDATE alunos SET presenca = $1 WHERE id = $2", [
@@ -481,68 +512,80 @@ exports.atualizarPresenca = async (req, res) => {
 };
 
 exports.addAluno = async (req, res) => {
-  const nome = personName(req.body.nome);
-  const ano_escolar = ALLOWED_YEARS.includes(req.body.ano_escolar) ? req.body.ano_escolar : null;
-  const idade = numberInRange(req.body.idade, 10, 20);
+  const nome = personName(req.body?.nome);
+  const ano_escolar = ALLOWED_YEARS.includes(req.body?.ano_escolar)
+    ? req.body.ano_escolar
+    : null;
+  const idade = numberInRange(req.body?.idade, 10, 20);
   if (!nome || !ano_escolar || idade === null) {
-    req.flash("error_msg", "Todos os campos são obrigatórios");
+    req.flash(
+      "error_msg",
+      "Todos os campos são obrigatórios e devem ser válidos.",
+    );
     return res.redirect("/dashboard/edit");
   }
+
+  const client = await db.connect();
+  let inTransaction = false;
   try {
-    const nomeLower = normalizeToEmailName(nome);
-    const numeroAleatorio = crypto.randomInt(10, 100);
-    const email = generateStudentEmail(nome);
+    await client.query("BEGIN");
+    inTransaction = true;
+    const duplicate = await client.query(
+      "SELECT 1 FROM alunos WHERE nome = $1 LIMIT 1",
+      [nome],
+    );
+    if (duplicate.rows.length) {
+      await client.query("ROLLBACK");
+      inTransaction = false;
+      req.flash("error_msg", "Já existe um aluno com esse nome.");
+      return res.redirect("/dashboard/edit");
+    }
+
+    const email = `${(normalizeToEmailName(nome) || "aluno").slice(0, 55)}-${crypto.randomBytes(4).toString("hex")}@aluno.analisai.com`;
+    const matricula = `ALU${crypto.randomBytes(7).toString("hex").toUpperCase()}`;
     const senha = randomPassword();
     const senhaHash = await bcrypt.hash(senha, 12);
-    
-    const matricula = `alu${Date.now().toString().slice(-8)}`;
-    const alunoResult = await db.query(
-      `INSERT INTO alunos (nome, ano_escolar, idade, nota, presenca, nivel) 
-             VALUES ($1, $2, $3, 0, 100, 'EM DESENVOLVIMENTO') RETURNING id`,
+    const alunoResult = await client.query(
+      `INSERT INTO alunos (nome, ano_escolar, idade, nota, presenca, nivel)
+       VALUES ($1, $2, $3, 0, 100, 'EM DESENVOLVIMENTO') RETURNING id`,
       [nome, ano_escolar, idade],
     );
-    const alunoId = alunoResult.rows[0].id;
-    await db.query(
-      `INSERT INTO alunos_login (nome, email, senha, matricula, aluno_id, status) 
-             VALUES ($1, $2, $3, $4, $5, 'ATIVO')`,
-      [nome, email, senhaHash, matricula, alunoId],
+    await client.query(
+      `INSERT INTO alunos_login (nome, email, senha, matricula, aluno_id, status)
+       VALUES ($1, $2, $3, $4, $5, 'ATIVO')`,
+      [nome, email, senhaHash, matricula, alunoResult.rows[0].id],
     );
+    await client.query("COMMIT");
+    inTransaction = false;
     req.flash(
       "success_msg",
       `Aluno cadastrado com sucesso! Login: ${email} / Senha temporária: ${senha}`,
     );
-    res.redirect("/dashboard/edit");
+    return res.redirect("/dashboard/edit");
   } catch (err) {
-    console.error("Erro ao adicionar aluno:", err);
-    if (err.code === "23505") {
-      if (err.constraint === "alunos_login_email_key") {
-        const nomeLower = normalizeToEmailName(nome);
-        const timestamp = Date.now().toString().slice(-6);
-        const emailAlternativo = `${nomeLower}.${timestamp}@aluno.analisai.com`;
-        req.flash(
-          "error_msg",
-          `Email já existente. Tente novamente ou use: ${emailAlternativo}`,
-        );
-      } else if (err.constraint === "alunos_login_matricula_key") {
-        req.flash("error_msg", "Matrícula já existente. Tente novamente.");
-      } else {
-        req.flash(
-          "error_msg",
-          "Email ou matrícula já existente. Tente novamente.",
-        );
-      }
-    } else {
-      req.flash("error_msg", "Erro ao adicionar aluno");
+    if (inTransaction) {
+      try {
+        await client.query("ROLLBACK");
+      } catch (_) {}
     }
-    res.redirect("/dashboard/edit");
+    console.error("Erro ao adicionar aluno:", err);
+    req.flash(
+      "error_msg",
+      err.code === "23505"
+        ? "E-mail, matrícula ou aluno já existente. Tente novamente."
+        : "Erro ao adicionar aluno.",
+    );
+    return res.redirect("/dashboard/edit");
+  } finally {
+    client.release();
   }
 };
 
 exports.deleteAluno = async (req, res) => {
   const id = integerId(req.params.id);
   if (!id) {
-    req.flash('error_msg', 'Aluno inválido');
-    return res.redirect('/dashboard/edit');
+    req.flash("error_msg", "Aluno inválido");
+    return res.redirect("/dashboard/edit");
   }
   try {
     await db.query("DELETE FROM alunos WHERE id = $1", [id]);
@@ -567,16 +610,22 @@ exports.eraseAll = async (req, res) => {
   const client = await db.connect();
   try {
     await client.query("BEGIN");
-    
-    await client.query("TRUNCATE TABLE tarefas_alunos RESTART IDENTITY CASCADE");
+
+    await client.query(
+      "TRUNCATE TABLE tarefas_alunos RESTART IDENTITY CASCADE",
+    );
     await client.query("TRUNCATE TABLE tarefas RESTART IDENTITY CASCADE");
-    await client.query("TRUNCATE TABLE aluno_competencias RESTART IDENTITY CASCADE");
-    await client.query("TRUNCATE TABLE notas_detalhadas RESTART IDENTITY CASCADE");
+    await client.query(
+      "TRUNCATE TABLE aluno_competencias RESTART IDENTITY CASCADE",
+    );
+    await client.query(
+      "TRUNCATE TABLE notas_detalhadas RESTART IDENTITY CASCADE",
+    );
     await client.query("TRUNCATE TABLE alunos_login RESTART IDENTITY CASCADE");
     await client.query("TRUNCATE TABLE alunos RESTART IDENTITY CASCADE");
 
     await client.query("COMMIT");
-    
+
     req.flash("success_msg", "Todos os dados foram apagados com sucesso!");
     res.redirect("/dashboard/edit");
   } catch (err) {
@@ -589,148 +638,151 @@ exports.eraseAll = async (req, res) => {
   }
 };
 
-exports.importarDados = async (req, res) => {
-  try {
-    const { alunos } = req.body;
-    if (!alunos || !Array.isArray(alunos)) {
-      return res.json({ sucesso: false, erro: "Dados inválidos" });
-    }
-    let importados = 0;
-    let duplicados = 0;
-    
-    const credenciais = [];
+async function processarImportacao(req, alunos, incluirCompetencias) {
+  if (!Array.isArray(alunos))
+    return { status: 400, body: { sucesso: false, erro: "Dados inválidos." } };
+  if (alunos.length > 500)
+    return {
+      status: 400,
+      body: { sucesso: false, erro: "Limite de 500 alunos por importação." },
+    };
 
-    if (alunos.length > 500) return res.status(400).json({ sucesso: false, erro: 'Limite de 500 alunos por importação.' });
-    for (const aluno of alunos) {
-      const nome = personName(aluno.nome);
-      const ano_escolar = ALLOWED_YEARS.includes(aluno.ano_escolar) ? aluno.ano_escolar : null;
-      const idade = numberInRange(aluno.idade, 10, 20);
-      const presenca = numberInRange(aluno.presenca ?? 100, 0, 100);
-      if (!nome || !ano_escolar || idade === null || presenca === null) continue;
-      const existe = await db.query("SELECT id FROM alunos WHERE nome = $1", [nome]);
-      if (existe.rows.length > 0) {
-        duplicados++;
-        continue;
-      }
-      const result = await db.query(
-        `INSERT INTO alunos (nome, ano_escolar, idade, presenca, nivel) 
-                 VALUES ($1, $2, $3, $4, $5) RETURNING id`,
-        [
-          nome,
-          ano_escolar,
-          idade,
-          presenca,
-          "EM DESENVOLVIMENTO",
-        ],
-      );
-      const alunoId = result.rows[0].id;
-      const nomeLower = normalizeToEmailName(nome);
-      const numeroAleatorio = crypto.randomInt(10, 100);
-      const email = generateStudentEmail(nome);
-      const matricula = `ALU${Date.now().toString().slice(-8)}${importados}`;
+  const validos = [];
+  for (const raw of alunos) {
+    if (!raw || typeof raw !== "object") continue;
+    const nome = personName(raw.nome);
+    const ano_escolar = ALLOWED_YEARS.includes(raw.ano_escolar)
+      ? raw.ano_escolar
+      : null;
+    const idade = numberInRange(raw.idade, 10, 20);
+    const presenca = numberInRange(raw.presenca ?? 100, 0, 100);
+    if (!nome || !ano_escolar || idade === null || presenca === null) continue;
+    validos.push({
+      nome,
+      ano_escolar,
+      idade,
+      presenca,
+      competencias:
+        incluirCompetencias && Array.isArray(raw.competencias)
+          ? raw.competencias.slice(0, 50)
+          : [],
+    });
+  }
+
+  const names = [...new Set(validos.map((item) => item.nome))];
+  const existing = names.length
+    ? await db.query(
+        "SELECT id, nome FROM alunos WHERE nome = ANY($1::text[])",
+        [names],
+      )
+    : { rows: [] };
+  const existingNames = new Set(existing.rows.map((row) => row.nome));
+  const credenciais = [];
+  let importados = 0;
+  let duplicados = existing.rows.length;
+  let totalCompetencias = 0;
+  const client = await db.connect();
+  let inTransaction = false;
+
+  try {
+    await client.query("BEGIN");
+    inTransaction = true;
+    const competencies = await client.query(
+      "SELECT id, nome FROM competencias",
+    );
+    const competencyMap = new Map(
+      competencies.rows.map((row) => [row.nome, row.id]),
+    );
+
+    for (const item of validos) {
+      if (existingNames.has(item.nome)) continue;
+
+      const email = `${(normalizeToEmailName(item.nome) || "aluno").slice(0, 55)}-${crypto.randomBytes(4).toString("hex")}@aluno.analisai.com`;
+      const matricula = `ALU${crypto.randomBytes(7).toString("hex").toUpperCase()}`;
       const senhaTemporaria = randomPassword();
       const senhaHash = await bcrypt.hash(senhaTemporaria, 12);
-      credenciais.push({ nome, email, matricula, senha: senhaTemporaria });
-      await db.query(
-        `INSERT INTO alunos_login (nome, email, senha, matricula, aluno_id, status) 
-                 VALUES ($1, $2, $3, $4, $5, 'ATIVO')`,
-        [nome, email, senhaHash, matricula, alunoId],
+      const alunoResult = await client.query(
+        `INSERT INTO alunos (nome, ano_escolar, idade, nota, presenca, nivel)
+         VALUES ($1, $2, $3, 0, $4, 'EM DESENVOLVIMENTO') RETURNING id`,
+        [item.nome, item.ano_escolar, item.idade, item.presenca],
       );
+      const alunoId = alunoResult.rows[0].id;
+      await client.query(
+        `INSERT INTO alunos_login (nome, email, senha, matricula, aluno_id, status)
+         VALUES ($1, $2, $3, $4, $5, 'ATIVO')`,
+        [item.nome, email, senhaHash, matricula, alunoId],
+      );
+      credenciais.push({
+        nome: item.nome,
+        email,
+        matricula,
+        senha: senhaTemporaria,
+      });
       importados++;
+      existingNames.add(item.nome);
+
+      for (const comp of item.competencias) {
+        const compNome = text(comp?.nome, 100, { min: 1 });
+        const compNota = numberInRange(comp?.nota, 0, 10);
+        const competenciaId = compNome ? competencyMap.get(compNome) : null;
+        if (!competenciaId || compNota === null) continue;
+        await client.query(
+          `INSERT INTO aluno_competencias (aluno_id, competencia_id, nota, observacoes)
+           VALUES ($1, $2, $3, $4)`,
+          [alunoId, competenciaId, compNota, "Importado via planilha"],
+        );
+        totalCompetencias++;
+      }
     }
-    res.json({
-      sucesso: true,
-      importados,
-      duplicados,
-      mensagem: `${importados} alunos importados com sucesso! ${duplicados} duplicados ignorados.`,
-      credenciais,
-    });
+
+    await client.query("COMMIT");
+    inTransaction = false;
+    return {
+      status: 200,
+      body: {
+        sucesso: true,
+        importados,
+        duplicados,
+        ...(incluirCompetencias ? { totalCompetencias } : {}),
+        mensagem: incluirCompetencias
+          ? `${importados} alunos importados com ${totalCompetencias} competências! ${duplicados} duplicados ignorados.`
+          : `${importados} alunos importados com sucesso! ${duplicados} duplicados ignorados.`,
+        credenciais,
+      },
+    };
+  } catch (err) {
+    if (inTransaction) {
+      try {
+        await client.query("ROLLBACK");
+      } catch (_) {}
+    }
+    throw err;
+  } finally {
+    client.release();
+  }
+}
+
+exports.importarDados = async (req, res) => {
+  try {
+    const result = await processarImportacao(req, req.body?.alunos, false);
+    return res.status(result.status).json(result.body);
   } catch (err) {
     console.error("Erro na importação:", err);
-    res.status(500).json({ sucesso: false, erro: 'Erro interno durante a importação.' });
+    return res
+      .status(500)
+      .json({ sucesso: false, erro: "Erro interno durante a importação." });
   }
 };
 
 exports.importarDadosCompletos = async (req, res) => {
   try {
-    const { alunos } = req.body;
-    if (!alunos || !Array.isArray(alunos)) {
-      return res.json({ sucesso: false, erro: "Dados inválidos" });
-    }
-    let importados = 0;
-    let duplicados = 0;
-    let totalCompetencias = 0;
-
-    const credenciais = [];
-
-    if (alunos.length > 500) return res.status(400).json({ sucesso: false, erro: 'Limite de 500 alunos por importação.' });
-    for (const aluno of alunos) {
-      const nome = personName(aluno.nome);
-      const ano_escolar = ALLOWED_YEARS.includes(aluno.ano_escolar) ? aluno.ano_escolar : null;
-      const idade = numberInRange(aluno.idade, 10, 20);
-      const presenca = numberInRange(aluno.presenca ?? 100, 0, 100);
-      if (!nome || !ano_escolar || idade === null || presenca === null) continue;
-      const existe = await db.query("SELECT id FROM alunos WHERE nome = $1", [nome]);
-      if (existe.rows.length > 0) {
-        duplicados++;
-        continue;
-      }
-      const result = await db.query(
-        `INSERT INTO alunos (nome, ano_escolar, idade, presenca, nivel) 
-                 VALUES ($1, $2, $3, $4, $5) RETURNING id`,
-        [
-          nome,
-          ano_escolar,
-          idade,
-          presenca,
-          "EM DESENVOLVIMENTO",
-        ],
-      );
-      const alunoId = result.rows[0].id;
-      const nomeLower = normalizeToEmailName(nome);
-      const numeroAleatorio = crypto.randomInt(10, 100);
-      const email = generateStudentEmail(nome);
-      const matricula = `ALU${Date.now().toString().slice(-8)}${importados}`;
-      const senhaTemporaria = randomPassword();
-      const senhaHash = await bcrypt.hash(senhaTemporaria, 12);
-      credenciais.push({ nome, email, matricula, senha: senhaTemporaria });
-      await db.query(
-        `INSERT INTO alunos_login (nome, email, senha, matricula, aluno_id, status) 
-                 VALUES ($1, $2, $3, $4, $5, 'ATIVO')`,
-        [nome, email, senhaHash, matricula, alunoId], 
-      );
-      importados++;
-      if (aluno.competencias && aluno.competencias.length > 0) {
-        for (const comp of aluno.competencias.slice(0, 50)) {
-          const compNota = numberInRange(comp.nota, 0, 10);
-          const compNome = text(comp.nome, 100, { min: 1 });
-          if (compNota === null || !compNome) continue;
-          const compResult = await db.query(
-            "SELECT id FROM competencias WHERE nome = $1",
-            [compNome],
-          );
-          if (compResult.rows.length > 0) {
-            const competenciaId = compResult.rows[0].id;
-            await db.query(
-              "INSERT INTO aluno_competencias (aluno_id, competencia_id, nota, observacoes) VALUES ($1, $2, $3, $4)",
-              [alunoId, competenciaId, compNota, "Importado via planilha"],
-            );
-            totalCompetencias++;
-          }
-        }
-      }
-    }
-    res.json({
-      sucesso: true,
-      importados,
-      duplicados,
-      totalCompetencias,
-      mensagem: `${importados} alunos importados com ${totalCompetencias} competências! ${duplicados} duplicados ignorados.`,
-      credenciais,
-    });
+    const result = await processarImportacao(req, req.body?.alunos, true);
+    return res.status(result.status).json(result.body);
   } catch (err) {
-    console.error("Erro na importação:", err);
-    res.status(500).json({ sucesso: false, erro: 'Erro interno durante a importação.' });
+    console.error("Erro na importação completa:", err);
+    return res
+      .status(500)
+      .json({ sucesso: false, erro: "Erro interno durante a importação." });
   }
 };
 

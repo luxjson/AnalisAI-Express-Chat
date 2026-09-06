@@ -1,8 +1,8 @@
-const db = require('../db');
+const db = require("../db");
 
 class Aluno {
-    static async findAllWithCompetencias() {
-        const result = await db.query(`
+  static async findAllWithCompetencias() {
+    const result = await db.query(`
             SELECT 
                 a.*,
                 COALESCE(
@@ -20,11 +20,11 @@ class Aluno {
             FROM alunos a
             ORDER BY a.nome ASC
         `);
-        return result.rows;
-    }
+    return result.rows;
+  }
 
-    static async findAllWithDetails() {
-        const result = await db.query(`
+  static async findAllWithDetails() {
+    const result = await db.query(`
             SELECT 
                 a.*,
                 COALESCE(
@@ -66,16 +66,17 @@ class Aluno {
             FROM alunos a
             ORDER BY a.id ASC
         `);
-        return result.rows;
-    }
+    return result.rows;
+  }
 
-    static async findById(id) {
-        const result = await db.query('SELECT * FROM alunos WHERE id = $1', [id]);
-        return result.rows[0];
-    }
+  static async findById(id) {
+    const result = await db.query("SELECT * FROM alunos WHERE id = $1", [id]);
+    return result.rows[0];
+  }
 
-    static async findByIdWithLogin(id) {
-        const result = await db.query(`
+  static async findByIdWithLogin(id) {
+    const result = await db.query(
+      `
             SELECT 
                 a.id,
                 a.nome,
@@ -84,12 +85,15 @@ class Aluno {
             FROM alunos a
             LEFT JOIN alunos_login al ON a.id = al.aluno_id
             WHERE a.id = $1
-        `, [id]);
-        return result.rows[0];
-    }
+        `,
+      [id],
+    );
+    return result.rows[0];
+  }
 
-    static async getCompetencias(alunoId) {
-        const result = await db.query(`
+  static async getCompetencias(alunoId) {
+    const result = await db.query(
+      `
             SELECT 
                 ac.*, 
                 c.nome, 
@@ -100,47 +104,56 @@ class Aluno {
             JOIN competencias c ON ac.competencia_id = c.id
             WHERE ac.aluno_id = $1
             ORDER BY ac.data_registro DESC
-        `, [alunoId]);
-        return result.rows;
-    }
+        `,
+      [alunoId],
+    );
+    return result.rows;
+  }
 
-    static async create(nome, ano_escolar, idade) {
-        const result = await db.query(
-            `INSERT INTO alunos (nome, ano_escolar, idade, nota, presenca, nivel) 
+  static async create(nome, ano_escolar, idade) {
+    const result = await db.query(
+      `INSERT INTO alunos (nome, ano_escolar, idade, nota, presenca, nivel) 
              VALUES ($1, $2, $3, 0, 100, 'EM DESENVOLVIMENTO') RETURNING id`,
-            [nome, ano_escolar, idade]
-        );
-        return result.rows[0].id;
-    }
+      [nome, ano_escolar, idade],
+    );
+    return result.rows[0].id;
+  }
 
-    static async updatePresenca(id, presenca) {
-        await db.query('UPDATE alunos SET presenca = $1 WHERE id = $2', [presenca, id]);
-    }
+  static async updatePresenca(id, presenca) {
+    await db.query("UPDATE alunos SET presenca = $1 WHERE id = $2", [
+      presenca,
+      id,
+    ]);
+  }
 
-    static async delete(id) {
-        await db.query('DELETE FROM alunos WHERE id = $1', [id]);
-    }
+  static async delete(id) {
+    await db.query("DELETE FROM alunos WHERE id = $1", [id]);
+  }
 
-    static async resetSequence() {
-        const checkEmpty = await db.query('SELECT COUNT(*) FROM alunos');
-        if (parseInt(checkEmpty.rows[0].count) === 0) {
-            await db.query('ALTER SEQUENCE alunos_id_seq RESTART WITH 1');
-        } else {
-            await db.query("SELECT setval('alunos_id_seq', (SELECT MAX(id) FROM alunos))");
-        }
+  static async resetSequence() {
+    const checkEmpty = await db.query("SELECT COUNT(*) FROM alunos");
+    if (parseInt(checkEmpty.rows[0].count) === 0) {
+      await db.query("ALTER SEQUENCE alunos_id_seq RESTART WITH 1");
+    } else {
+      await db.query(
+        "SELECT setval('alunos_id_seq', (SELECT MAX(id) FROM alunos))",
+      );
     }
+  }
 
-    static async truncateAll() {
-        await db.query('TRUNCATE TABLE tarefas_alunos RESTART IDENTITY CASCADE');
-        await db.query('TRUNCATE TABLE tarefas RESTART IDENTITY CASCADE');
-        await db.query('TRUNCATE TABLE aluno_competencias RESTART IDENTITY CASCADE');
-        await db.query('TRUNCATE TABLE notas_detalhadas RESTART IDENTITY CASCADE');
-        await db.query('TRUNCATE TABLE alunos_login RESTART IDENTITY CASCADE');
-        await db.query('TRUNCATE TABLE alunos RESTART IDENTITY CASCADE');
-    }
+  static async truncateAll() {
+    await db.query("TRUNCATE TABLE tarefas_alunos RESTART IDENTITY CASCADE");
+    await db.query("TRUNCATE TABLE tarefas RESTART IDENTITY CASCADE");
+    await db.query(
+      "TRUNCATE TABLE aluno_competencias RESTART IDENTITY CASCADE",
+    );
+    await db.query("TRUNCATE TABLE notas_detalhadas RESTART IDENTITY CASCADE");
+    await db.query("TRUNCATE TABLE alunos_login RESTART IDENTITY CASCADE");
+    await db.query("TRUNCATE TABLE alunos RESTART IDENTITY CASCADE");
+  }
 
-    static async getRankingGeral() {
-        const result = await db.query(`
+  static async getRankingGeral() {
+    const result = await db.query(`
             SELECT 
                 c.nome,
                 COALESCE(AVG(ac.nota), 0) as media,
@@ -151,14 +164,14 @@ class Aluno {
             HAVING COUNT(ac.id) > 0
             ORDER BY media DESC
         `);
-        return result.rows.map(item => ({
-            ...item,
-            media: parseFloat(item.media) || 0
-        }));
-    }
+    return result.rows.map((item) => ({
+      ...item,
+      media: parseFloat(item.media) || 0,
+    }));
+  }
 
-    static async getRankingMedio() {
-        const result = await db.query(`
+  static async getRankingMedio() {
+    const result = await db.query(`
             SELECT 
                 c.nome,
                 COALESCE(AVG(ac.nota), 0) as media,
@@ -171,14 +184,14 @@ class Aluno {
             HAVING COUNT(ac.id) > 0
             ORDER BY media DESC
         `);
-        return result.rows.map(item => ({
-            ...item,
-            media: parseFloat(item.media) || 0
-        }));
-    }
+    return result.rows.map((item) => ({
+      ...item,
+      media: parseFloat(item.media) || 0,
+    }));
+  }
 
-    static async getRankingFundamental() {
-        const result = await db.query(`
+  static async getRankingFundamental() {
+    const result = await db.query(`
             SELECT 
                 c.nome,
                 COALESCE(AVG(ac.nota), 0) as media,
@@ -191,11 +204,11 @@ class Aluno {
             HAVING COUNT(ac.id) > 0
             ORDER BY media DESC
         `);
-        return result.rows.map(item => ({
-            ...item,
-            media: parseFloat(item.media) || 0
-        }));
-    }
+    return result.rows.map((item) => ({
+      ...item,
+      media: parseFloat(item.media) || 0,
+    }));
+  }
 }
 
 module.exports = Aluno;

@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <script src="/js/shared/theme-init.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AnalisAI - Editor de Notas</title>
+    <title>Editor de Notas</title>
     <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
     <script src="/js/shared/phosphor-icons.js" defer></script>
     <link rel="stylesheet" href="/css/components/sidebar.css">
@@ -162,30 +162,47 @@
         </div>
 
         <main class="edit-content">
-            <section class="ai-editor-panel">
-                <div class="ai-panel-heading">
-                    <div>
-                        <h2 class="section-title-2">SITUAÇÃO DO ALUNO</h2>
-                        <p>Gere uma leitura objetiva com base nas competências, presença e tarefas registradas.</p>
-                    </div>
+<section class="ai-editor-panel">
+    <details class="ai-accordion">
+        <summary class="ai-accordion-summary">
+            <div class="ai-panel-heading" style="cursor: pointer; display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                <div>
+                    <h2 class="section-title-2">SITUAÇÃO DO ALUNO</h2>
+                    <p>Gere uma leitura objetiva com base nas competências, presença e tarefas registradas.</p>
+                </div>
+                <div style="display: flex; align-items: center; gap: 16px;">
                     <a class="btn-secondary-dash" href="/dashboard/ia"><i class="fas fa-comments"></i> ABRIR CHAT</a>
+                    <span class="ai-accordion-icon">
+                        <i class="ph-bold ph-caret-down"></i>
+                    </span>
                 </div>
-                <div class="ai-editor-controls">
-                    <select id="aiStudentSelect">
-                        <option value="">Selecione um aluno</option>
-                        <% alunos.forEach(aluno => { %>
-                            <option value="<%= aluno.id %>"><%= aluno.nome %> - <%= aluno.ano_escolar %></option>
-                        <% }); %>
-                    </select>
-                    <button class="btn-secondary-dash" id="aiAnalyzeStudent" type="button"><i class="fas fa-chart-line"></i> ANALISAR</button>
-                </div>
-                <div class="ai-suggestion-list" aria-label="Sugestões de análise">
-                    <button type="button" class="ai-suggestion" data-ai-prompt="Elabore um diagnóstico pedagógico em texto corrido sobre este aluno, analisando rendimento geral, competências e pontos de atenção."><i class="fas fa-list-check"></i><span>Diagnóstico</span></button>
-                    <button type="button" class="ai-suggestion" data-ai-prompt="Sugira intervenções pedagógicas personalizadas e estratégias ativas para fortalecer o aprendizado deste aluno."><i class="fas fa-lightbulb"></i><span>Intervenções</span></button>
-                    <button type="button" class="ai-suggestion" data-ai-prompt="Faça uma análise detalhada sobre o engajamento, frequência e tarefas deste aluno, propondo ações práticas."><i class="fas fa-arrow-trend-up"></i><span>Engajamento</span></button>
-                </div>
-                <div id="aiEditorResult" class="ai-result" aria-live="polite">A análise aparecerá aqui.</div>
-            </section>
+            </div>
+        </summary>
+
+        <div class="ai-accordion-content">
+            <div class="ai-editor-controls">
+                <select id="aiStudentSelect">
+                    <option value="">Selecione um aluno</option>
+                    <% alunos.forEach(aluno => { %>
+                        <option value="<%= aluno.id %>"><%= aluno.nome %> - <%= aluno.ano_escolar %></option>
+                    <% }); %>
+                </select>
+                <button class="btn-secondary-dash" id="aiAnalyzeStudent" type="button"><i class="fas fa-chart-line"></i> ANALISAR</button>
+            </div>
+
+            <div class="ai-suggestion-list" aria-label="Sugestões de análise">
+                <button type="button" class="ai-suggestion" data-ai-prompt="Elabore um diagnóstico pedagógico em texto corrido sobre este aluno, analisando rendimento geral, competências e pontos de atenção."><i class="fas fa-list-check"></i><span>Diagnóstico</span></button>
+                <button type="button" class="ai-suggestion" data-ai-prompt="Sugira intervenções pedagógicas personalizadas e estratégias ativas para fortalecer o aprendizado deste aluno."><i class="fas fa-lightbulb"></i><span>Intervenções</span></button>
+                <button type="button" class="ai-suggestion" data-ai-prompt="Faça uma análise detalhada sobre o engajamento, frequência e tarefas deste aluno, propondo ações práticas."><i class="fas fa-arrow-trend-up"></i><span>Engajamento</span></button>
+            </div>
+
+            <div id="aiEditorResult" class="ai-result" aria-live="polite">A análise aparecerá aqui.</div>
+        </div>
+    </details>
+</section>
+
+
+            
             <div class="table-container">
                 <table class="alunos-table" id="alunosTable">
                     <thead>

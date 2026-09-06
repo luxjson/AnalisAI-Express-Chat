@@ -2,8 +2,16 @@ node_modules/
 .env
 .env.*
 !.env.example
+
+# Arquivos enviados por usuários e snapshots não devem ir para o Git
 uploads/*
 !uploads/.gitkeep
+src/uploads/*
+!src/uploads/.gitkeep
+src/backups/*
+!src/backups/.gitkeep
+
 npm-debug.log*
 *.log
 .DS_Store
+.vercel/

@@ -111,7 +111,7 @@
 
 .config-tab:hover {
     color: #fff;
-    background: rgba(255,255,255,0.05);
+    background: rgba(255, 255, 255, 0.05);
 }
 
 .config-tab.active {
@@ -129,8 +129,15 @@
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .info-grid {
@@ -180,9 +187,9 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    }
+}
 
-    .page-title {
+.page-title {
     color: #ffffff;
     text-transform: uppercase;
     font-size: 1.2rem;
@@ -393,15 +400,22 @@
 }
 
 @keyframes slideDown {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @media (max-width: 1024px) {
     .perfil-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .info-grid {
         grid-template-columns: 1fr;
     }
@@ -413,7 +427,7 @@
         align-items: flex-start;
         gap: 10px;
     }
-    
+
     .toggle-switch {
         margin-left: 0;
     }
@@ -444,7 +458,7 @@
     border-color: #ff0000;
     color: var(--text-white);
     background: rgba(115, 33, 33, 0.205);
-    transform: translateY(-3px);  
+    transform: translateY(-3px);
 }
 
 .b i {
@@ -458,7 +472,6 @@
     color: white;
 }
 
-/* Unified light theme — same neutral language as the Settings popup */
 html[data-theme="light"] .perfil-sidebar,
 html[data-theme="light"] .perfil-main,
 html[data-theme="light"] .info-value,
@@ -523,7 +536,7 @@ html[data-theme="light"] .toggle-switch.ativo {
 
 html[data-theme="light"] .form-input:focus {
     border-color: #a9a9af;
-    box-shadow: 0 0 0 3px rgba(60,60,65,.08);
+    box-shadow: 0 0 0 3px rgba(60, 60, 65, .08);
 }
 
 html[data-theme="light"] .btn-salvar,
@@ -544,4 +557,31 @@ html[data-theme="light"] .b:hover {
     border-color: #bfc0c5;
     color: #222222;
     transform: none;
+}
+
+@media screen and (max-width: 768px) {
+    .perfil-grid {
+        grid-template-columns: minmax(0, 1fr) !important;
+    }
+
+    .perfil-sidebar,
+    .perfil-main {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .form-group {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .form-input {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .btn-salvar {
+        width: 100%;
+        justify-content: center;
+    }
 }

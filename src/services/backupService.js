@@ -1,200 +1,317 @@
-const fs = require('fs');
-const path = require('path');
-const db = require('../db');
-const { SYSTEM_TABLES } = require('./checkupService');
+const crypto = require("crypto");
+const db = require("../db");
+const { SYSTEM_TABLES } = require("./checkupService");
 
-const BACKUP_DIR = path.join(__dirname, '..', 'backups');
-const METADATA_FILE = path.join(BACKUP_DIR, 'metadata.json');
 const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+const BACKUP_TABLES = [...SYSTEM_TABLES, "uploaded_files"];
+let readyPromise;
 
-function ensureBackupDirectory() {
-    if (!fs.existsSync(BACKUP_DIR)) {
-        fs.mkdirSync(BACKUP_DIR, { recursive: true });
-    }
+function ensureTable() {
+  if (!readyPromise) {
+    readyPromise = db.ensureRuntimeSchema();
+  }
+  return readyPromise;
 }
 
-function loadMetadata() {
-    ensureBackupDirectory();
-    if (!fs.existsSync(METADATA_FILE)) {
-        return {
-            lastBackup: null,
-            nextBackup: null,
-            intervalDays: 7,
-            backups: []
-        };
-    }
-    try {
-        const raw = fs.readFileSync(METADATA_FILE, 'utf-8');
-        return JSON.parse(raw);
-    } catch (err) {
-        console.error('Erro ao ler metadata de backup:', err);
-        return {
-            lastBackup: null,
-            nextBackup: null,
-            intervalDays: 7,
-            backups: []
-        };
-    }
-}
-
-function saveMetadata(meta) {
-    ensureBackupDirectory();
-    fs.writeFileSync(METADATA_FILE, JSON.stringify(meta, null, 2), 'utf-8');
+function serialize(value) {
+  if (Buffer.isBuffer(value))
+    return { __type: "Buffer", base64: value.toString("base64") };
+  if (Array.isArray(value)) return value.map(serialize);
+  if (value && typeof value === "object")
+    return Object.fromEntries(
+      Object.entries(value).map(([k, v]) => [k, serialize(v)]),
+    );
+  return value;
 }
 
 /**
- * Cria snapshot do banco de dados (todas as tabelas do sistema)
+ * Cria um snapshot (branch) no Neon via API.
+ * Retorna os dados do branch criado.
  */
-async function createBackup(origem = 'automatico') {
-    ensureBackupDirectory();
-    const timestamp = new Date();
-    const isoString = timestamp.toISOString();
-    const fileTimestamp = isoString.replace(/[:.]/g, '-');
-    const filename = `backup-analisai-${fileTimestamp}.json`;
-    const targetPath = path.join(BACKUP_DIR, filename);
+async function createNeonSnapshot() {
+  const apiKey = process.env.NEON_API_KEY;
+  const projectId = process.env.NEON_PROJECT_ID;
 
-    const backupData = {
-        metadata: {
-            app: 'AnalisAI',
-            version: '1.0.4',
-            createdAt: isoString,
-            origem: origem
+  if (!apiKey || !projectId) {
+    throw new Error("NEON_API_KEY ou NEON_PROJECT_ID não configurados.");
+  }
+
+  const branchName = `snapshot-${new Date().toISOString().replace(/[:.]/g, "-")}`;
+  const response = await fetch(
+    `https://console.neon.tech/api/v2/projects/${projectId}/branches`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
+        branch: {
+          name: branchName,
         },
-        tables: {}
-    };
+      }),
+    },
+  );
 
-    let tableCount = 0;
-    for (const table of SYSTEM_TABLES) {
-        try {
-            const res = await db.query(`SELECT * FROM ${table}`);
-            backupData.tables[table] = res.rows;
-            tableCount++;
-        } catch (err) {
-            console.warn(`Aviso ao exportar tabela ${table} para backup:`, err.message);
-            backupData.tables[table] = [];
-        }
-    }
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(
+      `Neon API error: ${response.status} ${response.statusText} - ${JSON.stringify(errorData)}`,
+    );
+  }
 
-    const jsonContent = JSON.stringify(backupData, null, 2);
-    fs.writeFileSync(targetPath, jsonContent, 'utf-8');
-    const stats = fs.statSync(targetPath);
+  const data = await response.json();
+  return {
+    branchId: data.branch.id,
+    branchName: data.branch.name,
+    createdAt: data.branch.created_at,
+    connectionString: data.branch.connection_string || null,
+  };
+}
 
-    const meta = loadMetadata();
-    meta.lastBackup = isoString;
-    meta.nextBackup = new Date(timestamp.getTime() + SEVEN_DAYS_MS).toISOString();
-    meta.backups.unshift({
-        filename,
+async function createBackup(origem = "automatico") {
+  await ensureTable();
+  const timestamp = new Date();
+  const isoString = timestamp.toISOString();
+  let backupType = "json";
+  let snapshotInfo = null;
+  let filename = `backup-analisai-${isoString.replace(/[:.]/g, "-")}-${crypto.randomBytes(4).toString("hex")}.json`;
+  let content = null;
+  let sizeBytes = 0;
+  let tableCount = 0;
+
+  try {
+    snapshotInfo = await createNeonSnapshot();
+    backupType = "neon-snapshot";
+    filename = `neon-snapshot-${snapshotInfo.branchName}.json`;
+    content = JSON.stringify({ snapshot: snapshotInfo });
+    sizeBytes = Buffer.byteLength(content, "utf8");
+    tableCount = 1;
+    console.log(
+      `[Backup] Snapshot Neon criado: ${snapshotInfo.branchName} (${snapshotInfo.branchId})`,
+    );
+  } catch (err) {
+    console.warn(
+      "[Backup] Falha ao criar snapshot Neon, usando fallback JSON:",
+      err.message,
+    );
+    const backupData = {
+      metadata: {
+        app: "AnalisAI",
+        version: "1.0.4",
         createdAt: isoString,
         origem,
-        sizeBytes: stats.size,
-        tableCount
-    });
-
-    // Manter no máximo os últimos 15 backups para economizar disco
-    if (meta.backups.length > 15) {
-        const toRemove = meta.backups.splice(15);
-        for (const item of toRemove) {
-            const oldPath = path.join(BACKUP_DIR, item.filename);
-            if (fs.existsSync(oldPath)) {
-                try { fs.unlinkSync(oldPath); } catch (_) {}
-            }
-        }
-    }
-
-    saveMetadata(meta);
-
-    console.log(`[Backup] Snapshot '${filename}' criado com sucesso (${origem}). Próximo agendado para 7 dias.`);
-    return {
-        filename,
-        createdAt: isoString,
-        origem,
-        sizeBytes: stats.size,
-        tableCount
+      },
+      tables: {},
     };
-}
+    let count = 0;
 
-/**
- * Obtém o status do backup semanal
- */
-function getBackupStatus() {
-    const meta = loadMetadata();
-    const now = Date.now();
-    let daysSinceLast = null;
-    let daysUntilNext = null;
-
-    if (meta.lastBackup) {
-        const lastTime = new Date(meta.lastBackup).getTime();
-        daysSinceLast = Math.max(0, Math.floor((now - lastTime) / (24 * 60 * 60 * 1000)));
-        const nextTime = new Date(meta.nextBackup || (lastTime + SEVEN_DAYS_MS)).getTime();
-        daysUntilNext = Math.max(0, Math.ceil((nextTime - now) / (24 * 60 * 60 * 1000)));
+    for (const table of BACKUP_TABLES) {
+      if (!/^[a-z_][a-z0-9_]*$/i.test(table)) continue;
+      try {
+        const result = await db.query(`SELECT * FROM ${table}`);
+        backupData.tables[table] = serialize(result.rows);
+        count++;
+      } catch (err) {
+        console.warn(`[Backup] Falha ao exportar ${table}:`, err.message);
+        backupData.tables[table] = [];
+      }
     }
 
-    return {
-        lastBackup: meta.lastBackup,
-        nextBackup: meta.nextBackup,
-        intervalDays: 7,
-        daysSinceLast,
-        daysUntilNext,
-        totalBackups: meta.backups.length,
-        backups: meta.backups
-    };
-}
-
-/**
- * Retorna o caminho de arquivo para download com validação de segurança
- */
-function getBackupFilePath(filename) {
-    if (!filename || typeof filename !== 'string') return null;
-    const safeName = path.basename(filename);
-    if (safeName !== filename || !safeName.startsWith('backup-analisai-') || !safeName.endsWith('.json')) {
-        return null;
+    content = JSON.stringify(backupData);
+    sizeBytes = Buffer.byteLength(content, "utf8");
+    tableCount = count;
+    backupType = "json";
+    filename = `backup-analisai-${isoString.replace(/[:.]/g, "-")}-${crypto.randomBytes(4).toString("hex")}.json`;
+  }
+  const checksum = crypto
+    .createHash("sha256")
+    .update(content, "utf8")
+    .digest("hex");
+  const backupOrigin = String(origem).slice(0, 100);
+  const columnsInfo = await db.query(`
+    SELECT column_name, udt_name
+    FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'system_backups'
+  `);
+  const columnMap = new Map(
+    columnsInfo.rows.map((row) => [row.column_name, row.udt_name]),
+  );
+  const insertColumns = [
+    "filename",
+    "created_at",
+    "origem",
+    "size_bytes",
+    "table_count",
+    "content",
+  ];
+  const values = [
+    filename,
+    timestamp,
+    backupOrigin,
+    sizeBytes,
+    tableCount,
+    content,
+  ];
+  if (columnMap.has("data")) {
+    const dataType = columnMap.get("data");
+    insertColumns.push("data");
+    if (dataType === "jsonb") {
+      values.push(JSON.stringify(isoString));
+    } else if (dataType === "timestamptz" || dataType === "timestamp") {
+      values.push(timestamp);
+    } else {
+      values.push(isoString);
     }
-    const fullPath = path.join(BACKUP_DIR, safeName);
-    if (!fs.existsSync(fullPath)) return null;
-    return fullPath;
+  }
+  if (columnMap.has("reason")) {
+    insertColumns.push("reason");
+    values.push(backupOrigin);
+  }
+  if (columnMap.has("checksum")) {
+    const checksumType = columnMap.get("checksum");
+    insertColumns.push("checksum");
+    if (checksumType === "bytea") {
+      values.push(Buffer.from(checksum, "hex"));
+    } else {
+      values.push(checksum);
+    }
+  }
+
+  if (columnMap.has("snapshot_id")) {
+    insertColumns.push("snapshot_id");
+    values.push(snapshotInfo?.branchId || null);
+  }
+
+  if (columnMap.has("tipo_backup")) {
+    insertColumns.push("tipo_backup");
+    values.push(backupType);
+  }
+
+  const placeholders = insertColumns
+    .map((col, idx) => {
+      const type = columnMap.get(col);
+      if (type === "jsonb") return `$${idx + 1}::jsonb`;
+      if (type === "bytea") return `$${idx + 1}::bytea`;
+      return `$${idx + 1}`;
+    })
+    .join(", ");
+
+  await db.query(
+    `INSERT INTO system_backups (${insertColumns.join(", ")}) VALUES (${placeholders})`,
+    values,
+  );
+
+  await db.query(
+    `DELETE FROM system_backups WHERE id NOT IN (SELECT id FROM system_backups ORDER BY created_at DESC LIMIT 15)`,
+  );
+
+  return {
+    filename,
+    createdAt: isoString,
+    origem: backupOrigin,
+    sizeBytes,
+    tableCount,
+    tipo: backupType,
+    snapshotId: snapshotInfo?.branchId || null,
+    snapshotName: snapshotInfo?.branchName || null,
+  };
 }
 
-/**
- * Verifica se o intervalo de 7 dias expirou e dispara backup se necessário
- */
+async function getBackupStatus() {
+  await ensureTable();
+  const result = await db.query(`
+    SELECT 
+      filename, 
+      created_at, 
+      origem, 
+      size_bytes, 
+      table_count,
+      tipo_backup,
+      snapshot_id
+    FROM system_backups 
+    ORDER BY created_at DESC 
+    LIMIT 15
+  `);
+  const backups = result.rows.map((row) => ({
+    filename: row.filename,
+    createdAt: row.created_at,
+    origem: row.origem,
+    sizeBytes: Number(row.size_bytes),
+    tableCount: Number(row.table_count),
+    tipo: row.tipo_backup || "json",
+    snapshotId: row.snapshot_id || null,
+  }));
+
+  const last = backups[0]?.createdAt ? new Date(backups[0].createdAt) : null;
+  const next = last ? new Date(last.getTime() + SEVEN_DAYS_MS) : null;
+  const now = Date.now();
+
+  return {
+    lastBackup: last?.toISOString() || null,
+    nextBackup: next?.toISOString() || null,
+    intervalDays: 7,
+    daysSinceLast: last
+      ? Math.max(0, Math.floor((now - last.getTime()) / 86400000))
+      : null,
+    daysUntilNext: next
+      ? Math.max(0, Math.ceil((next.getTime() - now) / 86400000))
+      : null,
+    totalBackups: backups.length,
+    backups,
+  };
+}
+
+async function getBackupFile(filename) {
+  if (typeof filename !== "string" || filename.length > 180) return null;
+  if (!/^(backup-analisai-|neon-snapshot-).+\.json$/.test(filename))
+    return null;
+
+  await ensureTable();
+  const result = await db.query(
+    "SELECT content FROM system_backups WHERE filename = $1 LIMIT 1",
+    [filename],
+  );
+  if (!result.rows.length) return null;
+
+  return Buffer.from(JSON.stringify(result.rows[0].content, null, 2), "utf8");
+}
+
 async function checkAndRunScheduledBackup() {
-    try {
-        const meta = loadMetadata();
-        const now = Date.now();
-
-        if (!meta.lastBackup) {
-            console.log('[Backup] Nenhum backup prévio detectado. Executando snapshot inicial de 7 dias...');
-            await createBackup('inicial-7dias');
-            return;
-        }
-
-        const lastTime = new Date(meta.lastBackup).getTime();
-        if (now - lastTime >= SEVEN_DAYS_MS) {
-            console.log('[Backup] Ciclo de 7 dias atingido. Executando backup semanal automático...');
-            await createBackup('agendado-7dias');
-        }
-    } catch (err) {
-        console.error('[Backup] Erro na verificação agendada de backup:', err.message);
-    }
+  const status = await getBackupStatus();
+  if (
+    !status.lastBackup ||
+    Date.now() - new Date(status.lastBackup).getTime() >= SEVEN_DAYS_MS
+  ) {
+    return createBackup(status.lastBackup ? "agendado-7dias" : "inicial-7dias");
+  }
+  return null;
 }
 
-/**
- * Inicializador da rotina de backup semanal
- */
 function init() {
-    ensureBackupDirectory();
-    // Executa verificação inicial após 5 segundos da subida do servidor
-    setTimeout(() => {
-        checkAndRunScheduledBackup();
-    }, 5000);
-
-    // Verifica a cada 6 horas se o prazo de 7 dias foi atingido
-    setInterval(checkAndRunScheduledBackup, 6 * 60 * 60 * 1000).unref();
+  if (process.env.VERCEL) return;
+  setTimeout(
+    () =>
+      checkAndRunScheduledBackup().catch((err) =>
+        console.error("[Backup]", err.message),
+      ),
+    5000,
+  );
+  setInterval(
+    () =>
+      checkAndRunScheduledBackup().catch((err) =>
+        console.error("[Backup]", err.message),
+      ),
+    6 * 60 * 60 * 1000,
+  ).unref();
 }
 
 module.exports = {
-    init,
-    createBackup,
-    getBackupStatus,
-    getBackupFilePath
+  init,
+  createBackup,
+  getBackupStatus,
+  getBackupFile,
+  checkAndRunScheduledBackup,
+  ensureTable,
 };

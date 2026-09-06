@@ -1,4 +1,3 @@
-
 :root {
     --bg-dark: #f4f5f7;
     --bg-secondary: #ffffff;
@@ -29,6 +28,7 @@ html[data-theme="dark"] {
     --border-color: #2e3134;
     --border-soft: rgba(255, 255, 255, 0.05);
 }
+
 html[data-theme="light"] body,
 html[data-theme="light"] .dash-body {
     background: var(--bg-dark);
@@ -124,7 +124,6 @@ html[data-theme="light"] ::-webkit-scrollbar-thumb {
     background: #c8cdd4;
 }
 
-/* Light theme surface and ranking system. */
 html[data-theme="light"] .stats-card,
 html[data-theme="light"] .chart-card,
 html[data-theme="light"] .dash-card,
@@ -229,6 +228,7 @@ html[data-theme="light"] .section-title-2 {
 }
 
 @media (prefers-reduced-motion: reduce) {
+
     *,
     *::before,
     *::after {
@@ -257,7 +257,6 @@ html[data-theme="light"] .section-title-2 {
     outline: none;
 }
 
-/* Consistent Phosphor Bold icon scale across the application. */
 i[class^="ph-"],
 i[class*=" ph-"] {
     display: inline-flex;
@@ -348,6 +347,7 @@ body.dash-body {
     min-height: 100vh;
     animation: pageReveal 0.65s cubic-bezier(.22, .8, .2, 1);
 }
+
 .dash-header {
     display: flex;
     justify-content: space-between;
@@ -771,213 +771,6 @@ body.dash-body {
     }
 }
 
-
-@media screen and (max-width: 1024px) {
-    .main-layout {
-        margin-left: 85px;
-        padding: 25px 40px;
-    }
-
-    .welcome-banner h1 {
-        font-size: 2rem;
-    }
-
-    .dash-grid {
-        grid-template-columns: 1fr 1fr;
-    }
-}
-
-
-@media screen and (max-width: 768px) {
-    .main-layout {
-        margin-top: 0 !important;
-        margin-left: 0 !important;
-        margin-right: 0 !important;
-        margin-bottom: 100px;
-        padding: 20px;
-    }
-
-    .dash-header {
-        flex-direction: column;
-        gap: 20px;
-        align-items: flex-start;
-    }
-
-    .header-user {
-        width: 100%;
-        justify-content: space-between;
-        border-top: 1px solid var(--border-color);
-        padding-top: 15px;
-    }
-
-    .welcome-banner {
-        padding: 30px 20px;
-        text-align: center;
-    }
-
-    .dash-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .footer-actions {
-        flex-direction: column;
-        width: 100%;
-    }
-
-    .btn-secondary-dash {
-        width: 100%;
-        justify-content: center;
-    }
-
-    .footer-credits {
-        display: none
-    }
-}
-
-@media screen and (max-width: 480px) {
-    .stats-number {
-        font-size: 2.2rem;
-    }
-
-    .ranking-item {
-        padding: 15px;
-        gap: 15px;
-    }
-
-    .ranking-position {
-        width: 35px;
-        height: 35px;
-        font-size: 0.9rem;
-    }
-}
-
-/* Mobile layout baseline shared by every dashboard page. */
-@media screen and (max-width: 768px) {
-    html,
-    body {
-        max-width: 100%;
-        overflow-x: hidden;
-    }
-
-    body.dash-body {
-        min-width: 0;
-        padding-bottom: 0;
-    }
-
-    .main-layout {
-        width: 100%;
-        min-height: 100vh;
-        padding: 70px 14px 28px;
-        border-radius: 0;
-    }
-
-    .dash-header {
-        margin-bottom: 24px;
-        padding-bottom: 14px;
-    }
-
-    .dash-header h1,
-    .page-title {
-        font-size: 1.25rem;
-    }
-
-    .header-user {
-        gap: 12px;
-    }
-
-    .user-profile-group {
-        gap: 9px;
-        padding-right: 10px;
-    }
-
-    .user-email,
-    .user-role {
-        max-width: 150px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
-    .welcome-banner {
-        margin-bottom: 24px;
-        padding: 26px 20px;
-        border-radius: 16px;
-    }
-
-    .welcome-banner h1 {
-        font-size: 1.65rem;
-    }
-
-    .welcome-banner p {
-        font-size: .92rem;
-    }
-
-    .dash-grid,
-    .info-grid,
-    .perfil-grid {
-        grid-template-columns: 1fr !important;
-        gap: 16px;
-    }
-
-    .stats-card,
-    .ranking-item {
-        padding: 20px;
-    }
-
-    .ranking-item {
-        gap: 12px;
-    }
-
-    .dash-footer {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 18px;
-        padding-top: 28px;
-    }
-
-    table {
-        display: block;
-        width: 100%;
-        overflow-x: auto;
-        white-space: nowrap;
-    }
-
-    input,
-    select,
-    textarea,
-    button,
-    .btn-secondary-dash,
-    .btn-salvar,
-    .btn-salvar-green {
-        max-width: 100%;
-    }
-}
-
-@media screen and (max-width: 480px) {
-    .main-layout {
-        padding-inline: 11px;
-    }
-
-    .header-left .header-info-btn {
-        width: 36px;
-        height: 36px;
-    }
-
-    .user-avatar {
-        width: 38px;
-        height: 38px;
-    }
-
-    .section-title-2 {
-        font-size: 1rem;
-        letter-spacing: 1px;
-    }
-}
-
-/* ==========================================================================
-   CHECKUP DO SISTEMA & DIAGNÓSTICO DO BANCO DE DADOS (ADMIN EXCLUSIVO)
-   ========================================================================== */
-
 .checkup-step {
     animation: fadeInModal 0.2s ease;
 }
@@ -1042,7 +835,6 @@ body.dash-body {
     border-color: var(--primary-red);
 }
 
-/* Banner de Backup a cada 7 dias */
 .checkup-backup-banner {
     display: flex;
     align-items: center;
@@ -1112,7 +904,6 @@ body.dash-body {
     color: var(--text-white);
 }
 
-/* Visão Geral (Métricas) */
 .checkup-overview-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -1152,7 +943,6 @@ body.dash-body {
     color: var(--primary-red);
 }
 
-/* Lista de Tabelas */
 .checkup-tables-list {
     display: flex;
     flex-direction: column;
@@ -1288,11 +1078,15 @@ body.dash-body {
 }
 
 @keyframes checkupSpinKey {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
 }
 
-/* Modal de Relatório Final de Reparo */
 .checkup-modal-overlay {
     position: fixed;
     inset: 0;
@@ -1474,3 +1268,618 @@ body.dash-body {
     box-shadow: 0 4px 14px rgba(33, 115, 70, 0.4);
 }
 
+
+@media screen and (min-width: 1921px) {
+    .main-layout {
+        max-width: 1600px;
+        margin-inline: auto;
+    }
+
+    .stats-number {
+        font-size: 4rem;
+    }
+}
+
+@media screen and (max-width: 1440px) {
+    .main-layout {
+        padding: 30px 50px;
+    }
+
+    .welcome-banner {
+        padding: 40px;
+    }
+
+    .stats-card {
+        padding: 30px;
+    }
+}
+
+@media screen and (max-width: 1024px) {
+    .main-layout {
+        margin-left: 85px;
+        padding: 25px 40px;
+    }
+
+    .welcome-banner h1 {
+        font-size: 2rem;
+    }
+
+    .dash-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media screen and (max-width: 768px) {
+
+    html,
+    body {
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    body.dash-body {
+        min-width: 0;
+        padding-bottom: 0;
+    }
+
+    .main-layout {
+        width: 100%;
+        min-height: 100vh;
+        padding: 70px 14px 28px;
+        margin: 0 !important;
+        border-radius: 0;
+        border-left: 0;
+        border-right: 0;
+        border-top: 0;
+    }
+
+    .dash-header {
+        flex-direction: column;
+        gap: 20px;
+        align-items: flex-start;
+        margin-bottom: 24px;
+        padding-bottom: 14px;
+    }
+
+    .dash-header h1,
+    .page-title {
+        font-size: 1.25rem;
+    }
+
+    .header-user {
+        width: 100%;
+        justify-content: space-between;
+        border-top: 1px solid var(--border-color);
+        padding-top: 15px;
+    }
+
+    .user-profile-group {
+        gap: 9px;
+        padding-right: 10px;
+    }
+
+    .user-email,
+    .user-role {
+        max-width: 150px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .welcome-banner {
+        margin-bottom: 24px;
+        padding: 26px 20px;
+        border-radius: 16px;
+        text-align: center;
+    }
+
+    .welcome-banner h1 {
+        font-size: 1.65rem;
+    }
+
+    .welcome-banner p {
+        font-size: .92rem;
+    }
+
+    .dash-grid,
+    .info-grid,
+    .perfil-grid {
+        grid-template-columns: 1fr !important;
+        gap: 16px;
+    }
+
+    .stats-card,
+    .ranking-item {
+        padding: 20px;
+    }
+
+    .ranking-item {
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    table {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    input,
+    select,
+    textarea,
+    button,
+    .btn-secondary-dash,
+    .btn-salvar,
+    .btn-salvar-green {
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    .dash-footer {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 18px;
+        padding-top: 28px;
+    }
+
+    .footer-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .btn-secondary-dash {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .footer-credits {
+        display: none;
+    }
+
+    .ranking-tabs {
+        gap: 20px;
+        overflow-x: auto;
+        padding-bottom: 10px;
+    }
+
+    .ranking-tab {
+        font-size: 0.75rem;
+        padding: 10px 0;
+        white-space: nowrap;
+    }
+
+    .ranking-list {
+        gap: 10px;
+    }
+
+    .ranking-item {
+        padding: 15px 18px;
+        gap: 15px;
+    }
+
+    .ranking-position {
+        width: 40px;
+        height: 40px;
+        font-size: 0.95rem;
+    }
+
+    .ranking-info h4 {
+        font-size: 0.95rem;
+    }
+
+    .media-nota {
+        font-size: 1rem;
+        padding: 6px 14px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .main-layout {
+        padding-inline: 11px;
+        padding-top: 60px;
+    }
+
+    .header-left .header-info-btn {
+        width: 36px;
+        height: 36px;
+    }
+
+    .user-avatar {
+        width: 38px;
+        height: 38px;
+        font-size: 14px;
+    }
+
+    .user-name {
+        font-size: 12px;
+    }
+
+    .user-email {
+        font-size: 10px;
+    }
+
+    .section-title-2 {
+        font-size: 0.85rem;
+        letter-spacing: 1px;
+    }
+
+    .stats-number {
+        font-size: 2.2rem;
+    }
+
+    .stats-card {
+        padding: 18px;
+    }
+
+    .stats-info h3 {
+        font-size: 0.75rem;
+    }
+
+    .ranking-item {
+        padding: 12px 14px;
+        gap: 12px;
+    }
+
+    .ranking-position {
+        width: 32px;
+        height: 32px;
+        font-size: 0.8rem;
+    }
+
+    .ranking-info h4 {
+        font-size: 0.85rem;
+    }
+
+    .ranking-info p {
+        font-size: 0.65rem;
+    }
+
+    .media-nota {
+        font-size: 0.85rem;
+        padding: 4px 10px;
+    }
+
+    .welcome-banner h1 {
+        font-size: 1.3rem;
+    }
+
+    .welcome-banner p {
+        font-size: 0.8rem;
+    }
+
+    .btn-secondary-dash {
+        font-size: 0.7rem;
+        padding: 10px 15px;
+    }
+}
+
+.backup-type-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    background: var(--card-bg-elevated);
+    border: 1px solid var(--border-color);
+    font-size: 0.85rem;
+}
+
+@media screen and (max-width: 768px) {
+
+    html,
+    body {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    body.dash-body {
+        min-width: 0;
+        width: 100%;
+        padding: 0;
+    }
+
+    .mobile {
+        height: 40px;
+        margin-top: 30px;
+    }
+
+    .main-layout {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        margin: 0 !important;
+        padding: 72px 14px 28px !important;
+        border-radius: 0 !important;
+        border-left: 0 !important;
+        border-right: 0 !important;
+        overflow: visible;
+    }
+
+    .main-layout>*,
+    .dash-content,
+    .section-container,
+    .dash-grid>*,
+    .info-grid>*,
+    .perfil-grid>* {
+        min-width: 0;
+    }
+
+    .dash-header {
+        width: 100%;
+        min-width: 0;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 14px;
+        margin-bottom: 22px;
+        padding-bottom: 14px;
+    }
+
+    .header-left,
+    .header-user,
+    .header-actions {
+        min-width: 0;
+    }
+
+    .header-left {
+        width: 100%;
+        text-align: center;
+    }
+
+    .header-left h1,
+    .dash-header h1,
+    .page-title {
+        max-width: 100%;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+        font-size: 1.5rem;
+    }
+
+    .header-user {
+        width: 100%;
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    .user-profile-group {
+        min-width: 0;
+        flex: 1;
+        gap: 10px;
+        padding-right: 10px;
+    }
+
+    .user-details {
+        min-width: 0;
+    }
+
+    .user-name,
+    .user-email,
+    .user-role {
+        display: block;
+        max-width: min(62vw, 220px);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .header-actions {
+        flex: 0 0 auto;
+        gap: 8px;
+    }
+
+    .header-icon,
+    .header-info-btn {
+        flex: 0 0 auto;
+    }
+
+    .toolbar,
+    .action-buttons,
+    .footer-actions {
+        width: 100%;
+        min-width: 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .toolbar {
+        flex-direction: column;
+        align-items: stretch;
+        margin-bottom: 20px;
+    }
+
+    .action-buttons {
+        align-items: stretch;
+    }
+
+    .action-buttons>*,
+    .footer-actions>* {
+        min-width: 0;
+    }
+
+    .btn-secondary-dash,
+    .btn-action,
+    .btn-action-2,
+    .btn-action-3,
+    .btn-cancel,
+    .btn-danger-action,
+    .btn-success-action,
+    .btn-login,
+    .btn-professor,
+    .btn-aluno,
+    .btn-full,
+    .btn-salvar,
+    .btn-salvar-green,
+    .btn-tarefa,
+    .btn-download,
+    .btn-avaliar,
+    .btn-devolver,
+    .btn-salvar-nota,
+    .btn-entregar,
+    .btn-aprovar,
+    .btn-rejeitar,
+    .btn-table-add,
+    .btn-table-edit {
+        min-height: 44px;
+        max-width: 100%;
+        box-sizing: border-box;
+        white-space: normal;
+        line-height: 1.2;
+        overflow-wrap: anywhere;
+        touch-action: manipulation;
+    }
+
+    .btn-secondary-dash {
+        width: 100%;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .footer-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .footer-actions>.btn-secondary-dash {
+        width: 100%;
+    }
+
+    .search-container {
+        width: 100%;
+        max-width: none;
+        min-width: 0;
+    }
+
+    .search-container input {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+    }
+
+    .dash-grid,
+    .info-grid,
+    .perfil-grid {
+        grid-template-columns: minmax(0, 1fr) !important;
+        gap: 14px;
+    }
+
+    .stats-card,
+    .ranking-item {
+        min-width: 0;
+    }
+
+    .ranking-item {
+        align-items: center;
+        gap: 10px;
+    }
+
+    .ranking-info {
+        min-width: 0;
+    }
+
+    .ranking-info h4,
+    .ranking-info p {
+        overflow-wrap: anywhere;
+    }
+
+    .media-nota {
+        flex: 0 0 auto;
+    }
+
+    .table-container {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    table {
+        max-width: none;
+    }
+
+    .modal-overlay,
+    .modal-new-overlay,
+    .settings-modal {
+        padding: 10px;
+        box-sizing: border-box;
+    }
+
+    .modal-content,
+    .modal-new-card {
+        width: min(100%, 520px);
+        max-width: 100%;
+        max-height: calc(100dvh - 20px);
+        overflow-y: auto;
+        overflow-x: hidden;
+        box-sizing: border-box;
+    }
+
+    .modal-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .modal-actions>* {
+        flex: 1 1 140px;
+        min-width: 0;
+    }
+
+    input,
+    select,
+    textarea {
+        max-width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+    }
+
+    img,
+    svg,
+    canvas,
+    video {
+        max-width: 100%;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .main-layout {
+        padding: 66px 11px 24px !important;
+    }
+
+    .header-user {
+        gap: 8px;
+    }
+
+    .user-name,
+    .user-email,
+    .user-role {
+        max-width: 52vw;
+    }
+
+    .dash-header h1,
+    .page-title {
+        font-size: 1.5rem;
+    }
+
+    .btn-secondary-dash,
+    .btn-action,
+    .btn-action-2,
+    .btn-action-3,
+    .btn-cancel,
+    .btn-danger-action,
+    .btn-success-action {
+        min-height: 42px;
+        padding: 10px 12px;
+        font-size: .72rem;
+    }
+
+    .modal-content,
+    .modal-new-card {
+        width: 100%;
+        max-height: calc(100dvh - 16px);
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+}

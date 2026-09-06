@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node scripts/verify-project.js",
     "start": "node src/app.js",
     "dev": "nodemon src/app.js"
   },
@@ -28,7 +28,11 @@
     "serve-favicon": "^2.5.1"
   },
   "nodemonConfig": {
-    "ignore": ["src/public/*", "src/uploads/*", "src/backups/*"]
+    "ignore": [
+      "src/public/*",
+      "src/uploads/*",
+      "src/backups/*"
+    ]
   },
   "engines": {
     "node": ">=20"

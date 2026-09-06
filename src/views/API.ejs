@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnalisAI — API</title>
+
+    <!-- Fontes e ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/phosphor-icons/2.1.1/css/phosphor-bold.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #151515;
+            --surface: #1e1e1e;
+            --border: #2e3134;
+            --text: #f0f0f0;
+            --text-muted: #8a8a8a;
+            --accent: #ff0101;
+            --accent-hover: #cc0000;
+            --code-bg: #0d0d0d;
+            --card-radius: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            min-height: 100vh;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .api-container {
+            max-width: 1100px;
+            width: 100%;
+        }
+
+        .api-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .api-header .logo {
+            width: 80px;
+            height: 80px;
+            background: var(--accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.4rem;
+            color: #fff;
+        }
+
+        .api-header h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        .api-header .version {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-left: auto;
+        }
+
+        .api-description {
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin-bottom: 32px;
+            line-height: 1.6;
+            border-left: 3px solid var(--accent);
+            padding-left: 18px;
+        }
+
+        .api-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--card-radius);
+            overflow: hidden;
+            margin-bottom: 28px;
+        }
+
+        .api-card-header {
+            padding: 18px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .api-card-header i {
+            font-size: 1.2rem;
+            color: var(--accent);
+        }
+
+        .api-card-header h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .api-card-body {
+            padding: 8px 0;
+            overflow-x: auto;
+        }
+
+        .endpoint-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .endpoint-table th {
+            text-align: left;
+            padding: 14px 20px;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .endpoint-table td {
+            padding: 14px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            vertical-align: middle;
+        }
+
+        .endpoint-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .method {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .method.get { background: #0d6efd; color: #fff; }
+        .method.post { background: #198754; color: #fff; }
+        .method.put { background: #fd7e14; color: #fff; }
+        .method.patch { background: #6f42c1; color: #fff; }
+        .method.delete { background: #dc3545; color: #fff; }
+
+        .endpoint-path {
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 0.85rem;
+            color: #e0e0e0;
+        }
+
+        .endpoint-desc {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .auth-badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.65rem;
+            font-weight: 500;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+        }
+
+        .auth-badge.required {
+            color: var(--accent);
+            border-color: var(--accent);
+            background: rgba(255, 1, 1, 0.08);
+        }
+
+        .auth-badge.csrf {
+            color: #ffc107;
+            border-color: #ffc107;
+            background: rgba(255, 193, 7, 0.08);
+        }
+
+        .api-footer {
+            margin-top: 40px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        .api-footer a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .api-footer a:hover {
+            color: var(--text);
+        }
+
+        .base-url {
+            background: var(--code-bg);
+            padding: 4px 14px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: #b0b0b0;
+        }
+
+        @media (max-width: 700px) {
+            .api-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .api-header .version {
+                margin-left: 0;
+            }
+            .endpoint-table th,
+            .endpoint-table td {
+                padding: 10px 14px;
+                font-size: 0.8rem;
+            }
+            .endpoint-path {
+                font-size: 0.75rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 20px 12px;
+            }
+            .api-card-header {
+                padding: 14px 16px;
+            }
+            .endpoint-table th,
+            .endpoint-table td {
+                padding: 8px 10px;
+                font-size: 0.7rem;
+            }
+        }
+
+        /* scrollbar */
+        ::-webkit-scrollbar {
+            height: 4px;
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="api-container">
+        <!-- Cabeçalho -->
+        <header class="api-header">
+            <div class="logo">
+                <img src="/images/side-bar-logo.png" alt="AnalisAI" style="height:40px; filter: brightness(0) invert(8.24%);">
+            </div>
+            <h1>AnalisAI <span style="font-weight:400;color:var(--text-muted);">API</span></h1>
+            <span class="version"><i class="ph-bold ph-code"></i> v1.0.0</span>
+        </header>
+
+        <div class="api-description">
+            <i class="ph-bold ph-info" style="color:var(--accent);margin-right:8px;"></i>
+            API REST da plataforma de gestão pedagógica AnalisAI.
+            Todas as rotas mutáveis (POST, PUT, PATCH, DELETE) exigem token CSRF no cabeçalho <code>X-CSRF-Token</code>.
+            A maioria dos endpoints requer autenticação via sessão.
+        </div>
+
+        <!-- Base URL -->
+        <div style="margin-bottom:24px;">
+            <span class="base-url">
+                <i class="ph-bold ph-link"></i> Base URL: <span id="baseUrlDisplay"><%= baseUrl %></span>
+            </span>
+        </div>
+
+        <!-- Tabela de Endpoints -->
+        <div class="api-card">
+            <div class="api-card-header">
+                <i class="ph-bold ph-list"></i>
+                <h2>Endpoints Disponíveis</h2>
+            </div>
+            <div class="api-card-body">
+                <table class="endpoint-table">
+                    <thead>
+                        <tr>
+                            <th style="width:80px;">Método</th>
+                            <th style="min-width:160px;">Endpoint</th>
+                            <th>Descrição</th>
+                            <th style="width:120px;">Autenticação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- HOME -->
+                        <tr>
+                            <td><span class="method get">GET</span></td>
+                            <td><code class="endpoint-path">/</code></td>
+                            <td class="endpoint-desc">Lista de endpoints (esta página)</td>
+                            <td><span class="auth-badge">Público</span></td>
+                        </tr>
+                        <!-- CONTA -->
+                        <tr>
+                            <td><span class="method get">GET</span></td>
+                            <td><code class="endpoint-path">/conta</code></td>
+                            <td class="endpoint-desc">Dados da conta do usuário logado</td>
+                            <td><span class="auth-badge required">Sessão</span></td>
+                        </tr>
+                        <!-- NOTIFICAÇÕES -->
+                        <tr>
+                            <td><span class="method get">GET</span></td>
+                            <td><code class="endpoint-path">/notificacoes</code></td>
+                            <td class="endpoint-desc">Lista de notificações não lidas</td>
+                            <td><span class="auth-badge required">Sessão</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="method post">POST</span></td>
+                            <td><code class="endpoint-path">/notificacoes/marcar-lida/:id</code></td>
+                            <td class="endpoint-desc">Marcar uma notificação como lida</td>
+                            <td><span class="auth-badge required">Sessão + CSRF</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="method post">POST</span></td>
+                            <td><code class="endpoint-path">/notificacoes/marcar-todas-lidas</code></td>
+                            <td class="endpoint-desc">Marcar todas as notificações como lidas</td>
+                            <td><span class="auth-badge required">Sessão + CSRF</span></td>
+                        </tr>
+                        <!-- CONFIGURAÇÕES NOTIFICAÇÕES -->
+                        <tr>
+                            <td><span class="method get">GET</span></td>
+                            <td><code class="endpoint-path">/configuracoes-notificacoes</code></td>
+                            <td class="endpoint-desc">Obter configurações de notificações</td>
+                            <td><span class="auth-badge required">Sessão</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="method post">POST</span></td>
+                            <td><code class="endpoint-path">/configuracoes-notificacoes</code></td>
+                            <td class="endpoint-desc">Salvar configurações de notificações</td>
+                            <td><span class="auth-badge required">Sessão + CSRF</span></td>
+                        </tr>
+                        <!-- TAREFAS STATS -->
+                        <tr>
+                            <td><span class="method get">GET</span></td>
+                            <td><code class="endpoint-path">/tarefas-stats</code></td>
+                            <td class="endpoint-desc">Estatísticas de tarefas (professores)</td>
+                            <td><span class="auth-badge required">Sessão (Professor)</span></td>
+                        </tr>
+                        <!-- ALUNO GRÁFICOS -->
+                        <tr>
+                            <td><span class="method get">GET</span></td>
+                            <td><code class="endpoint-path">/aluno/dados-grafico</code></td>
+                            <td class="endpoint-desc">Dados para gráficos do aluno</td>
+                            <td><span class="auth-badge required">Sessão (Aluno)</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="method get">GET</span></td>
+                            <td><code class="endpoint-path">/aluno/ranking-comparativo</code></td>
+                            <td class="endpoint-desc">Ranking comparativo do aluno</td>
+                            <td><span class="auth-badge required">Sessão (Aluno)</span></td>
+                        </tr>
+                        <!-- BUSCA ALUNOS -->
+                        <tr>
+                            <td><span class="method get">GET</span></td>
+                            <td><code class="endpoint-path">/alunos/busca</code></td>
+                            <td class="endpoint-desc">Buscar alunos (professores)</td>
+                            <td><span class="auth-badge required">Sessão (Professor)</span></td>
+                        </tr>
+                        <!-- HEALTH -->
+                        <tr>
+                            <td><span class="method get">GET</span></td>
+                            <td><code class="endpoint-path">/health</code></td>
+                            <td class="endpoint-desc">Verificação de saúde do sistema</td>
+                            <td><span class="auth-badge">Público</span></td>
+                        </tr>
+                        <!-- IA HISTÓRICO -->
+                        <tr>
+                            <td><span class="method get">GET</span></td>
+                            <td><code class="endpoint-path">/ia/historico</code></td>
+                            <td class="endpoint-desc">Histórico de conversas da IA</td>
+                            <td><span class="auth-badge required">Sessão</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="method patch">PATCH</span></td>
+                            <td><code class="endpoint-path">/ia/historico/:id</code></td>
+                            <td class="endpoint-desc">Atualizar conversa (apagar, fixar, renomear)</td>
+                            <td><span class="auth-badge required">Sessão + CSRF</span></td>
+                        </tr>
+                        <!-- IA CHAT -->
+                        <tr>
+                            <td><span class="method post">POST</span></td>
+                            <td><code class="endpoint-path">/ia/aluno/chat</code></td>
+                            <td class="endpoint-desc">Chat do aluno com a IA</td>
+                            <td><span class="auth-badge required">Sessão (Aluno) + CSRF</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="method post">POST</span></td>
+                            <td><code class="endpoint-path">/ia/professor/chat</code></td>
+                            <td class="endpoint-desc">Chat do professor com a IA</td>
+                            <td><span class="auth-badge required">Sessão (Professor) + CSRF</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="method post">POST</span></td>
+                            <td><code class="endpoint-path">/ia/professor/aluno/:id/analisar</code></td>
+                            <td class="endpoint-desc">Analisar aluno via IA</td>
+                            <td><span class="auth-badge required">Sessão (Professor) + CSRF</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="method post">POST</span></td>
+                            <td><code class="endpoint-path">/ia/professor/alterar-nota</code></td>
+                            <td class="endpoint-desc">Alterar nota via IA (com confirmação)</td>
+                            <td><span class="auth-badge required">Sessão (Professor) + CSRF</span></td>
+                        </tr>
+                        <!-- CSRF TOKEN -->
+                        <tr>
+                            <td><span class="method get">GET</span></td>
+                            <td><code class="endpoint-path">/csrf-token</code></td>
+                            <td class="endpoint-desc">Obter token CSRF</td>
+                            <td><span class="auth-badge">Sessão (opcional)</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Legenda de autenticação -->
+        <div class="api-card" style="margin-top:12px;">
+            <div class="api-card-header">
+                <i class="ph-bold ph-shield-check"></i>
+                <h2>Autenticação e Segurança</h2>
+            </div>
+            <div class="api-card-body" style="padding:18px 24px;">
+                <div style="display:flex;flex-wrap:wrap;gap:16px;font-size:0.9rem;">
+                    <div><span class="auth-badge" style="background:rgba(255,255,255,0.06);">Público</span> – sem autenticação</div>
+                    <div><span class="auth-badge required">Sessão</span> – requer login via cookie de sessão</div>
+                    <div><span class="auth-badge csrf" style="color:#ffc107;border-color:#ffc107;background:rgba(255,193,7,0.08);">CSRF</span> – token CSRF obrigatório no header <code>X-CSRF-Token</code></div>
+                </div>
+                <div style="margin-top:16px;color:var(--text-muted);font-size:0.85rem;border-top:1px solid var(--border);padding-top:14px;">
+                    <strong>Como obter o token CSRF:</strong> Faça uma requisição <code>GET /api/csrf-token</code> e use o valor retornado no campo <code>csrfToken</code>.
+                    <br>
+                    <strong>Exemplo de requisição com CSRF:</strong>
+                    <pre style="background:var(--code-bg);padding:10px 14px;border-radius:8px;margin-top:8px;font-size:0.8rem;color:#ccc;overflow-x:auto;">
+fetch('/api/ia/professor/chat', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': token
+    },
+    body: JSON.stringify({ message: 'Olá' })
+})</pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rodapé -->
+        <footer class="api-footer">
+            <span>© 2026 <a href="/">AnalisAI</a></span>
+            <span>
+                <a href="/dashboard" target="_blank"><i class="ph-bold ph-house"></i> Dashboard</a>
+                <span style="margin:0 8px;">•</span>
+                <a href="/manuais" target="_blank"><i class="ph-bold ph-book"></i> Manuais</a>
+            </span>
+        </footer>
+    </div>
+
+    <script>
+        // Exibir a base URL dinamicamente
+        document.addEventListener('DOMContentLoaded', function() {
+            const baseUrl = window.location.origin + '/api';
+            document.getElementById('baseUrlDisplay').textContent = baseUrl;
+        });
+    </script>
+</body>
+</html>

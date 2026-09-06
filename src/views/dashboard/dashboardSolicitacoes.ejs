@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <script src="/js/shared/theme-init.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AnalisAI - Solicitações de Senha</title>
+    <title>Solicitações de Senha</title>
     <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
     <script src="/js/shared/phosphor-icons.js" defer></script>
     <link rel="stylesheet" href="/css/components/sidebar.css">
@@ -60,10 +60,10 @@
                                 <%= new Date(s.data_solicitacao).toLocaleString('pt-BR') %>
                             </div>
                             <div class="solicitacao-acoes">
-                                <button class="btn-secondary-dash" onclick="abrirModalAprovar(<%= s.id %>, '<%= s.nome %>')">
+                                <button class="btn-secondary-dash" onclick='abrirModalAprovar(<%= s.id %>, <%- safeJson(s.nome).replace(/'/g, '\\u0027') %>)'>
                                     <i class="fas fa-check"></i> APROVAR
                                 </button>
-                                <button class="btn-secondary-dash" onclick="abrirModalRejeitar(<%= s.id %>, '<%= s.nome %>')">
+                                <button class="btn-secondary-dash" onclick='abrirModalRejeitar(<%= s.id %>, <%- safeJson(s.nome).replace(/'/g, '\\u0027') %>)'>
                                     <i class="fas fa-times"></i> REJEITAR
                                 </button>
                             </div>

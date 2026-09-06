@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <script src="/js/shared/theme-init.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AnalisAI - Equipe</title>
+    <title>Equipe — AnalisAI</title>
     <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
     <script src="/js/shared/phosphor-icons.js" defer></script>
     <link rel="stylesheet" href="/css/base/dashboard.css">
@@ -13,44 +13,63 @@
 </head>
 <body class="dash-body">
 
-    <div class="login-wrapper">
-        <div style="margin-bottom: 20px;">
-            <a href="#" onclick="event.preventDefault(); history.back()" class="btn-secondary-dash" style="text-decoration: none;">
-                <i class="fas fa-undo-alt"></i> VOLTAR AO PAINEL
-            </a>
+    <div class="team-wrapper">
+
+        <!-- LOGO -->
+        <div class="team-logo">
+            <img src="/images/logo3-white.png" alt="AnalisAI">
+            <h3>Time de Desenvolvimento</h3>
         </div>
 
-        <div class="login-card">
-            <div style="text-align: center; margin-bottom: 30px;">
-                <img src="/images/logo3-white.png" alt="AnalisAI" style="height: 40px;">
+        <!-- CARD PRINCIPAL -->
+        <div class="team-card">
+
+            <!-- GRID DE MEMBROS -->
+            <div class="team-grid">
+
+                <!-- FRONT-END -->
+                <div class="team-section">
+                    <div class="team-section-title">
+                        <i class="ph-bold ph-pencil"></i> Front-end
+                    </div>
+                    <p>Lucas Eduardo Duarte Pereira</p>
+                    <p>Ellefer Fernanda Bovaroti Rizzo</p>
+                </div>
+
+                <!-- BACK-END -->
+                <div class="team-section">
+                    <div class="team-section-title">
+                        <i class="ph-bold ph-terminal-window"></i> Back-end
+                    </div>
+                    <p>Lucas Eduardo Duarte Pereira</p>
+                    <p>Isabella Li Affa Sanches</p>
+                </div>
+
+                <!-- BANCO DE DADOS -->
+                <div class="team-section">
+                    <div class="team-section-title">
+                        <i class="ph-bold ph-database"></i> Banco de Dados
+                    </div>
+                    <p>Isabella Li Affa Sanches</p>
+                    <p>Luiz Otávio da Silva Mattarugo</p>
+                </div>
+
             </div>
 
-            <h2 class="team-title">Time de Desenvolvimento</h2>
-
-            <div class="team-content">
-                <div class="team-group">
-                    <span class="team-label">FRONT-END</span>
-                    <div class="team-box">
-                        <p><i class="fas fa-user-edit"></i> LUCAS EDUARDO DUARTE PEREIRA</p>
-                        <p><i class="fas fa-user-edit"></i> ELLEFER FERNANDA BOVAROTI RIZZO</p>
-                    </div>
-                </div>
-                <div class="team-group">
-                    <span class="team-label">BACK-END</span>
-                    <div class="team-box">
-                        <p><i class="fas fa-terminal"></i> LUCAS EDUARDO DUARTE PEREIRA</p>
-                        <p><i class="fas fa-terminal"></i> ISABELLA LI AFFA SANCHES</p>
-                    </div>
-                </div>
-                <div class="team-group">
-                    <span class="team-label">BANCO DE DADOS</span>
-                    <div class="team-box">
-                        <p><i class="fas fa-database"></i> ISABELLA LI AFFA SANCHES</p>
-                        <p><i class="fas fa-database"></i> LUIZ OTÁVIO DA SILVA MATTARUGO</p>
-                    </div>
+            <!-- DIVISOR / AÇÕES -->
+            <div class="team-divider">
+                <div class="team-actions">
+                    <a href="#" onclick="event.preventDefault(); history.back()" class="btn-secondary-dash">
+                        <i class="ph-bold ph-arrow-left"></i> Voltar ao Painel
+                    </a>
+                    <a href="/dashboard" class="btn-secondary-dash">
+                        <i class="ph-bold ph-house"></i> Dashboard
+                    </a>
                 </div>
             </div>
+
         </div>
+
     </div>
 
 </body>
