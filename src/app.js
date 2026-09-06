@@ -31,6 +31,13 @@ app.use(express.urlencoded({ extended: false, limit: '200kb' }));
 app.use(express.json({ limit: '2mb' }));
 app.use(securityHeaders);
 
+app.use((req, res, next) => {
+  req.setTimeout(60000, () => {
+    res.status(503).json({ error: 'Tempo limite excedido.' });
+  });
+  next();
+});
+
 app.set('trust proxy', process.env.NODE_ENV === 'production' ? 1 : false);
 
 if (process.env.NODE_ENV === 'production') {
