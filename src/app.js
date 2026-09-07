@@ -156,6 +156,7 @@ app.use((req, res) => {
     mensagem: 'A página que você está procurando não existe.',
     erroDetalhe: null,
     user: req.session?.user,
+    csrfToken: req.session.csrfToken,
     userCargo: req.session?.userCargo,
     isAdmin: req.session?.userCargo === 'Admin'
   });
